@@ -1,0 +1,93 @@
+---
+import "@shelfwood/talos-ui/talos.css";
+interface Props {
+  title?: string;
+}
+const { title = "Talos UI" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta
+      name="description"
+      content="Dark-monochrome HUD design system — chamfered panels, Oxanium type, ambient grid, composable web components."
+    />
+  </head>
+  <body>
+    <div class="ambient-overlay"></div>
+    <main><slot /></main>
+
+    <script>
+      // Ambient grid cursor tracking + WC registration.
+      import "@shelfwood/talos-ui/wc";
+      const root = document.documentElement;
+      addEventListener("pointermove", (e) => {
+        root.style.setProperty("--talos-cursor-x", e.clientX + "px");
+        root.style.setProperty("--talos-cursor-y", e.clientY + "px");
+      });
+      // Cursor sheen for interactive panels.
+      document.querySelectorAll<HTMLElement>(".interactive-panel").forEach((p) => {
+        p.addEventListener("pointermove", (e) => {
+          const r = p.getBoundingClientRect();
+          p.style.setProperty("--talos-mx", `${((e.clientX - r.left) / r.width) * 100}%`);
+          p.style.setProperty("--talos-my", `${((e.clientY - r.top) / r.height) * 100}%`);
+        });
+      });
+    </script>
+
+    <style is:global>
+      :root { color-scheme: dark; }
+      html { background: var(--talos-background); }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--talos-foreground);
+        font-family: var(--talos-font-display);
+        font-weight: 300;
+        letter-spacing: 0.01em;
+        -webkit-font-smoothing: antialiased;
+      }
+      main {
+        position: relative;
+        z-index: 2;
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 6rem 1.5rem;
+      }
+      h1, h2, h3 {
+        font-weight: 300;
+        text-transform: uppercase;
+        letter-spacing: var(--talos-tracking-hud);
+        margin: 0;
+      }
+      .eyebrow {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: var(--talos-tracking-hud);
+        color: var(--talos-muted-foreground);
+      }
+      .grid {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+      .pad { padding: 1.75rem; }
+      .stack { display: flex; flex-direction: column; gap: 1rem; }
+      .row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+      .muted { color: var(--talos-muted-foreground); }
+      section { margin-block: 5rem; }
+      .dot {
+        width: 7px; height: 7px; border-radius: 50%;
+        background: var(--talos-accent);
+        box-shadow: 0 0 8px var(--talos-accent);
+        animation: pulse 2.4s ease-in-out infinite;
+      }
+      @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+      a.doclink { color: var(--talos-foreground); }
+    </style>
+  </body>
+</html>

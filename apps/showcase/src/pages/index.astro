@@ -1,0 +1,95 @@
+---
+import Landing from "../layouts/Landing.astro";
+import GlassPanel from "@shelfwood/talos-ui/astro/GlassPanel.astro";
+import Button from "@shelfwood/talos-ui/astro/Button.astro";
+---
+
+<Landing>
+  <!-- HERO -->
+  <header class="stack">
+    <div class="row" style="justify-content:space-between">
+      <span class="eyebrow">// @shelfwood/talos-ui</span>
+      <span class="row" style="gap:.5rem">
+        <span class="dot"></span>
+        <span class="eyebrow">v0.0.1</span>
+      </span>
+    </div>
+    <h1 style="font-size:clamp(2.25rem,5vw,4rem);letter-spacing:.005em;line-height:1.05">
+      Dark-monochrome<br />HUD design system
+    </h1>
+    <p class="muted" style="max-width:46ch;font-size:1.05rem">
+      Chamfered hairline panels, Oxanium uppercase type, a cursor-tracked
+      ambient grid, and composable notched-panel web components. Astro,
+      Laravel, or plain HTML.
+    </p>
+    <div class="row" style="margin-top:.5rem">
+      <Button href="/docs/getting-started/">Get started</Button>
+      <Button variant="ghost" href="https://github.com/shelfwood">Source</Button>
+    </div>
+  </header>
+
+  <!-- PANELS -->
+  <section class="stack">
+    <span class="eyebrow">// 01 — Panels</span>
+    <div class="grid bento-stagger">
+      <GlassPanel as="a" href="/docs/components/" class="pad">
+        <h3 style="font-size:1.1rem">Glass panel</h3>
+        <p class="muted">Two-layer chamfer hairline. Hover for lift, sheen, brackets.</p>
+      </GlassPanel>
+      <GlassPanel as="a" href="/docs/tokens/" class="pad">
+        <h3 style="font-size:1.1rem">Tokens</h3>
+        <p class="muted">Every decision is a <code>--talos-*</code> property.</p>
+      </GlassPanel>
+      <GlassPanel as="a" href="/docs/web-components/" class="pad">
+        <h3 style="font-size:1.1rem">Web components</h3>
+        <p class="muted">Composable notched panels via custom elements.</p>
+      </GlassPanel>
+      <GlassPanel as="a" href="/docs/blade/" class="pad">
+        <h3 style="font-size:1.1rem">Laravel / Blade</h3>
+        <p class="muted">CSS + a module script. No Composer package.</p>
+      </GlassPanel>
+    </div>
+  </section>
+
+  <!-- BUTTONS -->
+  <section class="stack">
+    <span class="eyebrow">// 02 — Buttons</span>
+    <div class="row">
+      <Button>Primary</Button>
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="ghost">Ghost</Button>
+      <Button size="sm">Small</Button>
+      <Button size="lg">Large</Button>
+    </div>
+  </section>
+
+  <!-- WEB COMPONENTS -->
+  <section class="stack">
+    <span class="eyebrow">// 03 — Notched panels (web components)</span>
+    <div class="row" style="gap:2rem;align-items:flex-start">
+      <talos-panel panel-width="360" panel-height="200" animate>
+        <talos-corner edge="top-right" radius="24"></talos-corner>
+        <talos-corner edge="bottom-left" radius="24"></talos-corner>
+        <talos-notch edge="top" width="90" depth="14"></talos-notch>
+        <div class="pad">
+          <span class="eyebrow">SYS://PANEL</span>
+          <h3 style="font-size:1.05rem;margin-top:.5rem">Corners + top notch</h3>
+        </div>
+      </talos-panel>
+
+      <talos-panel panel-width="360" panel-height="200">
+        <talos-notch edge="left" width="70" depth="16"></talos-notch>
+        <talos-notch edge="right" width="70" depth="16"></talos-notch>
+        <div class="pad">
+          <span class="eyebrow">SYS://PANEL</span>
+          <h3 style="font-size:1.05rem;margin-top:.5rem">Side notches</h3>
+        </div>
+      </talos-panel>
+    </div>
+  </section>
+
+  <footer class="row muted" style="justify-content:space-between;border-top:1px solid var(--talos-border);padding-top:1.5rem">
+    <span class="eyebrow">SYS://TALOS-UI</span>
+    <span class="eyebrow">MIT — Shelfwood ◢</span>
+  </footer>
+</Landing>
