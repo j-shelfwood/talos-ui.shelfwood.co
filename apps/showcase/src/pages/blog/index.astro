@@ -1,0 +1,47 @@
+---
+import BlogShell from "../../layouts/BlogShell.astro";
+import GlassPanel from "@shelfwood/talos-ui/astro/GlassPanel.astro";
+
+const posts = [
+  {
+    href: "/blog/sample/",
+    title: "Designing a monochrome HUD",
+    description: "How geometry and contrast replace color in the talos-ui system.",
+    tags: ["design", "css"],
+  },
+  {
+    href: "/blog/sample/",
+    title: "Notched panels with web components",
+    description: "Composing SVG outlines from declarative corner + notch decorators.",
+    tags: ["web-components"],
+  },
+  {
+    href: "/blog/sample/",
+    title: "Shipping a framework-agnostic package",
+    description: "One CSS layer for Astro, Laravel, and plain HTML.",
+    tags: ["package", "astro"],
+  },
+];
+---
+
+<BlogShell title="Blog — Talos UI">
+  <span class="talos-eyebrow">// Insights & ideas</span>
+  <h1 style="font-size:clamp(1.875rem,4vw,2.5rem);text-transform:uppercase;letter-spacing:var(--talos-tracking-hud);font-weight:300;margin:.5rem 0 2rem">
+    Blog
+  </h1>
+
+  <div class="talos-grid bento-stagger">
+    {posts.map((p) => (
+      <GlassPanel as="a" href={p.href} class="col-span-12 md:col-span-4 talos-pad">
+        <div class="row" style="justify-content:space-between;align-items:flex-start">
+          <h3 style="font-size:1.15rem;font-weight:300;margin:0">{p.title}</h3>
+          <span style="opacity:.5">↗</span>
+        </div>
+        <p class="muted" style="font-size:.85rem;margin:1rem 0">{p.description}</p>
+        <div class="row" style="gap:.5rem;margin-top:auto">
+          {p.tags.map((t) => <span class="talos-tag">#{t}</span>)}
+        </div>
+      </GlassPanel>
+    ))}
+  </div>
+</BlogShell>

@@ -1,0 +1,113 @@
+---
+import "@shelfwood/talos-ui/talos.css";
+import "@shelfwood/talos-ui/talos-blog.css";
+import GlassPanel from "@shelfwood/talos-ui/astro/GlassPanel.astro";
+
+interface Props {
+  title?: string;
+  /** TOC headings for post pages: [{ id, text, depth }] */
+  toc?: { id: string; text: string; depth: number }[];
+  back?: { href: string; text: string };
+}
+const { title = "Talos UI", toc = [], back } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="ambient-overlay"></div>
+
+    <header class="talos-navbar cascade-in" id="navbar" data-compact="false">
+      <GlassPanel class="talos-navbar-pill glass-panel--navbar-dense" style="overflow:visible">
+        <div class="talos-navbar-inner">
+          <div>
+            {back ? (
+              <a class="talos-nav-link" href={back.href}>
+                ←<span class="talos-nav-text">{back.text}</span>
+              </a>
+            ) : (
+              <a class="talos-nav-link" href="/"><span class="talos-nav-text">Home</span></a>
+            )}
+          </div>
+          <div><a href="/" aria-label="Home" style="font-weight:300;letter-spacing:.1em">◢</a></div>
+          <div>
+            {toc.length > 0 ? (
+              <button class="talos-nav-link" id="toc-btn" type="button" aria-expanded="false">
+                <span class="talos-nav-text">TOC</span> ☰
+              </button>
+            ) : (
+              <a class="talos-nav-link" href="/docs/getting-started/"><span class="talos-nav-text">Docs</span></a>
+            )}
+          </div>
+        </div>
+        {toc.length > 0 && (
+          <div class="toc-content" id="toc-content">
+            <div class="toc-inner">
+              <p class="toc-heading">On this page</p>
+              <ul>
+                {toc.map((h) => (
+                  <li><a href={`#${h.id}`} data-depth={h.depth} style={h.depth === 3 ? "padding-left:1rem" : ""}>{h.text}</a></li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+      </GlassPanel>
+    </header>
+
+    <main><slot /></main>
+
+    <script>
+      import "@shelfwood/talos-ui/wc";
+      const root = document.documentElement;
+      addEventListener("pointermove", (e) => {
+        root.style.setProperty("--talos-cursor-x", e.clientX + "px");
+        root.style.setProperty("--talos-cursor-y", e.clientY + "px");
+      });
+      // Compact-on-scroll.
+      const nav = document.getElementById("navbar");
+      const onScroll = () => nav?.setAttribute("data-compact", String(scrollY > 50));
+      addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+      // TOC toggle.
+      const btn = document.getElementById("toc-btn");
+      btn?.addEventListener("click", () => {
+        const open = nav?.classList.toggle("toc-expanded");
+        btn.setAttribute("aria-expanded", String(open));
+      });
+    </script>
+
+    <style is:global>
+      :root { color-scheme: dark; }
+      html { background: var(--talos-background); scroll-behavior: smooth; scroll-padding-top: 8rem; }
+      body {
+        margin: 0; min-height: 100vh; color: var(--talos-foreground);
+        font-family: var(--talos-font-display); font-weight: 300; letter-spacing: 0.01em;
+        -webkit-font-smoothing: antialiased;
+      }
+      main { position: relative; z-index: 2; max-width: 768px; margin: 0 auto; padding: 8rem 1.5rem 4rem; }
+      .row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+      .muted { color: var(--talos-muted-foreground); }
+      /* TOC dropdown. */
+      .toc-content { max-height: 0; opacity: 0; overflow: hidden; transition: max-height 300ms ease, opacity 200ms ease; }
+      #navbar.toc-expanded .toc-content { max-height: 60vh; opacity: 1; }
+      #navbar.toc-expanded .talos-navbar-pill { max-width: 600px; }
+      .toc-inner { border-top: 1px solid hsl(0 0% 100% / .1); margin: 0 1.5rem; padding-top: 1rem; }
+      .toc-heading {
+        font-size: .7rem; text-transform: uppercase; letter-spacing: var(--talos-tracking-hud-tight);
+        color: var(--talos-muted-foreground); margin: 0 0 .5rem;
+      }
+      .toc-inner ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .25rem; }
+      .toc-inner a {
+        display: block; padding: .35rem .5rem; font-size: .85rem; text-decoration: none;
+        color: var(--talos-muted-foreground); transition: color 160ms ease, background 160ms ease;
+      }
+      .toc-inner a:hover { color: var(--talos-foreground); background: hsl(0 0% 100% / .08); }
+    </style>
+  </body>
+</html>

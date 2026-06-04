@@ -1,0 +1,92 @@
+---
+import Landing from "../layouts/Landing.astro";
+import GlassPanel from "@shelfwood/talos-ui/astro/GlassPanel.astro";
+import HeroPanel from "@shelfwood/talos-ui/astro/HeroPanel.astro";
+import MissionPanel from "@shelfwood/talos-ui/astro/MissionPanel.astro";
+---
+
+<Landing title="Mosaic — Talos UI">
+  <span class="talos-eyebrow">// Mosaic layout — 12-col bento grid</span>
+  <div class="talos-grid bento-stagger" style="margin-top:1.5rem">
+    <HeroPanel
+      class="col-span-12 lg:col-span-8 lg:row-span-2"
+      eyebrow="Shelfwood"
+      headline="Composable HUD mosaics"
+      summary="The bento grid maps 4 / 8 / 12 columns across breakpoints. Panels claim spans and row-spans to build an asymmetric, deliberate mosaic — no Tailwind required."
+      vitals={[
+        { key: "Stack", value: "Astro · Laravel" },
+        { key: "Layer", value: "Plain CSS" },
+        { key: "Mode", value: "Monochrome" },
+      ]}
+    />
+    <MissionPanel
+      class="col-span-12 lg:col-span-4 lg:row-span-2"
+      statement="Geometry and contrast over color. Every panel is the same chamfered hairline chrome; the mosaic gives it rhythm."
+      axes={[
+        { key: "Tailored", description: "Spans + row-spans compose any layout." },
+        { key: "Agnostic", description: "Works in Astro, Blade, or plain HTML." },
+        { key: "Coherent", description: "One token set drives the whole grid." },
+      ]}
+    />
+
+    <GlassPanel as="a" href="/docs/components/" class="col-span-12 md:col-span-4 talos-pad">
+      <span class="talos-eyebrow">// Services</span>
+      <h3 style="font-size:1.05rem;margin:.5rem 0">Preview card</h3>
+      <ul class="prev-list">
+        <li>Design systems</li>
+        <li>AI-native tooling</li>
+        <li>Astro & Laravel builds</li>
+      </ul>
+    </GlassPanel>
+
+    <GlassPanel as="a" href="/docs/web-components/" class="col-span-12 md:col-span-4 talos-pad">
+      <span class="talos-eyebrow">// Projects</span>
+      <h3 style="font-size:1.05rem;margin:.5rem 0">Preview card</h3>
+      <ul class="prev-list">
+        <li>talos-ui</li>
+        <li>tesseract-dash</li>
+        <li>shelfwood.co</li>
+      </ul>
+    </GlassPanel>
+
+    <GlassPanel as="a" href="/docs/tokens/" class="col-span-12 md:col-span-4 lg:row-span-2 talos-pad">
+      <div class="row" style="justify-content:space-between">
+        <span class="talos-eyebrow">// Profile</span>
+        <span style="opacity:.5">↗</span>
+      </div>
+      <div class="avatar"></div>
+      <h3 style="font-size:1.1rem;margin:.25rem 0 0">Mini profile</h3>
+      <p class="muted" style="margin:.25rem 0 0;font-size:.75rem;text-transform:uppercase;letter-spacing:var(--talos-tracking-hud-tight)">
+        Row-span-2 tall card
+      </p>
+      <span class="talos-eyebrow" style="margin-top:auto">Meet the maker →</span>
+    </GlassPanel>
+
+    <GlassPanel as="a" href="/blog/" class="col-span-12 md:col-span-4 talos-pad">
+      <div class="row" style="justify-content:space-between">
+        <h3 style="font-size:1rem;margin:0">Blog</h3>
+        <span style="opacity:.5">↗</span>
+      </div>
+      <span class="talos-eyebrow" style="margin-top:.75rem">Insights & ideas</span>
+    </GlassPanel>
+
+    <GlassPanel as="a" href="/docs/blade/" class="col-span-12 md:col-span-4 talos-pad">
+      <div class="row" style="justify-content:space-between">
+        <h3 style="font-size:1rem;margin:0">Contact</h3>
+        <span style="opacity:.5">↗</span>
+      </div>
+      <span class="talos-eyebrow" style="margin-top:.75rem">Let's connect</span>
+    </GlassPanel>
+  </div>
+
+  <style>
+    .prev-list { list-style: none; margin: 1rem 0 0; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
+    .prev-list li { display: flex; align-items: center; gap: .5rem; color: var(--talos-muted-foreground); font-size: .9rem; }
+    .prev-list li::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: hsl(0 0% 100% / .5); }
+    .avatar {
+      width: 5rem; height: 5rem; border-radius: 50%; margin: 1rem 0;
+      background: radial-gradient(circle at 35% 30%, hsl(0 0% 30%), hsl(0 0% 8%));
+      border: 1px solid hsl(0 0% 100% / .15);
+    }
+  </style>
+</Landing>
