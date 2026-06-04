@@ -1,0 +1,55 @@
+---
+// Live-preview surface for Starlight docs pages.
+// Pulls in the full talos.css layer so component demos render styled
+// inside Starlight's content area (Starlight itself only loads tokens.css).
+import "@shelfwood/talos-ui/talos.css";
+
+interface Props {
+  /** Optional label override; defaults to "PREVIEW". */
+  label?: string;
+}
+const { label = "PREVIEW" } = Astro.props;
+---
+
+<div class="talos-demo not-content">
+  <span class="talos-demo__label">{label}</span>
+  <div class="talos-demo__surface">
+    <slot />
+  </div>
+</div>
+
+<style>
+  /* Scoped so it never leaks into Starlight's own chrome.
+     .not-content (Starlight class) opts the block out of prose styling. */
+  .talos-demo {
+    position: relative;
+    margin: 1.25rem 0 1.75rem;
+    border: 1px solid var(--talos-hud-edge, rgba(255, 255, 255, 0.14));
+    border-radius: 4px;
+    background: var(--talos-background, #08090b);
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+    color: var(--talos-foreground, #e7e9ec);
+  }
+  .talos-demo__label {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.75rem;
+    font-family: var(--talos-font-display, system-ui);
+    font-size: 0.6rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: var(--talos-tracking-hud, 0.22em);
+    color: var(--talos-muted-foreground, rgba(231, 233, 236, 0.55));
+    pointer-events: none;
+  }
+  .talos-demo__surface {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    padding: 2.25rem 1.75rem 1.75rem;
+  }
+</style>

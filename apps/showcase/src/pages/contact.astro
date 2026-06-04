@@ -1,0 +1,20 @@
+---
+import Landing from "../layouts/Landing.astro";
+import "@shelfwood/talos-ui/talos-forms.css";
+import ContactInfoPanel from "@shelfwood/talos-ui/astro/ContactInfoPanel.astro";
+import ContactFormPanel from "@shelfwood/talos-ui/astro/ContactFormPanel.astro";
+---
+
+<Landing title="Contact — Talos UI">
+  <span class="talos-eyebrow">// Get in touch</span>
+  <div class="talos-grid" style="margin-top:1.5rem">
+    <ContactInfoPanel
+      class="col-span-12 lg:col-span-5"
+      email="joris@shelfwood.co"
+      phone="+31 6 00 00 00 00"
+      location="Netherlands"
+      calendarUrl="https://cal.com/shelfwood"
+    />
+    <ContactFormPanel class="col-span-12 lg:col-span-7" action="#" method="POST" />
+  </div>
+</Landing>

@@ -3,8 +3,29 @@ title: Web components
 description: Composable notched-panel custom elements.
 ---
 
+import Demo from "../../../components/Demo.astro";
+
+{/* Astro bundles this module script and runs it on the page, registering the
+    custom elements client-side so the <talos-panel> demo below renders. */}
+<script>import "@shelfwood/talos-ui/wc";</script>
+
 Importing the `wc` entry registers `<talos-panel>`, `<talos-corner>`,
 `<talos-notch>`.
+
+<Demo>
+  <talos-panel
+    panel-width="400"
+    panel-height="220"
+    edge="hsl(0 0% 100% / 0.5)"
+    stroke-width="1.5"
+    style="width:360px"
+  >
+    <talos-corner edge="top-right" radius="22"></talos-corner>
+    <talos-corner edge="bottom-left" radius="22"></talos-corner>
+    <talos-notch edge="top" width="80" depth="14"></talos-notch>
+    <h3 style="margin:0;font-weight:300;letter-spacing:var(--talos-tracking-hud);text-transform:uppercase;font-size:1rem">Composable geometry</h3>
+  </talos-panel>
+</Demo>
 
 ```html
 <script type="module">import "@shelfwood/talos-ui/wc";</script>

@@ -1,0 +1,61 @@
+---
+import Landing from "../layouts/Landing.astro";
+import TitlePanel from "@shelfwood/talos-ui/astro/TitlePanel.astro";
+import ServicePanel from "@shelfwood/talos-ui/astro/ServicePanel.astro";
+import ToolkitPanel from "@shelfwood/talos-ui/astro/ToolkitPanel.astro";
+import ProjectPanel from "@shelfwood/talos-ui/astro/ProjectPanel.astro";
+---
+
+<Landing title="Components — Talos UI">
+  <span class="talos-eyebrow">// Panel & card library</span>
+  <div class="talos-grid bento-stagger" style="margin-top:1.5rem">
+    <TitlePanel
+      class="col-span-12"
+      title="Component library"
+      subtitle="Every panel is the same chamfered chrome — composed into a bento mosaic."
+    />
+
+    <ServicePanel
+      class="col-span-12 lg:col-span-6"
+      title="Design systems"
+      description="Token-driven, framework-agnostic UI that scales across Astro and Laravel."
+      features={[
+        { title: "Plain-CSS core", description: "No Tailwind required to consume the look." },
+        { title: "Web components", description: "Composable notched panels via custom elements." },
+        { title: "Astro wrappers", description: "Ergonomic .astro components for the common cases." },
+      ]}
+    />
+
+    <ToolkitPanel
+      class="col-span-12 lg:col-span-6"
+      groups={[
+        { level: "Expert", emphasis: "high", items: ["Astro", "TypeScript", "CSS", "Laravel", "Bun"] },
+        { level: "Working", emphasis: "low", items: ["Web Components", "Vite", "PHP", "SQLite"] },
+      ]}
+    />
+
+    <ProjectPanel
+      class="col-span-12 md:col-span-4"
+      title="talos-ui"
+      description="This design system — monochrome HUD chrome packaged for reuse."
+      tags={["css", "astro"]}
+      href="/"
+    />
+    <ProjectPanel
+      class="col-span-12 md:col-span-4"
+      title="tesseract-dash"
+      description="Hardware telemetry dashboard — rings, sparklines, scatter."
+      tags={["dashboard", "canvas"]}
+      href="https://github.com/shelfwood"
+      external
+    />
+    <ProjectPanel
+      class="col-span-12 md:col-span-4"
+      title="shelfwood.co"
+      description="The studio site — origin of the refined monochrome direction."
+      tags={["astro"]}
+      href="https://shelfwood.co"
+      external
+    />
+  </div>
+</Landing>
