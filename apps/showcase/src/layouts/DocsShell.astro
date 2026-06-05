@@ -212,6 +212,24 @@ const pageTitle = `${title} — Talos UI`;
         color: var(--talos-text-primary);
       }
 
+      /* Shiki css-variables theme → Talos palette. Restrained monochrome with
+         green accent for strings/values; comments dim; keywords/punctuation in
+         foreground tones. Background is transparent so the chamfer fill shows. */
+      .docs-prose {
+        /* shiki sets the pre's inline background from --astro-code-background;
+           that inline style wins over our stylesheet, so we point it AT the
+           edge colour — it becomes the chamfer hairline layer, with the
+           ::before fill covering the interior 1px in. */
+        --astro-code-background: var(--talos-edge-default);
+        --astro-code-foreground: hsl(var(--talos-foreground-hsl) / 0.9);
+        --astro-code-token-comment: var(--talos-text-tertiary);
+        --astro-code-token-keyword: hsl(var(--talos-foreground-hsl) / 0.6);
+        --astro-code-token-string: var(--talos-accent);
+        --astro-code-token-string-expression: var(--talos-accent);
+        --astro-code-token-constant: hsl(var(--talos-accent-hsl) / 0.85);
+        --astro-code-token-function: var(--talos-text-primary);
+      }
+
       /* Fenced code blocks — chamfered HUD frame echoing .talos-code.
          Two-layer chamfer: the host carries the edge colour + clip-path, a
          1px-inset ::before carries the fill. A plain `border` would be sliced
