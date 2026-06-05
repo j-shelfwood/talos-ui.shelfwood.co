@@ -1,0 +1,320 @@
+---
+/**
+ * Primitive gallery — exercises every Phase-1 CSS primitive (feedback, data,
+ * nav, forms) so the look can be reviewed at a glance and regressions show up.
+ * Pure class-based markup; no JS wiring beyond what Landing already provides.
+ */
+import Landing from "../layouts/Landing.astro";
+
+const rows = [
+  { id: "TX-9043", node: "atlas-01", load: "62.4", status: "online" },
+  { id: "TX-9044", node: "atlas-02", load: "11.8", status: "idle" },
+  { id: "TX-9051", node: "borealis", load: "94.1", status: "degraded" },
+];
+---
+
+<Landing title="Gallery — Talos UI">
+  <span class="talos-eyebrow">// Primitive gallery</span>
+  <h1 style="font-size:2rem;margin:0.5rem 0 0">Component primitives</h1>
+  <p class="muted" style="max-width:60ch;margin-top:0.5rem">
+    Every Phase-1 primitive in one place — feedback, data display, navigation,
+    and the full form control set. Monochrome HUD; status colour is the only
+    chroma.
+  </p>
+
+  <!-- ===================== FEEDBACK ===================== -->
+  <section>
+    <h2 style="font-size:1rem"><span class="muted">01</span> &nbsp;Feedback</h2>
+    <hr class="talos-rule" style="margin:1rem 0 2rem" />
+
+    <div class="stack" style="gap:2rem">
+      <div class="row">
+        <span class="talos-badge talos-badge--dot talos-badge--success">Operational</span>
+        <span class="talos-badge talos-badge--dot talos-badge--warning">Degraded</span>
+        <span class="talos-badge talos-badge--dot talos-badge--danger">Offline</span>
+        <span class="talos-badge talos-badge--info">Info</span>
+        <span class="talos-badge">Neutral</span>
+        <span class="talos-badge talos-badge--solid talos-badge--success">Solid</span>
+        <span class="talos-badge talos-badge--sm">v0.0.1</span>
+      </div>
+
+      <div class="grid">
+        <div class="talos-alert talos-alert--info">
+          <span class="talos-alert__icon">◆</span>
+          <div class="talos-alert__title">Deployment queued</div>
+          <div class="talos-alert__body">Build #482 is waiting on the test gate.</div>
+          <button class="talos-alert__close" aria-label="Dismiss">×</button>
+        </div>
+        <div class="talos-alert talos-alert--danger">
+          <span class="talos-alert__icon">▲</span>
+          <div class="talos-alert__title">Disk pressure</div>
+          <div class="talos-alert__body">Node borealis at 94% — shed load.</div>
+        </div>
+        <div class="talos-alert talos-alert--bare talos-alert--success">
+          <span class="talos-alert__icon">✓</span>
+          <div class="talos-alert__title">Synced</div>
+          <div class="talos-alert__body">All replicas consistent.</div>
+        </div>
+      </div>
+
+      <div class="row" style="align-items:flex-start;gap:3rem">
+        <div class="stack" style="min-width:240px">
+          <span class="talos-eyebrow">Progress</span>
+          <div class="talos-progress"><div class="talos-progress__bar" style="--talos-value:68"></div></div>
+          <div class="talos-progress talos-progress--lg"><div class="talos-progress__bar" style="--talos-value:32"></div></div>
+          <div class="talos-progress talos-progress--indeterminate"><div class="talos-progress__bar"></div></div>
+        </div>
+        <div class="stack">
+          <span class="talos-eyebrow">Loaders</span>
+          <div class="row">
+            <span class="talos-spinner talos-spinner--sm"></span>
+            <span class="talos-spinner"></span>
+            <span class="talos-spinner talos-spinner--lg"></span>
+          </div>
+        </div>
+        <div class="stack" style="min-width:200px">
+          <span class="talos-eyebrow">Skeleton</span>
+          <span class="talos-skeleton talos-skeleton--text" style="width:90%"></span>
+          <span class="talos-skeleton talos-skeleton--text" style="width:70%"></span>
+          <span class="talos-skeleton talos-skeleton--text" style="width:80%"></span>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="talos-has-tooltip" data-tooltip="Tooltip on hover">
+          <span class="talos-badge">Hover me</span>
+        </span>
+        <div class="talos-status">
+          <span class="talos-status__item talos-status__item--online">Online</span>
+          <span class="talos-status__item talos-status__item--degraded">Degraded</span>
+          <span class="talos-status__item talos-status__item--offline">Offline</span>
+          <span class="talos-status__item talos-status__item--idle">Idle</span>
+        </div>
+      </div>
+
+      <div class="talos-empty" style="max-width:480px">
+        <span class="talos-empty__icon">⊘</span>
+        <div class="talos-empty__title">No telemetry</div>
+        <div class="talos-empty__body">No nodes are reporting on this channel yet.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== DATA ===================== -->
+  <section>
+    <h2 style="font-size:1rem"><span class="muted">02</span> &nbsp;Data display</h2>
+    <hr class="talos-rule" style="margin:1rem 0 2rem" />
+
+    <div class="grid" style="margin-bottom:2rem">
+      <div class="talos-stat">
+        <span class="talos-stat__label">Throughput</span>
+        <span class="talos-stat__value">14.2k</span>
+        <span class="talos-stat__delta talos-stat__delta--up">8.4% vs last hr</span>
+      </div>
+      <div class="talos-stat">
+        <span class="talos-stat__label">Error rate</span>
+        <span class="talos-stat__value">0.31%</span>
+        <span class="talos-stat__delta talos-stat__delta--down">2.1% vs last hr</span>
+      </div>
+      <div class="talos-stat">
+        <span class="talos-stat__label">Uptime</span>
+        <span class="talos-stat__value">99.98%</span>
+        <span class="talos-stat__sub">30-day rolling</span>
+      </div>
+    </div>
+
+    <div class="talos-table-wrap" style="margin-bottom:2rem">
+      <table class="talos-table talos-table--zebra">
+        <thead>
+          <tr>
+            <th><span class="talos-table__sort">Txn</span></th>
+            <th>Node</th>
+            <th class="talos-table__num">Load %</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr>
+              <td>{r.id}</td>
+              <td>{r.node}</td>
+              <td class="talos-table__num">{r.load}</td>
+              <td><span class={`talos-badge talos-badge--dot talos-badge--${r.status === "online" ? "success" : r.status === "degraded" ? "warning" : "neutral"}`}>{r.status}</span></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="row" style="align-items:flex-start;gap:2rem">
+      <div class="talos-readout" style="min-width:260px">
+        <div class="talos-readout__head"><span class="talos-readout__live"></span> System status</div>
+        <div class="talos-readout__rows">
+          <div class="talos-readout__row"><span>cpu</span><span>42%</span></div>
+          <div class="talos-readout__row"><span>mem</span><span>6.1/16 GB</span></div>
+          <div class="talos-readout__row"><span>net</span><span>118 Mb/s</span></div>
+        </div>
+      </div>
+
+      <dl class="talos-dl" style="min-width:240px">
+        <dt>Region</dt><dd>eu-west-3</dd>
+        <dt>Instance</dt><dd>c7g.2xlarge</dd>
+        <dt>Cores</dt><dd>8</dd>
+      </dl>
+
+      <div class="stack" style="min-width:220px">
+        <span class="talos-eyebrow">Meters</span>
+        <div class="talos-meter talos-meter--ok"><div class="talos-meter__fill" style="--talos-value:48"></div></div>
+        <div class="talos-meter talos-meter--warn"><div class="talos-meter__fill" style="--talos-value:74"></div></div>
+        <div class="talos-meter talos-meter--crit"><div class="talos-meter__fill" style="--talos-value:93"></div></div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:2rem;align-items:flex-start;gap:2rem">
+      <div class="talos-log talos-log--feed" style="min-width:340px">
+        <div class="talos-log__row talos-log__row--info"><span class="talos-log__ts">12:04:11</span><span class="talos-log__msg">handshake ok</span></div>
+        <div class="talos-log__row talos-log__row--success"><span class="talos-log__ts">12:04:13</span><span class="talos-log__msg">sync complete</span></div>
+        <div class="talos-log__row talos-log__row--warn"><span class="talos-log__ts">12:04:19</span><span class="talos-log__msg">retry backoff 2s</span></div>
+        <div class="talos-log__row talos-log__row--error"><span class="talos-log__ts">12:04:31</span><span class="talos-log__msg">node borealis unreachable</span></div>
+      </div>
+      <div class="stack">
+        <span class="talos-eyebrow">Avatars + kbd</span>
+        <div class="talos-avatar-group">
+          <span class="talos-avatar">JS</span>
+          <span class="talos-avatar">KP<span class="talos-avatar__status talos-avatar__status--online"></span></span>
+          <span class="talos-avatar talos-avatar--lg">AB</span>
+        </div>
+        <div class="row" style="margin-top:0.5rem">
+          <kbd class="talos-kbd">⌘</kbd><kbd class="talos-kbd">K</kbd>
+          <span class="talos-inline-code">npm i @shelfwood/talos-ui</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="talos-code" style="margin-top:2rem;max-width:520px">
+      <div class="talos-code__bar"><span>button.astro</span><button class="talos-code__copy">copy</button></div>
+      <pre class="talos-code__body">&lt;Button variant="ghost"&gt;Engage&lt;/Button&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ===================== NAVIGATION ===================== -->
+  <section>
+    <h2 style="font-size:1rem"><span class="muted">03</span> &nbsp;Navigation</h2>
+    <hr class="talos-rule" style="margin:1rem 0 2rem" />
+
+    <div class="stack" style="gap:2rem">
+      <div class="talos-tabs" role="tablist">
+        <button class="talos-tab" role="tab" aria-selected="true">Overview</button>
+        <button class="talos-tab" role="tab" aria-selected="false">Metrics</button>
+        <button class="talos-tab" role="tab" aria-selected="false">Logs</button>
+      </div>
+
+      <div class="talos-tabs--segmented" role="tablist">
+        <button class="talos-tab" role="tab" aria-selected="true">Day</button>
+        <button class="talos-tab" role="tab" aria-selected="false">Week</button>
+        <button class="talos-tab" role="tab" aria-selected="false">Month</button>
+      </div>
+
+      <nav class="talos-breadcrumbs">
+        <a class="talos-breadcrumb" href="#">Home</a>
+        <a class="talos-breadcrumb" href="#">Cluster</a>
+        <span class="talos-breadcrumb" aria-current="page">atlas-01</span>
+      </nav>
+
+      <div class="talos-pagination">
+        <button class="talos-page talos-page--nav">‹</button>
+        <button class="talos-page talos-page--active">1</button>
+        <button class="talos-page">2</button>
+        <button class="talos-page">3</button>
+        <span class="talos-page--ellipsis talos-page">…</span>
+        <button class="talos-page">9</button>
+        <button class="talos-page talos-page--nav">›</button>
+      </div>
+
+      <div class="talos-steps" style="max-width:520px">
+        <div class="talos-step talos-step--done"><span class="talos-step__index">✓</span><span class="talos-step__label">Plan</span></div>
+        <div class="talos-step talos-step--current"><span class="talos-step__index">2</span><span class="talos-step__label">Build</span></div>
+        <div class="talos-step"><span class="talos-step__index">3</span><span class="talos-step__label">Verify</span></div>
+        <div class="talos-step"><span class="talos-step__index">4</span><span class="talos-step__label">Ship</span></div>
+      </div>
+
+      <div class="row" style="align-items:flex-start;gap:2rem">
+        <div class="talos-menu" style="position:relative">
+          <div class="talos-menu__label">Actions</div>
+          <button class="talos-menu__item">Restart node <span class="talos-menu__shortcut">⌘R</span></button>
+          <button class="talos-menu__item">Drain traffic</button>
+          <hr class="talos-menu__sep" />
+          <button class="talos-menu__item talos-menu__item--danger">Terminate</button>
+        </div>
+
+        <div class="talos-toolbar">
+          <button class="talos-button talos-button--sm talos-button--ghost">Bold</button>
+          <button class="talos-button talos-button--sm talos-button--ghost">Italic</button>
+          <span class="talos-toolbar__sep"></span>
+          <span class="talos-toolbar__spacer"></span>
+          <button class="talos-button talos-button--sm talos-button--ghost">Export</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FORMS ===================== -->
+  <section>
+    <h2 style="font-size:1rem"><span class="muted">04</span> &nbsp;Forms</h2>
+    <hr class="talos-rule" style="margin:1rem 0 2rem" />
+
+    <div class="talos-field-grid" style="max-width:760px">
+      <div class="talos-field">
+        <label class="talos-label talos-label--required">Hostname</label>
+        <input class="talos-input" placeholder="atlas-01" />
+        <span class="talos-field__help">Lowercase, no spaces.</span>
+      </div>
+
+      <div class="talos-field talos-field--error">
+        <label class="talos-label">Port</label>
+        <input class="talos-input" value="99999" />
+        <span class="talos-field__error">Out of range (1–65535).</span>
+      </div>
+
+      <div class="talos-field">
+        <label class="talos-label">Region</label>
+        <select class="talos-select">
+          <option>eu-west-3</option>
+          <option>us-east-1</option>
+          <option>ap-south-1</option>
+        </select>
+      </div>
+
+      <div class="talos-field">
+        <label class="talos-label">Budget</label>
+        <div class="talos-input-group">
+          <span class="talos-input-addon talos-input-addon--leading">$</span>
+          <input class="talos-input" placeholder="0.00" />
+          <span class="talos-input-addon talos-input-addon--trailing">/mo</span>
+        </div>
+      </div>
+
+      <div class="talos-field">
+        <label class="talos-label">Search</label>
+        <div class="talos-search">
+          <span class="talos-search__icon">⌕</span>
+          <input class="talos-input" placeholder="Filter nodes…" />
+        </div>
+      </div>
+
+      <div class="talos-field">
+        <label class="talos-label">Threshold</label>
+        <input class="talos-range" type="range" min="0" max="100" value="60" />
+      </div>
+    </div>
+
+    <fieldset class="talos-fieldset" style="max-width:760px;margin-top:2rem">
+      <legend class="talos-fieldset__legend">Toggles</legend>
+      <label class="talos-check-row"><input class="talos-checkbox" type="checkbox" checked /> Enable auto-scaling</label>
+      <label class="talos-check-row"><input class="talos-checkbox" type="checkbox" /> Send alerts to PagerDuty</label>
+      <label class="talos-check-row"><input class="talos-radio" type="radio" name="mode" checked /> Comfortable density</label>
+      <label class="talos-check-row"><input class="talos-radio" type="radio" name="mode" /> Compact density</label>
+      <label class="talos-check-row"><input class="talos-switch" type="checkbox" checked /> Live telemetry</label>
+    </fieldset>
+  </section>
+</Landing>
