@@ -11,6 +11,10 @@ export interface DocsNavGroup {
 
 export const docsNav: DocsNavGroup[] = [
   {
+    label: "Manifesto",
+    items: [{ label: "Philosophy", slug: "docs/philosophy" }],
+  },
+  {
     label: "Start",
     items: [
       { label: "Getting started", slug: "docs/getting-started" },
