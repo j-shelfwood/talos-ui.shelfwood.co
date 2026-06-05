@@ -1,33 +1,11 @@
 import { defineConfig } from "astro/config";
-import starlight from "@astrojs/starlight";
+import mdx from "@astrojs/mdx";
 
 // https://astro.build
+// Docs are hand-built (DocsShell.astro + [...slug].astro) using the Talos
+// component library itself — no Starlight. MDX support is kept for the two
+// component-demo pages.
 export default defineConfig({
   site: "https://talos-ui.shelfwood.co",
-  integrations: [
-    starlight({
-      title: "Talos UI",
-      description:
-        "Dark-monochrome HUD design system — chamfered panels, Oxanium type, ambient grid, composable web components.",
-      // Custom landing page at "/" is a plain Astro page; Starlight owns /docs.
-      sidebar: [
-        {
-          label: "Start",
-          items: [
-            { label: "Getting started", slug: "docs/getting-started" },
-            { label: "Tokens", slug: "docs/tokens" },
-          ],
-        },
-        {
-          label: "Components",
-          items: [
-            { label: "Panels & buttons", slug: "docs/components" },
-            { label: "Web components", slug: "docs/web-components" },
-            { label: "Laravel / Blade", slug: "docs/blade" },
-          ],
-        },
-      ],
-      customCss: ["@shelfwood/talos-ui/tokens.css"],
-    }),
-  ],
+  integrations: [mdx()],
 });

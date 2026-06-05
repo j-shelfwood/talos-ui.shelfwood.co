@@ -90,8 +90,68 @@ import Button from "@shelfwood/talos-ui/astro/Button.astro";
     </div>
   </section>
 
+  <!-- LIVE COMPONENTS — feedback / data / nav families -->
+  <section class="stack">
+    <span class="eyebrow">// 04 — Live components</span>
+
+    <div class="row" style="gap:.6rem">
+      <span class="talos-badge talos-badge--success talos-badge--dot">Online</span>
+      <span class="talos-badge talos-badge--info">Build 0.0.1</span>
+      <span class="talos-badge talos-badge--warning">Beta</span>
+      <span class="talos-badge talos-badge--neutral">MIT</span>
+    </div>
+
+    <div class="grid" style="margin-top:.5rem">
+      <div class="talos-stat">
+        <span class="talos-stat__label">Components</span>
+        <span class="talos-stat__value">48</span>
+        <span class="talos-stat__delta">CSS + WC</span>
+      </div>
+      <div class="talos-stat">
+        <span class="talos-stat__label">Token vars</span>
+        <span class="talos-stat__value">120+</span>
+        <span class="talos-stat__delta">retheme on :root</span>
+      </div>
+      <div class="talos-stat">
+        <span class="talos-stat__label">Bundle</span>
+        <span class="talos-stat__value">0 JS</span>
+        <span class="talos-stat__delta">CSS-only core</span>
+      </div>
+    </div>
+
+    <div class="talos-alert talos-alert--info" role="status" style="margin-top:.5rem">
+      <span class="talos-alert__icon">◆</span>
+      <div>
+        <div class="talos-alert__title">Dogfooded</div>
+        <div class="talos-alert__body">
+          This page and the docs are built from Talos UI itself — every panel,
+          badge, stat card, and code block is a library component.
+        </div>
+      </div>
+    </div>
+
+    <div class="talos-tabs talos-tabs--segmented" role="tablist" style="margin-top:.75rem">
+      <button class="talos-tab" role="tab" aria-selected="true">Astro</button>
+      <button class="talos-tab" role="tab" aria-selected="false">Web components</button>
+      <button class="talos-tab" role="tab" aria-selected="false">Blade</button>
+    </div>
+  </section>
+
   <footer class="row muted" style="justify-content:space-between;border-top:1px solid var(--talos-border);padding-top:1.5rem">
     <span class="eyebrow">SYS://TALOS-UI</span>
     <span class="eyebrow">MIT — Shelfwood ◢</span>
   </footer>
+
+  <script>
+    // Minimal segmented-tab toggle so the showcase strip is interactive.
+    document.querySelectorAll<HTMLElement>('.talos-tabs[role="tablist"]').forEach((list) => {
+      list.addEventListener("click", (e) => {
+        const tab = (e.target as HTMLElement).closest('[role="tab"]');
+        if (!tab) return;
+        list.querySelectorAll('[role="tab"]').forEach((t) =>
+          t.setAttribute("aria-selected", String(t === tab)),
+        );
+      });
+    });
+  </script>
 </Landing>

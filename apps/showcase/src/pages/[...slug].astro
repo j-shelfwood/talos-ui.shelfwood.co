@@ -1,0 +1,25 @@
+---
+import { getCollection, render } from "astro:content";
+import DocsShell from "../layouts/DocsShell.astro";
+
+// One page per docs entry. Entry ids are "docs/getting-started" etc., so the
+// route resolves to /docs/getting-started/.
+export async function getStaticPaths() {
+  const entries = await getCollection("docs");
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<DocsShell
+  title={entry.data.title}
+  description={entry.data.description}
+  slug={entry.id}
+>
+  <Content />
+</DocsShell>
