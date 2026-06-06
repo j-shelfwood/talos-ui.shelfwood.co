@@ -1,0 +1,32 @@
+---
+import Landing from "../layouts/Landing.astro";
+import GlassPanel from "@shelfwood/talos-ui/astro/GlassPanel.astro";
+---
+
+<Landing title="Signal lost — Talos UI">
+  <div class="stack" style="min-height:62vh;justify-content:center;align-items:flex-start;gap:1.5rem">
+    <span class="talos-eyebrow">// ERR — 404 · NO SIGNAL</span>
+
+    <GlassPanel>
+      <div class="stack" style="gap:1rem;padding:.5rem">
+        <h1 style="font-size:clamp(2.5rem,6vw,4.5rem);line-height:1;letter-spacing:.01em">
+          SIGNAL LOST
+        </h1>
+        <p class="muted" style="max-width:52ch">
+          The instrument you requested isn't reporting on this channel. The route
+          either never existed or has been re-zoned.
+        </p>
+        <div class="row" style="gap:1rem;flex-wrap:wrap;margin-top:.5rem">
+          <a class="talos-button" href="/">Return to console</a>
+          <a class="talos-button talos-button--ghost" href="/docs/getting-started/">Read the docs</a>
+          <a class="talos-button talos-button--ghost" href="/showcase/">See components</a>
+        </div>
+      </div>
+    </GlassPanel>
+
+    <div class="talos-status" aria-hidden="true">
+      <span class="talos-status__item talos-status__item--offline">Route offline</span>
+      <span class="talos-status__item talos-status__item--online">Core nominal</span>
+    </div>
+  </div>
+</Landing>

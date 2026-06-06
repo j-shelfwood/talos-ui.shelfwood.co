@@ -1,0 +1,37 @@
+---
+// Shared <head> metadata: favicon, canonical, Open Graph + Twitter card.
+// Every layout renders this so social shares get a card and the tab gets an
+// icon. Absolute URLs are derived from `site` (astro.config) + the current path.
+interface Props {
+  title: string;
+  description?: string;
+  /** Path to the share image under /public; defaults to the site og card. */
+  image?: string;
+}
+const {
+  title,
+  description = "Dark-monochrome HUD design system — gauges, trends, meters and flows where colour and motion are bound to live domain state.",
+  image = "/og.png",
+} = Astro.props;
+
+const site = Astro.site ?? new URL("https://talos-ui.shelfwood.co");
+const canonical = new URL(Astro.url.pathname, site).href;
+const ogImage = new URL(image, site).href;
+---
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="canonical" href={canonical} />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Talos UI" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />

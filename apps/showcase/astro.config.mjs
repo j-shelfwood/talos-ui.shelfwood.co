@@ -1,5 +1,6 @@
 import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
+import sitemap from "@astrojs/sitemap";
 
 // https://astro.build
 // Docs are hand-built (DocsShell.astro + [...slug].astro) using the Talos
@@ -13,7 +14,7 @@ export default defineConfig({
     "/manifesto": "/docs/philosophy/",
     "/manifesto/": "/docs/philosophy/",
   },
-  integrations: [mdx()],
+  integrations: [mdx(), sitemap()],
   markdown: {
     // css-variables theme: shiki emits var(--astro-code-*) instead of inline
     // hex colors, so code tokens track the Talos palette (defined in

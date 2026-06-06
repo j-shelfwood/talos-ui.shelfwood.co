@@ -1,5 +1,6 @@
 ---
 import "@shelfwood/talos-ui/all.css";
+import Meta from "../components/Meta.astro";
 import { docsNav, slugToHref } from "../docs-nav";
 
 interface Props {
@@ -19,6 +20,7 @@ const pageTitle = `${title} — Talos UI`;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     {description && <meta name="description" content={description} />}
+    <Meta title={pageTitle} description={description} />
   </head>
   <body>
     <div class="ambient-overlay"></div>
@@ -32,7 +34,6 @@ const pageTitle = `${title} — Talos UI`;
         <a class="docs-toplink eyebrow" href="/manifesto/">Manifesto</a>
         <a class="docs-toplink eyebrow" href="/showcase/">Showcase</a>
         <a class="docs-toplink eyebrow" href="/mosaic/">Mosaic</a>
-        <a class="docs-toplink eyebrow" href="/blog/">Blog</a>
         <a class="docs-toplink eyebrow" href="https://github.com/shelfwood">Source</a>
       </nav>
     </header>

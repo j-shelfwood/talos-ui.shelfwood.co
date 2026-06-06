@@ -1,5 +1,6 @@
 ---
 import "@shelfwood/talos-ui/all.css";
+import Meta from "../components/Meta.astro";
 interface Props {
   title?: string;
 }
@@ -16,6 +17,7 @@ const { title = "Talos UI" } = Astro.props;
       name="description"
       content="Dark-monochrome HUD design system — chamfered panels, Oxanium type, ambient grid, composable web components."
     />
+    <Meta title={title} description="Dark-monochrome HUD design system — chamfered panels, Oxanium type, ambient grid, composable web components." />
   </head>
   <body>
     <div class="ambient-overlay"></div>
