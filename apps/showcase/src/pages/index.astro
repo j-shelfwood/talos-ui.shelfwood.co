@@ -59,6 +59,40 @@ import "@shelfwood/talos-ui/all.css";
       .scanlines { position: fixed; inset: 0; z-index: 2; pointer-events: none; background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0,0,0,.16) 2px 3px); mix-blend-mode: multiply; opacity: .5; }
       .vignette { position: fixed; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(120% 100% at 50% 50%, transparent 52%, rgba(0,0,0,.6) 100%); }
 
+      /* ---- live HUD garnish: brackets, rulers, scroll-bound readouts ---- */
+      /* Corner viewfinder brackets. */
+      .bracket { position: absolute; width: 18px; height: 18px; border: 1px solid var(--talos-edge-default); }
+      .bracket--tl { top: 48px; left: 16px; border-right: 0; border-bottom: 0; }
+      .bracket--tr { top: 48px; right: 16px; border-left: 0; border-bottom: 0; }
+      .bracket--bl { bottom: 48px; left: 16px; border-right: 0; border-top: 0; }
+      .bracket--br { bottom: 48px; right: 16px; border-left: 0; border-top: 0; }
+
+      /* Left-edge ruler — ticks; a marker rides it at scroll progress. */
+      .ruler { position: absolute; left: 16px; top: 96px; bottom: 96px; width: 1px; }
+      .ruler__track { position: absolute; inset: 0; }
+      .ruler__tick { position: absolute; left: 0; width: 6px; height: 1px; background: var(--talos-edge-subtle); }
+      .ruler__tick--major { width: 11px; background: var(--talos-edge-default); }
+      .ruler__marker { position: absolute; left: -3px; width: 13px; height: 1px; background: var(--talos-accent); box-shadow: 0 0 6px hsl(var(--talos-accent-hsl)/.7); transition: none; }
+      .ruler__pct { position: absolute; left: 16px; transform: translateY(-50%); font-size: .6rem; letter-spacing: .1em; color: var(--talos-accent); font-variant-numeric: tabular-nums; }
+
+      /* Readout cluster, lower-left — live scroll telemetry. */
+      .readouts { position: absolute; left: 40px; bottom: 96px; display: flex; flex-direction: column; gap: 6px;
+        font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--talos-muted-foreground); font-variant-numeric: tabular-nums; }
+      .readouts b { color: var(--talos-foreground); font-weight: 400; }
+      .readouts .k { color: var(--talos-text-tertiary, var(--talos-muted-foreground)); }
+
+      /* Center-bottom big scroll value. */
+      .scroll-val { position: absolute; left: 50%; bottom: 78px; transform: translateX(-50%); text-align: center; }
+      .scroll-val__num { font-size: 1.6rem; font-weight: 300; font-variant-numeric: tabular-nums; letter-spacing: .04em; color: var(--talos-foreground); line-height: 1; }
+      .scroll-val__num small { font-size: .7rem; color: var(--talos-muted-foreground); }
+      .scroll-val__bar { width: 160px; height: 1px; margin: 8px auto 0; background: var(--talos-edge-default); position: relative; }
+      .scroll-val__bar i { position: absolute; left: 0; top: 0; height: 100%; background: var(--talos-accent); box-shadow: 0 0 6px hsl(var(--talos-accent-hsl)/.6); }
+
+      /* Right-edge coordinate ticks that scrub with scroll. */
+      .coords { position: absolute; right: 40px; top: 96px; display: flex; flex-direction: column; gap: 6px; align-items: flex-end;
+        font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--talos-muted-foreground); font-variant-numeric: tabular-nums; }
+      .coords b { color: var(--talos-foreground); font-weight: 400; }
+
       /* typography */
       .eyebrow { font-size: .7rem; text-transform: uppercase; letter-spacing: var(--talos-tracking-hud); color: var(--talos-muted-foreground); }
       .display { font-weight: 300; text-transform: uppercase; letter-spacing: var(--talos-tracking-hud); line-height: 1.02; margin: .5rem 0; font-size: clamp(2.2rem, 5.5vw, 5rem); }
@@ -194,6 +228,10 @@ import "@shelfwood/talos-ui/all.css";
     <div class="hud">
       <div class="hud-line hud-line--top"></div>
       <div class="hud-line hud-line--bottom"></div>
+      <span class="bracket bracket--tl"></span>
+      <span class="bracket bracket--tr"></span>
+      <span class="bracket bracket--bl"></span>
+      <span class="bracket bracket--br"></span>
       <div class="hud-top">
         <a class="brand" href="/"><span class="dot"></span>SYS://TALOS-UI</a>
         <nav><a href="/docs/philosophy/">Manifesto</a><a href="/showcase/">Showcase</a><a href="/docs/getting-started/">Docs</a></nav>
@@ -202,6 +240,35 @@ import "@shelfwood/talos-ui/all.css";
         <span id="hud-scene">SCENE 00 / 07</span>
         <span>MIT — Shelfwood ◢</span>
       </div>
+
+      <!-- left ruler with a marker that rides scroll progress -->
+      <div class="ruler"><div class="ruler__track" id="ruler-track"></div>
+        <div class="ruler__marker" id="ruler-marker" style="top:0"></div>
+        <div class="ruler__pct" id="ruler-pct" style="top:0">0%</div>
+      </div>
+
+      <!-- live scroll telemetry (lower-left) -->
+      <div class="readouts">
+        <span><span class="k">SCROLL</span> <b id="ro-scroll">0000</b> PX</span>
+        <span><span class="k">CAM.Z</span> <b id="ro-z">-0000</b></span>
+        <span><span class="k">VEL</span> <b id="ro-vel">0.00</b></span>
+        <span><span class="k">FOV</span> <b>62°</b></span>
+      </div>
+
+      <!-- right-edge coords scrubbing with scroll -->
+      <div class="coords">
+        <span><span class="k">SECT</span> <b id="ro-sect">00:08</b></span>
+        <span><span class="k">LAT</span> <b id="ro-lat">+00.000</b></span>
+        <span><span class="k">LON</span> <b id="ro-lon">+00.000</b></span>
+        <span><span class="k">SIG</span> <b id="ro-sig">NOMINAL</b></span>
+      </div>
+
+      <!-- center-bottom big scroll value -->
+      <div class="scroll-val">
+        <div class="scroll-val__num"><span id="sv-num">0</span><small>%</small></div>
+        <div class="scroll-val__bar"><i id="sv-bar" style="width:0%"></i></div>
+      </div>
+
       <div class="hud-progress" id="progress"></div>
       <div class="scroll-cue">Scroll ▼</div>
     </div>
@@ -219,8 +286,24 @@ import "@shelfwood/talos-ui/all.css";
       const hudScene = document.getElementById("hud-scene")!;
       const cue = document.querySelector<HTMLElement>(".scroll-cue")!;
 
+      // live HUD readout refs
+      const $id = (id: string) => document.getElementById(id)!;
+      const roScroll = $id("ro-scroll"), roZ = $id("ro-z"), roVel = $id("ro-vel");
+      const roSect = $id("ro-sect"), roLat = $id("ro-lat"), roLon = $id("ro-lon"), roSig = $id("ro-sig");
+      const svNum = $id("sv-num"), svBar = $id("sv-bar");
+      const rulerMarker = $id("ruler-marker"), rulerPct = $id("ruler-pct");
+
       const GAP = 900; // px of Z between scenes
       proxy.style.height = `${N * 100}vh`;
+
+      // build ruler ticks (every 5%, major every 25%)
+      const rulerTrack = $id("ruler-track");
+      let rt = "";
+      for (let i = 0; i <= 20; i++) {
+        const major = i % 5 === 0;
+        rt += `<div class="ruler__tick${major ? " ruler__tick--major" : ""}" style="top:${i * 5}%"></div>`;
+      }
+      rulerTrack.innerHTML = rt;
 
       progress.innerHTML = scenes.map(() => "<span></span>").join("");
       const ticks = Array.from(progress.children) as HTMLElement[];
@@ -255,12 +338,19 @@ import "@shelfwood/talos-ui/all.css";
           const z = -i * GAP + camZ;        // this scene's Z relative to camera
           const dist = Math.abs(z) / GAP;    // 0 = at camera plane
           // hide far scenes for perf + clarity
-          const visible = dist < 1.6;
+          const visible = dist < 1.05;
           s.dataset.hidden = visible ? "0" : "1";
-          if (!visible) return;
-          const opacity = z > 60 ? 0 : Math.max(0, 1 - dist * 0.85); // fade as it passes behind/ahead
+          if (!visible) { s.style.opacity = "0"; return; }
+          // Smoothstep fade reaching ~0 exactly at the neighbour (dist 1): the
+          // active scene stays dominant (no static ghosting at rest) while the
+          // incoming scene rises as the outgoing falls (no dead black gaps in
+          // the transition). Scenes that have passed the camera (z>0) drop fast.
+          const t = Math.min(1, dist);
+          const smooth = t * t * (3 - 2 * t);        // smoothstep 0..1
+          let opacity = 1 - smooth;
+          if (z > 0) opacity *= Math.max(0, 1 - z / 220); // crossing the lens → out
           s.style.transform = `translate(-50%, -50%) translateZ(${z.toFixed(0)}px)`;
-          s.style.opacity = String(opacity.toFixed(3));
+          s.style.opacity = String(Math.max(0, opacity).toFixed(3));
           s.style.pointerEvents = dist < 0.4 ? "auto" : "none";
         });
 
@@ -271,6 +361,27 @@ import "@shelfwood/talos-ui/all.css";
         ticks.forEach((t, i) => t.classList.toggle("active", i === active));
         hudScene.textContent = `SCENE ${String(active).padStart(2, "0")} / ${String(N - 1).padStart(2, "0")}`;
         cue.style.opacity = current > 0.3 ? "0" : "";
+
+        // ---- live HUD telemetry (all bound to real scroll state) ----
+        const pct = (N > 1 ? current / (N - 1) : 0);
+        const pctR = Math.round(pct * 100);
+        const vel = Math.abs(target - current);                 // camera velocity (scenes/frame-ish)
+        roScroll.textContent = String(Math.round(scroll)).padStart(4, "0");
+        roZ.textContent = (camZ >= 0 ? "-" : "+") + String(Math.round(camZ)).padStart(4, "0");
+        roVel.textContent = vel.toFixed(2);
+        roSect.textContent = `${String(active).padStart(2, "0")}:${String(N).padStart(2, "0")}`;
+        // synthetic but deterministic "coordinates" derived from camera depth —
+        // they scrub continuously with scroll so the frame reads as a live instrument
+        roLat.textContent = (pct * 90 - 45 >= 0 ? "+" : "") + (pct * 90 - 45).toFixed(3);
+        roLon.textContent = (current * 23.7 % 180 - 90 >= 0 ? "+" : "") + (current * 23.7 % 180 - 90).toFixed(3);
+        roSig.textContent = vel > 0.25 ? "TRACKING" : "NOMINAL";
+        roSig.style.color = vel > 0.25 ? "var(--talos-accent)" : "";
+        svNum.textContent = String(pctR);
+        svBar.style.width = pctR + "%";
+        rulerMarker.style.top = (pct * 100).toFixed(1) + "%";
+        rulerPct.style.top = (pct * 100).toFixed(1) + "%";
+        rulerPct.textContent = pctR + "%";
+
         requestAnimationFrame(frame);
       }
       requestAnimationFrame(frame);
