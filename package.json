@@ -11,7 +11,8 @@
     "dev": "bun --filter showcase dev",
     "build:pkg": "bun --filter @shelfwood/talos-ui build",
     "build:site": "bun --filter showcase build",
-    "build": "bun run build:pkg && bun run build:site"
+    "build": "bun run build:pkg && bun run build:site",
+    "test": "bun --filter @shelfwood/talos-ui test"
   },
   "engines": {
     "bun": ">=1.2.0"
