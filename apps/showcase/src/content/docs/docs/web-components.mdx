@@ -58,3 +58,62 @@ Importing the `wc` entry registers `<talos-panel>`, `<talos-corner>`,
 `edge`: `top` `right` `bottom` `left`. Centered edge cut-out — the one motif
 the CSS layer doesn't provide. Decorators are reactive: add/remove children
 and the outline re-renders.
+
+## `<talos-sheen>` — pointer affordance
+
+`talos.css` designs a cursor-tracked sheen on `.glass-panel` (the `::after`
+spotlight reads `--talos-mx` / `--talos-my` / `--talos-sheen`), but nothing
+writes those props until you wrap the panels in `<talos-sheen>`. It tracks the
+pointer over any matching descendant and drives the dormant CSS — no new visual,
+just the hand on a dial the stylesheet already drew. The sheen encodes *pointer
+presence* (an affordance, like `cursor: pointer`); under reduced motion the
+position still tracks but the glow stays off.
+
+<Demo>
+  <talos-sheen>
+    <div class="glass-panel interactive-panel" style="width:240px;height:120px">
+      <div class="glass-panel-content" style="padding:1rem">
+        <span class="talos-eyebrow">SHEEN</span>
+        <h3 style="margin-top:.4rem;font-size:.95rem">Move the pointer across me</h3>
+      </div>
+    </div>
+  </talos-sheen>
+</Demo>
+
+```html
+<talos-sheen>
+  <div class="glass-panel interactive-panel">…</div>
+  <div class="glass-panel interactive-panel">…</div>
+</talos-sheen>
+```
+
+| Attribute | Default | Notes |
+| --- | --- | --- |
+| `selector` | `.glass-panel` | which descendants to track |
+
+## `.activity-edge` — rate-bound border (CSS)
+
+A conic ring that travels around a panel's chamfered silhouette, whose **speed
+encodes a rate** — the reference-design "animated conic border", rebound to the
+library's law. `--talos-rate: 0` parks the ring (no activity, no motion); higher
+rates sweep faster. Bind `--talos-rate` to a real signal the way `<talos-flow>`
+binds its dash travel. This is a zero-JS CSS class, not a custom element.
+
+<Demo>
+  <div class="glass-panel activity-edge" style="--talos-rate:0.6;width:240px;height:120px">
+    <div class="glass-panel-content" style="padding:1rem">
+      <span class="talos-eyebrow">ACTIVITY</span>
+      <h3 style="margin-top:.4rem;font-size:.95rem">rate = 0.6</h3>
+    </div>
+  </div>
+</Demo>
+
+```html
+<div class="glass-panel activity-edge" style="--talos-rate:0.6">…</div>
+<!-- drive it live: el.style.setProperty('--talos-rate', reqsPerSec / 100) -->
+```
+
+| Custom property | Default | Notes |
+| --- | --- | --- |
+| `--talos-rate` | 0 | 0 = parked; scales sweep speed |
+| `--talos-rate-period` | 4s | revolution time at rate 1 |

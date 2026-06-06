@@ -83,6 +83,65 @@ Throughput as motion; dash speed = rate, 0 = idle.
 <talos-flow rate="30" max="100" warn="70" crit="90" width="180" height="36"></talos-flow>
 ```
 
+## Orbital — `<talos-orbital>`
+
+A radial system: nodes orbit a core, and the motion *is* the telemetry — orbit
+speed = throughput rate, node size = load, colour = band. At rate 0 a node parks.
+
+<Demo>
+  <talos-orbital rings="3" warn="70" crit="90" size="260" core-label="CORE" id="docs-orbital"></talos-orbital>
+</Demo>
+
+```html
+<talos-orbital rings="3" warn="70" crit="90" size="260" core-label="CORE"></talos-orbital>
+<script type="module">
+  const el = document.querySelector("talos-orbital");
+  el.nodes = [
+    { id: "api",   ring: 1, value: 40, load: 60, rate: 50, label: "API" },
+    { id: "db",    ring: 2, value: 82, load: 90, rate: 20, label: "DB" },
+    { id: "cache", ring: 3, value: 12, load: 30, rate: 80, label: "CACHE" },
+  ];
+</script>
+```
+
+Nodes are set as a property (`el.nodes = [...]`), not an attribute. Re-assigning
+preserves each node's orbit angle by `id`, so a data update never resets the system.
+
+| Attribute | Default | Notes |
+| --- | --- | --- |
+| `rings` | 3 | number of concentric orbits |
+| `warn` / `crit` | — | band thresholds (inclusive-from) |
+| `size` | 260 | px square |
+| `core-label` | — | text in the central core |
+
+## Readout — `<talos-readout>`
+
+A value that *decodes* when it changes: a brief glyph-scramble resolves into the
+new value, marking the arrival of fresh telemetry. A stable value is stable text —
+the motion is an event, not decoration. Under reduced motion the value snaps in.
+
+<Demo>
+  <talos-readout value="1042" unit="req/s" label="Ingest" warn="2000" crit="4000"></talos-readout>
+  <talos-readout value="86" unit="%" label="Saturation" warn="70" crit="90"></talos-readout>
+</Demo>
+
+```html
+<talos-readout value="1042" unit="req/s" label="Ingest"
+               warn="2000" crit="4000"></talos-readout>
+<script type="module">
+  // changing the attribute fires the decode; a same-value write is a no-op
+  el.setAttribute("value", "1180");
+</script>
+```
+
+| Attribute | Default | Notes |
+| --- | --- | --- |
+| `value` | "" | the reading; numeric values get band colour (reactive) |
+| `warn` / `crit` | — | band thresholds, applied only when `value` is numeric |
+| `unit` | — | appended after the value |
+| `label` | — | uppercase caption above the readout |
+| `duration` | 420 | scramble length, ms |
+
 ## Console shell
 
 A non-document layout: zoned, fixed-viewport, scrolls within zones. Compose the
