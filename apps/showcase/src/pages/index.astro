@@ -1,157 +1,239 @@
 ---
-import Landing from "../layouts/Landing.astro";
-import GlassPanel from "@shelfwood/talos-ui/astro/GlassPanel.astro";
-import Button from "@shelfwood/talos-ui/astro/Button.astro";
+// The home page IS one live instrument (PHILOSOPHY.md): a believable node being
+// monitored in real time, every panel bound to a deterministic sim loop. This
+// is the proof of the thesis — not a catalog of cards. The component showcase
+// lives at /showcase; the CSS primitive reference at /gallery.
+import "@shelfwood/talos-ui/all.css";
 ---
 
-<Landing>
-  <!-- HERO -->
-  <header class="stack">
-    <div class="row" style="justify-content:space-between">
-      <span class="eyebrow">// @shelfwood/talos-ui</span>
-      <span class="row" style="gap:.5rem">
-        <span class="dot"></span>
-        <span class="eyebrow">v0.0.1</span>
-      </span>
-    </div>
-    <h1 style="font-size:clamp(2.25rem,5vw,4rem);letter-spacing:.005em;line-height:1.05">
-      Dark-monochrome<br />HUD design system
-    </h1>
-    <p class="muted" style="max-width:46ch;font-size:1.05rem">
-      Chamfered hairline panels, Oxanium uppercase type, a cursor-tracked
-      ambient grid, and composable notched-panel web components. Astro,
-      Laravel, or plain HTML.
-    </p>
-    <div class="row" style="margin-top:.5rem">
-      <Button href="/docs/getting-started/">Get started</Button>
-      <Button variant="secondary" href="/mosaic/">Mosaic</Button>
-      <Button variant="secondary" href="/blog/">Blog</Button>
-      <Button variant="ghost" href="https://github.com/shelfwood">Source</Button>
-    </div>
-  </header>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Talos UI — live HUD instruments</title>
+    <meta
+      name="description"
+      content="A component system for building functional instruments — dashboards, consoles, monitors — where colour, motion, and form are bound to live domain state."
+    />
+    <style>
+      html, body { margin: 0; height: 100%; background: var(--talos-background); }
+      a { color: inherit; }
 
-  <!-- PANELS -->
-  <section class="stack">
-    <span class="eyebrow">// 01 — Panels</span>
-    <div class="grid bento-stagger">
-      <GlassPanel as="a" href="/docs/components/" class="pad">
-        <h3 style="font-size:1.1rem">Glass panel</h3>
-        <p class="muted">Two-layer chamfer hairline. Hover for lift, sheen, brackets.</p>
-      </GlassPanel>
-      <GlassPanel as="a" href="/docs/tokens/" class="pad">
-        <h3 style="font-size:1.1rem">Tokens</h3>
-        <p class="muted">Every decision is a <code>--talos-*</code> property.</p>
-      </GlassPanel>
-      <GlassPanel as="a" href="/docs/web-components/" class="pad">
-        <h3 style="font-size:1.1rem">Web components</h3>
-        <p class="muted">Composable notched panels via custom elements.</p>
-      </GlassPanel>
-      <GlassPanel as="a" href="/docs/blade/" class="pad">
-        <h3 style="font-size:1.1rem">Laravel / Blade</h3>
-        <p class="muted">CSS + a module script. No Composer package.</p>
-      </GlassPanel>
-    </div>
-  </section>
+      /* Hero cell — the pitch, sharing one screen with the proof. */
+      .home-hero { gap: var(--talos-space-4); }
+      .home-hero h1 {
+        margin: 0;
+        font-weight: 300;
+        text-transform: uppercase;
+        letter-spacing: var(--talos-tracking-hud);
+        font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+        line-height: 1.04;
+      }
+      .home-hero p {
+        margin: 0;
+        max-width: 52ch;
+        color: var(--talos-muted-foreground);
+        font-size: 0.98rem;
+        line-height: 1.6;
+      }
+      .home-cta { display: flex; gap: var(--talos-space-3); flex-wrap: wrap; margin-top: var(--talos-space-2); }
+      .home-cta a {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.55rem 1.1rem;
+        font-family: var(--talos-font-display);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: var(--talos-tracking-hud-tight);
+        text-decoration: none;
+        border: 1px solid var(--talos-edge-default);
+        color: var(--talos-foreground);
+        transition: border-color var(--talos-dur-fast) ease, background var(--talos-dur-fast) ease;
+        /* bottom-right chamfer echoing the button geometry */
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+      }
+      .home-cta a:hover { border-color: var(--talos-edge-strong); background: var(--talos-surface-2); }
+      .home-cta a.primary { border-color: hsl(var(--talos-accent-hsl) / 0.5); color: var(--talos-accent); }
+      .home-cta a.primary:hover { background: hsl(var(--talos-accent-hsl) / 0.08); }
 
-  <!-- BUTTONS -->
-  <section class="stack">
-    <span class="eyebrow">// 02 — Buttons</span>
-    <div class="row">
-      <Button>Primary</Button>
-      <Button variant="secondary">Secondary</Button>
-      <Button variant="ghost">Ghost</Button>
-      <Button size="sm">Small</Button>
-      <Button size="lg">Large</Button>
-    </div>
-  </section>
+      .instrument-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: var(--talos-text-2xs, 0.62rem);
+        text-transform: uppercase;
+        letter-spacing: var(--talos-tracking-hud);
+        color: var(--talos-text-tertiary, var(--talos-muted-foreground));
+      }
+      .gauge-row { display: flex; gap: var(--talos-space-5); flex-wrap: wrap; justify-content: space-around; }
+      .pipeline {
+        display: flex;
+        align-items: center;
+        gap: var(--talos-space-3);
+        flex-wrap: wrap;
+        font-size: var(--talos-text-2xs, 0.62rem);
+        text-transform: uppercase;
+        letter-spacing: var(--talos-tracking-hud-tight);
+        color: var(--talos-muted-foreground);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ambient-overlay"></div>
 
-  <!-- WEB COMPONENTS -->
-  <section class="stack">
-    <span class="eyebrow">// 03 — Notched panels (web components)</span>
-    <div class="row" style="gap:2rem;align-items:flex-start">
-      <talos-panel panel-width="360" panel-height="200" animate>
-        <talos-corner edge="top-right" radius="24"></talos-corner>
-        <talos-corner edge="bottom-left" radius="24"></talos-corner>
-        <talos-notch edge="top" width="90" depth="14"></talos-notch>
-        <div class="pad">
-          <span class="eyebrow">SYS://PANEL</span>
-          <h3 style="font-size:1.05rem;margin-top:.5rem">Corners + top notch</h3>
+    <div class="talos-console talos-console--viewport">
+      <!-- RAIL -->
+      <header class="console-rail">
+        <span class="console-rail__brand">
+          <span style="width:7px;height:7px;border-radius:50%;background:var(--talos-accent);box-shadow:0 0 8px var(--talos-accent)"></span>
+          SYS://TALOS-UI
+        </span>
+        <span class="console-rail__spacer"></span>
+        <span class="console-rail__meta">
+          <a href="/showcase/" style="text-decoration:none">Showcase</a>
+          <a href="/gallery/" style="text-decoration:none">Gallery</a>
+          <a href="/docs/philosophy/" style="text-decoration:none">Philosophy</a>
+          <a href="/docs/getting-started/" style="text-decoration:none">Docs</a>
+          <span id="clock">--:--:--</span>
+        </span>
+      </header>
+
+      <!-- SCOPE -->
+      <main class="console-scope">
+        <!-- Hero: the pitch, on the same screen as the proof -->
+        <div class="console-cell console-cell--full home-hero">
+          <span class="instrument-label"><span>// @shelfwood/talos-ui — v0.0.1</span><span>LIVE</span></span>
+          <h1>Interfaces that visualise<br />a running system</h1>
+          <p>
+            Talos UI builds <strong style="color:var(--talos-foreground);font-weight:400">instruments</strong>,
+            not static pages — gauges, trend lines, meters, and flows where colour
+            and motion are bound to live domain state. Everything on this screen is
+            one component library driven by a single sim loop. Read it twice; it
+            differs.
+          </p>
+          <div class="home-cta">
+            <a class="primary" href="/docs/getting-started/">Get started</a>
+            <a href="/docs/philosophy/">Read the philosophy</a>
+            <a href="/showcase/">Component showcase</a>
+          </div>
         </div>
-      </talos-panel>
 
-      <talos-panel panel-width="360" panel-height="200">
-        <talos-notch edge="left" width="70" depth="16"></talos-notch>
-        <talos-notch edge="right" width="70" depth="16"></talos-notch>
-        <div class="pad">
-          <span class="eyebrow">SYS://PANEL</span>
-          <h3 style="font-size:1.05rem;margin-top:.5rem">Side notches</h3>
+        <!-- Core gauges -->
+        <div class="console-cell console-cell--wide">
+          <span class="instrument-label"><span>Node atlas-01 — resources</span></span>
+          <div class="gauge-row">
+            <talos-gauge id="g-cpu" value="20" min="0" max="100" warn="70" crit="90" label="CPU" unit="%" size="148"></talos-gauge>
+            <talos-gauge id="g-mem" value="40" min="0" max="100" warn="70" crit="90" label="Memory" unit="%" size="148"></talos-gauge>
+            <talos-gauge id="g-load" value="30" min="0" max="100" warn="75" crit="92" label="Load" unit="%" size="148"></talos-gauge>
+          </div>
         </div>
-      </talos-panel>
-    </div>
-  </section>
 
-  <!-- LIVE COMPONENTS — feedback / data / nav families -->
-  <section class="stack">
-    <span class="eyebrow">// 04 — Live components</span>
-
-    <div class="row" style="gap:.6rem">
-      <span class="talos-badge talos-badge--success talos-badge--dot">Online</span>
-      <span class="talos-badge talos-badge--info">Build 0.0.1</span>
-      <span class="talos-badge talos-badge--warning">Beta</span>
-      <span class="talos-badge talos-badge--neutral">MIT</span>
-    </div>
-
-    <div class="grid" style="margin-top:.5rem">
-      <div class="talos-stat">
-        <span class="talos-stat__label">Components</span>
-        <span class="talos-stat__value">48</span>
-        <span class="talos-stat__delta">CSS + WC</span>
-      </div>
-      <div class="talos-stat">
-        <span class="talos-stat__label">Token vars</span>
-        <span class="talos-stat__value">120+</span>
-        <span class="talos-stat__delta">retheme on :root</span>
-      </div>
-      <div class="talos-stat">
-        <span class="talos-stat__label">Bundle</span>
-        <span class="talos-stat__value">0 JS</span>
-        <span class="talos-stat__delta">CSS-only core</span>
-      </div>
-    </div>
-
-    <div class="talos-alert talos-alert--info" role="status" style="margin-top:.5rem">
-      <span class="talos-alert__icon">◆</span>
-      <div>
-        <div class="talos-alert__title">Dogfooded</div>
-        <div class="talos-alert__body">
-          This page and the docs are built from Talos UI itself — every panel,
-          badge, stat card, and code block is a library component.
+        <!-- Throughput trend -->
+        <div class="console-cell">
+          <span class="instrument-label"><span>Throughput</span><span>60s</span></span>
+          <talos-trend id="t-thru" value="40" points="60" min="0" max="100" warn="70" crit="90" unit="%" width="360" height="120" fill></talos-trend>
         </div>
-      </div>
+
+        <!-- Pipeline flow -->
+        <div class="console-cell console-cell--full">
+          <span class="instrument-label"><span>Pipeline</span></span>
+          <div class="pipeline">
+            <span>INGEST</span>
+            <talos-flow id="f-a" rate="30" max="100" warn="70" crit="90" width="150" height="34"></talos-flow>
+            <span>TRANSFORM</span>
+            <talos-flow id="f-b" rate="30" max="100" warn="70" crit="90" width="150" height="34"></talos-flow>
+            <span>VALIDATE</span>
+            <talos-flow id="f-c" rate="30" max="100" warn="70" crit="90" width="150" height="34"></talos-flow>
+            <span>STORE</span>
+          </div>
+        </div>
+      </main>
+
+      <!-- ASIDE -->
+      <aside class="console-aside">
+        <span class="console-aside__label">// Telemetry</span>
+        <talos-meter id="m-disk" value="30" min="0" max="100" warn="70" crit="90" label="Disk" unit="%" width="240"></talos-meter>
+        <talos-meter id="m-net" value="50" min="0" max="100" warn="70" crit="90" label="Network" unit="%" width="240"></talos-meter>
+        <talos-meter id="m-q" value="10" min="0" max="100" warn="60" crit="85" label="Queue depth" width="240"></talos-meter>
+        <talos-meter id="m-err" value="2" min="0" max="100" warn="20" crit="50" label="Error rate" unit="%" width="240"></talos-meter>
+      </aside>
+
+      <!-- STATUS -->
+      <footer class="console-status">
+        <span class="console-status__stat" id="health" style="--_status:var(--talos-success-hsl)">NOMINAL</span>
+        <span class="console-status__spacer"></span>
+        <span>NODE atlas-01</span>
+        <span>UPTIME 14d 06h</span>
+        <span>BUILD 0.0.1</span>
+      </footer>
     </div>
 
-    <div class="talos-tabs talos-tabs--segmented" role="tablist" style="margin-top:.75rem">
-      <button class="talos-tab" role="tab" aria-selected="true">Astro</button>
-      <button class="talos-tab" role="tab" aria-selected="false">Web components</button>
-      <button class="talos-tab" role="tab" aria-selected="false">Blade</button>
-    </div>
-  </section>
-
-  <footer class="row muted" style="justify-content:space-between;border-top:1px solid var(--talos-border);padding-top:1.5rem">
-    <span class="eyebrow">SYS://TALOS-UI</span>
-    <span class="eyebrow">MIT — Shelfwood ◢</span>
-  </footer>
-
-  <script>
-    // Minimal segmented-tab toggle so the showcase strip is interactive.
-    document.querySelectorAll<HTMLElement>('.talos-tabs[role="tablist"]').forEach((list) => {
-      list.addEventListener("click", (e) => {
-        const tab = (e.target as HTMLElement).closest('[role="tab"]');
-        if (!tab) return;
-        list.querySelectorAll('[role="tab"]').forEach((t) =>
-          t.setAttribute("aria-selected", String(t === tab)),
-        );
+    <script>
+      import "@shelfwood/talos-ui/wc";
+      const root = document.documentElement;
+      addEventListener("pointermove", (e) => {
+        root.style.setProperty("--talos-cursor-x", e.clientX + "px");
+        root.style.setProperty("--talos-cursor-y", e.clientY + "px");
       });
-    });
-  </script>
-</Landing>
+
+      const $ = (id: string) => document.getElementById(id);
+
+      // Deterministic seeded PRNG (mulberry32) so the sim is reproducible —
+      // the philosophy values a system whose behaviour is defined, not random.
+      function mulberry32(seed: number) {
+        return function () {
+          seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+          let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      const rand = mulberry32(0x7a105);
+      const clamp = (v: number) => Math.round(Math.max(0, Math.min(100, v)));
+
+      // Each signal: a slow sine carrier + a faster wobble + a little seeded
+      // noise, phased apart so the instruments don't move in lockstep.
+      let k = 0;
+      const signal = (carrier: number, wobble: number, phase: number, amp: number, base: number) =>
+        clamp(base + amp * Math.sin(k * carrier + phase) + (amp * 0.18) * Math.sin(k * wobble) + (rand() - 0.5) * 6);
+
+      const tick = () => {
+        k += 0.05;
+        const cpu = signal(1.0, 5, 0, 42, 50);
+        const mem = signal(0.4, 3, 1.2, 28, 55);
+        const load = signal(0.7, 6, 2.0, 40, 48);
+        const thru = signal(0.8, 4, 2.6, 40, 50);
+        const disk = signal(0.25, 2, 0.5, 18, 45);
+        const net = signal(0.9, 7, 3.1, 38, 50);
+        const queue = clamp(12 + 55 * Math.max(0, Math.sin(k * 1.2 + 1)));
+        const err = clamp(3 + 22 * Math.max(0, Math.sin(k * 0.6 - 1.5)) ** 2);
+
+        $("g-cpu")?.setAttribute("value", String(cpu));
+        $("g-mem")?.setAttribute("value", String(mem));
+        $("g-load")?.setAttribute("value", String(load));
+        ($("t-thru") as any)?.push(thru);
+        $("f-a")?.setAttribute("rate", String(thru));
+        $("f-b")?.setAttribute("rate", String(clamp(thru * 0.85)));
+        $("f-c")?.setAttribute("rate", String(clamp(thru * 0.7)));
+        $("m-disk")?.setAttribute("value", String(disk));
+        $("m-net")?.setAttribute("value", String(net));
+        $("m-q")?.setAttribute("value", String(queue));
+        $("m-err")?.setAttribute("value", String(err));
+
+        // Aggregate health → the status bar colour + word (form encodes function).
+        const peak = Math.max(cpu, mem, load, thru, queue, err * 2);
+        const hsl = peak >= 90 ? "--talos-danger-hsl" : peak >= 72 ? "--talos-warning-hsl" : "--talos-success-hsl";
+        const word = peak >= 90 ? "CRITICAL" : peak >= 72 ? "ELEVATED" : "NOMINAL";
+        const h = $("health");
+        if (h) { h.style.setProperty("--_status", `var(${hsl})`); h.textContent = word; }
+      };
+      setInterval(tick, 280);
+
+      const clock = $("clock");
+      const updateClock = () => { if (clock) clock.textContent = new Date().toTimeString().slice(0, 8); };
+      updateClock();
+      setInterval(updateClock, 1000);
+    </script>
+  </body>
+</html>
