@@ -1,0 +1,10 @@
+node_modules
+**/node_modules
+**/dist
+**/.astro
+.git
+.agent
+*.log
+.DS_Store
+.env
+.env.*
