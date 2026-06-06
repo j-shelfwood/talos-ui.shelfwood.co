@@ -1,10 +1,9 @@
 ---
-// The homepage is a scroll-JOURNEY (ref: Hyper Scroll). A fixed HUD viewport
-// you fly through; each scene shows a different part of the library doing what
-// it is best at. Lenis provides momentum smooth-scroll; a small rAF layer adds
-// per-scene parallax/scale from scroll progress. Motion here is honest: the
-// camera moves with YOUR scroll (real, user-driven input), and each scene's
-// instruments bind to real/scroll-derived state.
+// Homepage = a 3D scroll-JOURNEY (ref: Hyper Scroll). A fixed HUD viewport with
+// real perspective; scenes are arranged in Z-space and you fly through them as
+// you scroll. Honest motion: the camera tracks YOUR scroll (real input), and
+// each scene binds to live/real state. Each scene shows a different part of the
+// library doing what it is best at.
 import "@shelfwood/talos-ui/all.css";
 ---
 
@@ -19,145 +18,177 @@ import "@shelfwood/talos-ui/all.css";
       :root { color-scheme: dark; }
       * { box-sizing: border-box; }
       html, body { margin: 0; background: var(--talos-background); color: var(--talos-foreground); font-family: var(--talos-font-display); }
-      html.lenis, html.lenis body { height: auto; }
       .lenis.lenis-smooth { scroll-behavior: auto !important; }
 
-      /* The fixed window we fly through. */
-      .viewport { position: fixed; inset: 0; overflow: hidden; z-index: 1; }
-      .world { position: absolute; inset: 0; will-change: transform; }
+      /* Fixed window with real perspective — we fly through it. */
+      .viewport { position: fixed; inset: 0; overflow: hidden; z-index: 1; perspective: 1100px; perspective-origin: 50% 50%; }
+      .world { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
 
-      /* Each scene is a full-viewport stage, stacked; the camera (scroll) reveals
-         them one at a time. They are absolutely positioned and shown/parallaxed
-         by the rAF layer via --p (this scene's progress, -1..1, 0 = centred). */
-      .scene {
-        position: absolute; inset: 0;
-        display: grid; place-items: center;
-        padding: 6vh 6vw;
-        opacity: 0;
-        will-change: transform, opacity;
-      }
-      .scene__inner { width: min(1100px, 92vw); }
+      /* Parallax depth field behind everything (moves slower → depth cue). */
+      .starfield { position: absolute; inset: -20%; transform-style: preserve-3d;
+        background-image: radial-gradient(circle at 1px 1px, hsl(0 0% 100% / 0.06) 1px, transparent 1.6px);
+        background-size: 44px 44px; will-change: transform; }
 
-      /* The scroll proxy gives the page its height — one viewport-height per
-         scene; JS maps scrollY to the active scene. */
+      /* Scenes live at increasing -Z; perspective scales them as they approach. */
+      .scene { position: absolute; left: 50%; top: 50%; width: min(1100px, 92vw);
+        transform: translate(-50%, -50%); transform-style: preserve-3d;
+        will-change: transform, opacity; }
+      .scene[data-hidden="1"] { visibility: hidden; }
+
+      /* scroll proxy gives the page height — one viewport per scene */
       .scroll-proxy { position: relative; z-index: 0; }
 
-      /* ---- HUD overlay: fixed chrome over the moving world ---- */
+      /* ---- HUD overlay ---- */
       .hud { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
       .hud a, .hud button { pointer-events: auto; }
       .hud-line { position: absolute; background: var(--talos-edge-subtle); }
       .hud-line--top { top: 56px; left: 24px; right: 24px; height: 1px; }
       .hud-line--bottom { bottom: 56px; left: 24px; right: 24px; height: 1px; }
-      .hud-top, .hud-bottom {
-        position: absolute; left: 24px; right: 24px;
-        display: flex; align-items: center; justify-content: space-between;
-        font-size: 0.7rem; text-transform: uppercase; letter-spacing: var(--talos-tracking-hud);
-        color: var(--talos-muted-foreground);
-      }
-      .hud-top { top: 20px; }
-      .hud-bottom { bottom: 20px; }
-      .hud-top a, .hud-bottom a { color: var(--talos-muted-foreground); text-decoration: none; margin-left: 1.25rem; transition: color .18s ease; }
-      .hud-top a:hover, .hud-bottom a:hover { color: var(--talos-foreground); }
-      .brand { display: inline-flex; align-items: center; gap: .5rem; color: var(--talos-foreground); }
+      .hud-top, .hud-bottom { position: absolute; left: 24px; right: 24px; display: flex; align-items: center; justify-content: space-between; font-size: .7rem; text-transform: uppercase; letter-spacing: var(--talos-tracking-hud); color: var(--talos-muted-foreground); }
+      .hud-top { top: 20px; } .hud-bottom { bottom: 20px; }
+      .hud-top nav a, .hud-bottom a { color: var(--talos-muted-foreground); text-decoration: none; margin-left: 1.25rem; transition: color .18s; }
+      .hud-top nav a:hover { color: var(--talos-foreground); }
+      .brand { display: inline-flex; align-items: center; gap: .5rem; color: var(--talos-foreground); text-decoration:none; }
       .brand .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--talos-accent); box-shadow: 0 0 8px var(--talos-accent); }
-
-      /* Progress ticks down the right edge — which scene you're in. */
-      .hud-progress { position: absolute; right: 22px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; }
-      .hud-progress span { width: 8px; height: 1px; background: var(--talos-edge-default); transition: width .25s ease, background .25s ease; }
+      .hud-progress { position: absolute; right: 22px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 9px; }
+      .hud-progress span { width: 8px; height: 1px; background: var(--talos-edge-default); transition: width .25s, background .25s; cursor: pointer; pointer-events: auto; }
       .hud-progress span.active { width: 22px; background: var(--talos-accent); }
-
       .scroll-cue { position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%); font-size: .62rem; letter-spacing: var(--talos-tracking-hud); color: var(--talos-muted-foreground); text-transform: uppercase; animation: cue 2.4s ease-in-out infinite; }
-      @keyframes cue { 0%,100%{opacity:.3;transform:translate(-50%,0)} 50%{opacity:1;transform:translate(-50%,4px)} }
+      @keyframes cue { 0%,100%{opacity:.3;transform:translate(-50%,0)} 50%{opacity:1;transform:translate(-50%,5px)} }
 
-      /* CRT atmospherics — scanlines, vignette, grain. Decorative *frame*, kept
-         faint; the information lives in the scenes, not the chrome. */
-      .scanlines { position: fixed; inset: 0; z-index: 2; pointer-events: none;
-        background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0,0,0,0.18) 2px 3px);
-        mix-blend-mode: multiply; opacity: .5; }
-      .vignette { position: fixed; inset: 0; z-index: 2; pointer-events: none;
-        background: radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(0,0,0,0.55) 100%); }
+      .scanlines { position: fixed; inset: 0; z-index: 2; pointer-events: none; background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0,0,0,.16) 2px 3px); mix-blend-mode: multiply; opacity: .5; }
+      .vignette { position: fixed; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(120% 100% at 50% 50%, transparent 52%, rgba(0,0,0,.6) 100%); }
 
-      /* Scene typography */
+      /* typography */
       .eyebrow { font-size: .7rem; text-transform: uppercase; letter-spacing: var(--talos-tracking-hud); color: var(--talos-muted-foreground); }
-      .display { font-weight: 300; text-transform: uppercase; letter-spacing: var(--talos-tracking-hud); line-height: 1.02; margin: .5rem 0; font-size: clamp(2.4rem, 6vw, 5.5rem); }
-      .lede { max-width: 46ch; color: var(--talos-muted-foreground); font-size: clamp(1rem,1.4vw,1.2rem); line-height: 1.6; }
+      .display { font-weight: 300; text-transform: uppercase; letter-spacing: var(--talos-tracking-hud); line-height: 1.02; margin: .5rem 0; font-size: clamp(2.2rem, 5.5vw, 5rem); }
+      .lede { max-width: 48ch; color: var(--talos-muted-foreground); font-size: clamp(1rem,1.3vw,1.18rem); line-height: 1.6; }
       .scene-title { font-size: .72rem; text-transform: uppercase; letter-spacing: var(--talos-tracking-hud); color: var(--talos-text-tertiary, var(--talos-muted-foreground)); }
-      .cta { display: inline-flex; gap: .9rem; margin-top: 1.5rem; flex-wrap: wrap; }
+      .center { text-align: center; }
+      .row { display:flex; gap:2.5rem; flex-wrap:wrap; align-items:center; justify-content:center; }
+      .cta { display:inline-flex; gap:.9rem; margin-top:1.5rem; flex-wrap:wrap; justify-content:center; }
       .cta a { display:inline-flex; align-items:center; padding:.6rem 1.2rem; font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; text-decoration:none; border:1px solid var(--talos-edge-default); color:var(--talos-foreground); transition:border-color .18s, background .18s; clip-path: polygon(0 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%); }
       .cta a:hover { border-color: var(--talos-edge-strong); background: var(--talos-surface-2); }
       .cta a.primary { border-color: hsl(var(--talos-accent-hsl)/.5); color: var(--talos-accent); }
-
-      .row { display:flex; gap:2.5rem; flex-wrap:wrap; align-items:center; justify-content:center; }
-      .quote { font-weight: 300; text-transform: uppercase; letter-spacing: .04em; line-height: 1.15; font-size: clamp(1.6rem,3.4vw,3rem); max-width: 18ch; }
+      .quote { font-weight: 300; text-transform: uppercase; letter-spacing: .04em; line-height: 1.15; font-size: clamp(1.6rem,3.4vw,3rem); max-width: 20ch; margin: 0 auto; }
       .quote .accent { color: var(--talos-accent); }
 
-      @media (prefers-reduced-motion: reduce) {
-        .scene { transition: none; }
-        .scroll-cue { animation: none; }
-      }
+      /* mini console for the console scene */
+      .mini-console { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+      .mini-cell { border:1px solid var(--talos-edge-subtle); background: var(--talos-surface-1); padding: 1rem; display:flex; flex-direction:column; align-items:center; gap:.5rem; }
+      .mini-cell .scene-title { align-self:flex-start; }
+
+      /* anti-grid scene — deliberately non-document spatial scatter */
+      .scatter { position: relative; height: 52vh; }
+      .scatter > * { position: absolute; }
+
+      @media (prefers-reduced-motion: reduce) { .scroll-cue { animation:none; } }
+      @media (max-width: 720px) { .mini-console { grid-template-columns: 1fr; } }
     </style>
   </head>
   <body>
     <div class="viewport">
       <div class="world" id="world">
-        <!-- SCENE 0 — Thesis -->
+        <div class="starfield" id="starfield"></div>
+
+        <!-- 0 — THESIS -->
         <section class="scene" data-scene>
-          <div class="scene__inner">
-            <span class="eyebrow">// @shelfwood/talos-ui — v0.0.1</span>
-            <h1 class="display">Interfaces that<br />visualise a<br />running system</h1>
-            <p class="lede">Gauges, trends, meters, and flows where colour and motion are bound to live domain state. Scroll to fly through them.</p>
+          <span class="eyebrow">// @shelfwood/talos-ui — v0.0.1</span>
+          <h1 class="display">Interfaces that<br />visualise a<br />running system</h1>
+          <p class="lede">Gauges, trends, meters, flows — colour and motion bound to live domain state. Scroll to fly through them.</p>
+        </section>
+
+        <!-- 1 — RESOURCE INSTRUMENTS -->
+        <section class="scene center" data-scene>
+          <span class="scene-title">01 — Resource instruments</span>
+          <div class="row" style="margin-top:2rem">
+            <talos-gauge id="g1" value="20" warn="70" crit="90" unit="%" label="CPU" size="180"></talos-gauge>
+            <talos-gauge id="g2" value="50" warn="70" crit="90" unit="%" label="Memory" size="180"></talos-gauge>
+            <talos-meter id="m1" value="30" warn="70" crit="90" label="Disk" unit="%" width="260"></talos-meter>
+          </div>
+          <p class="lede" style="margin:2rem auto 0">Colour <em>is</em> the band. The number and colour move together, on their own.</p>
+        </section>
+
+        <!-- 2 — SIGNAL & THROUGHPUT -->
+        <section class="scene center" data-scene>
+          <span class="scene-title">02 — Signal &amp; throughput</span>
+          <div style="margin:2rem auto 0;max-width:680px">
+            <talos-trend id="t1" value="40" points="72" warn="70" crit="90" unit="%" label="Throughput" width="660" height="160" fill></talos-trend>
+          </div>
+          <div class="row" style="margin-top:2rem;color:var(--talos-muted-foreground);font-size:.7rem;text-transform:uppercase;letter-spacing:.12em">
+            <span>INGEST</span>
+            <talos-flow id="f1" rate="40" max="100" warn="70" crit="90" width="150" height="34"></talos-flow>
+            <span>PROCESS</span>
+            <talos-flow id="f2" rate="40" max="100" warn="70" crit="90" width="150" height="34" curve="12"></talos-flow>
+            <span>STORE</span>
+          </div>
+          <p class="lede" style="margin:2rem auto 0">The line's shape is the rate; the dash speed is the throughput. Freeze it and you lose nothing — the motion is the data moving.</p>
+        </section>
+
+        <!-- 3 — MISSION CONSOLE -->
+        <section class="scene center" data-scene>
+          <span class="scene-title">03 — Composed into a console</span>
+          <div class="mini-console" style="margin-top:2rem;text-align:left">
+            <div class="mini-cell"><span class="scene-title">CPU</span><talos-gauge id="cg1" value="40" warn="70" crit="90" unit="%" size="130"></talos-gauge></div>
+            <div class="mini-cell"><span class="scene-title">LOAD</span><talos-gauge id="cg2" value="60" warn="75" crit="92" unit="%" size="130"></talos-gauge></div>
+            <div class="mini-cell"><span class="scene-title">NET</span><talos-gauge id="cg3" value="30" warn="70" crit="90" unit="%" size="130"></talos-gauge></div>
+          </div>
+          <p class="lede" style="margin:2rem auto 0">Instruments compose into a real cockpit — the console shell is a non-document, zoned, fixed-viewport layout.</p>
+        </section>
+
+        <!-- 4 — ORBITAL / SERVICE MESH (honest data) -->
+        <section class="scene center" data-scene>
+          <span class="scene-title">04 — Service mesh</span>
+          <div style="margin:1rem auto 0;width:min(60vh,560px)">
+            <talos-orbital id="orb" rings="3" warn="6" crit="14" core-label="ATLAS" size="560"></talos-orbital>
+          </div>
+          <p class="lede" style="margin:1rem auto 0">Ring = tier (edge · app · data). Node size = traffic share, colour = error rate, orbit speed = request rate, arc = live calls. Motion is the call volume — nothing is decorative.</p>
+        </section>
+
+        <!-- 5 — CONTROLS (interactive, not just read-out) -->
+        <section class="scene center" data-scene>
+          <span class="scene-title">05 — Controls</span>
+          <div style="margin:2rem auto 0;max-width:560px;text-align:left;display:flex;flex-direction:column;gap:1.25rem">
+            <div class="talos-field">
+              <label class="talos-label talos-label--required">Node hostname</label>
+              <input class="talos-input" value="atlas-01" />
+            </div>
+            <div class="talos-field talos-field--error">
+              <label class="talos-label">Port</label>
+              <input class="talos-input talos-input--error" value="99999" />
+            </div>
+            <label style="display:flex;gap:.6rem;align-items:center;color:var(--talos-muted-foreground)"><input type="checkbox" class="talos-checkbox" checked /> Enable auto-scaling</label>
+          </div>
+          <p class="lede" style="margin:2rem auto 0">Talos is not only read-outs — inputs, validation, and toggles carry the same chamfered HUD language, with state shown in colour.</p>
+        </section>
+
+        <!-- 6 — DEFY THE GRID -->
+        <section class="scene" data-scene>
+          <span class="scene-title">06 — Defy the default</span>
+          <div class="scatter" style="margin-top:1.5rem">
+            <talos-gauge style="left:4%;top:0" value="82" warn="70" crit="90" unit="%" size="120"></talos-gauge>
+            <talos-meter style="left:34%;top:30%" value="46" warn="70" crit="90" label="Net" unit="%" width="200"></talos-meter>
+            <talos-flow style="left:30%;top:6%" rate="70" warn="70" crit="90" width="180" height="34"></talos-flow>
+            <talos-gauge style="right:6%;top:18%" value="33" warn="70" crit="90" unit="%" size="100"></talos-gauge>
+            <talos-trend style="left:8%;bottom:0" value="50" points="40" warn="70" crit="90" width="280" height="80" fill></talos-trend>
+            <div style="right:2%;bottom:6%;max-width:30ch" class="lede">No column. No reading-line. A field of live instruments, arranged in space — because an instrument is monitored, not read.</div>
           </div>
         </section>
 
-        <!-- SCENE 1 — Live resource instruments -->
-        <section class="scene" data-scene>
-          <div class="scene__inner" style="text-align:center">
-            <span class="scene-title">01 — Resource instruments</span>
-            <div class="row" style="margin-top:2rem">
-              <talos-gauge id="g1" value="20" warn="70" crit="90" unit="%" label="CPU" size="180"></talos-gauge>
-              <talos-gauge id="g2" value="50" warn="70" crit="90" unit="%" label="Memory" size="180"></talos-gauge>
-              <talos-meter id="m1" value="30" warn="70" crit="90" label="Disk" unit="%" width="260"></talos-meter>
-            </div>
-            <p class="lede" style="margin:2rem auto 0">Colour <em>is</em> the band — nominal, warning, critical. The number and colour change together, on their own.</p>
-          </div>
-        </section>
-
-        <!-- SCENE 2 — Signal / throughput -->
-        <section class="scene" data-scene>
-          <div class="scene__inner" style="text-align:center">
-            <span class="scene-title">02 — Signal &amp; throughput</span>
-            <div style="margin:2rem auto 0;max-width:680px">
-              <talos-trend id="t1" value="40" points="72" warn="70" crit="90" unit="%" label="Throughput" width="660" height="160" fill></talos-trend>
-            </div>
-            <div class="row" style="margin-top:2rem;justify-content:center;color:var(--talos-muted-foreground);font-size:.7rem;text-transform:uppercase;letter-spacing:.12em">
-              <span>INGEST</span>
-              <talos-flow id="f1" rate="40" max="100" warn="70" crit="90" width="160" height="34"></talos-flow>
-              <span>PROCESS</span>
-              <talos-flow id="f2" rate="40" max="100" warn="70" crit="90" width="160" height="34" curve="12"></talos-flow>
-              <span>STORE</span>
-            </div>
-            <p class="lede" style="margin:2rem auto 0">The line's shape is the rate; the dash speed is the throughput. Freeze the frame and you lose nothing — but the motion is the data moving.</p>
-          </div>
-        </section>
-
-        <!-- SCENE 3 — Manifesto + CTA -->
-        <section class="scene" data-scene>
-          <div class="scene__inner" style="text-align:center">
-            <p class="quote">The interface is an <span class="accent">instrument</span>, not a document.</p>
-            <div class="cta" style="justify-content:center">
-              <a class="primary" href="/docs/getting-started/">Get started</a>
-              <a href="/docs/philosophy/">Read the manifesto</a>
-              <a href="/showcase/">See every component</a>
-            </div>
+        <!-- 7 — MANIFESTO + CTA -->
+        <section class="scene center" data-scene>
+          <p class="quote">The interface is an <span class="accent">instrument</span>, not a document.</p>
+          <div class="cta">
+            <a class="primary" href="/docs/getting-started/">Get started</a>
+            <a href="/docs/philosophy/">Read the manifesto</a>
+            <a href="/showcase/">See every component</a>
           </div>
         </section>
       </div>
     </div>
 
-    <!-- scroll proxy: one viewport per scene -->
     <div class="scroll-proxy" id="proxy"></div>
 
-    <!-- fixed HUD chrome -->
     <div class="scanlines"></div>
     <div class="vignette"></div>
     <div class="hud">
@@ -165,14 +196,10 @@ import "@shelfwood/talos-ui/all.css";
       <div class="hud-line hud-line--bottom"></div>
       <div class="hud-top">
         <a class="brand" href="/"><span class="dot"></span>SYS://TALOS-UI</a>
-        <nav>
-          <a href="/docs/philosophy/">Manifesto</a>
-          <a href="/showcase/">Showcase</a>
-          <a href="/docs/getting-started/">Docs</a>
-        </nav>
+        <nav><a href="/docs/philosophy/">Manifesto</a><a href="/showcase/">Showcase</a><a href="/docs/getting-started/">Docs</a></nav>
       </div>
       <div class="hud-bottom">
-        <span id="hud-scene">SCENE 00 / 04</span>
+        <span id="hud-scene">SCENE 00 / 07</span>
         <span>MIT — Shelfwood ◢</span>
       </div>
       <div class="hud-progress" id="progress"></div>
@@ -185,73 +212,108 @@ import "@shelfwood/talos-ui/all.css";
 
       const scenes = Array.from(document.querySelectorAll<HTMLElement>("[data-scene]"));
       const N = scenes.length;
-      const world = document.getElementById("world")!;
       const proxy = document.getElementById("proxy")!;
+      const world = document.getElementById("world")!;
+      const starfield = document.getElementById("starfield")!;
       const progress = document.getElementById("progress")!;
       const hudScene = document.getElementById("hud-scene")!;
       const cue = document.querySelector<HTMLElement>(".scroll-cue")!;
 
-      // proxy height = one viewport per scene (so scrollable range = (N-1) vh)
+      const GAP = 900; // px of Z between scenes
       proxy.style.height = `${N * 100}vh`;
 
-      // progress ticks
       progress.innerHTML = scenes.map(() => "<span></span>").join("");
       const ticks = Array.from(progress.children) as HTMLElement[];
+      hudScene.textContent = `SCENE 00 / ${String(N - 1).padStart(2, "0")}`;
+
+      // place scenes at increasing depth
+      scenes.forEach((s, i) => { s.dataset.z = String(-i * GAP); });
 
       const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
       const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+      let target = 0, current = 0;
 
-      let target = 0; // scroll progress in "scenes" (0..N-1)
-      let current = 0;
+      const lenis = new Lenis({ duration: 1.15, smoothWheel: true });
+      // Read progress from the instance in the rAF loop (the scroll-event payload
+      // shape varies across Lenis versions; lenis.scroll / lenis.limit are stable).
 
-      const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
-      lenis.on("scroll", ({ scroll, limit }: any) => {
-        target = limit > 0 ? (scroll / limit) * (N - 1) : 0;
-      });
+      // click a progress tick to jump
+      ticks.forEach((t, i) => t.addEventListener("click", () => {
+        const limit = (document.documentElement.scrollHeight - window.innerHeight);
+        lenis.scrollTo((i / (N - 1)) * limit);
+      }));
 
       function frame(time: number) {
         lenis.raf(time);
-        current = reduce ? target : lerp(current, target, 0.1);
+        const limit = (lenis as any).limit || (document.documentElement.scrollHeight - window.innerHeight);
+        const scroll = (lenis as any).scroll ?? window.scrollY;
+        target = limit > 0 ? (scroll / limit) * (N - 1) : 0;
+        current = reduce ? target : lerp(current, target, 0.085);
+        const camZ = current * GAP; // move camera into the scene stack
 
-        scenes.forEach((scene, i) => {
-          const p = current - i; // -.. 0 (centred) ..+
-          const dist = Math.abs(p);
-          // each scene is a stage that flies in from below and out the top,
-          // with a touch of scale + depth so it reads as a camera move.
-          const y = p * -16; // vh offset
-          const scale = 1 - Math.min(dist, 1) * 0.12;
-          const opacity = Math.max(0, 1 - dist * 1.15);
-          scene.style.transform = `translate3d(0, ${y}vh, 0) scale(${scale.toFixed(3)})`;
-          scene.style.opacity = String(opacity.toFixed(3));
-          scene.style.pointerEvents = dist < 0.5 ? "auto" : "none";
+        scenes.forEach((s, i) => {
+          const z = -i * GAP + camZ;        // this scene's Z relative to camera
+          const dist = Math.abs(z) / GAP;    // 0 = at camera plane
+          // hide far scenes for perf + clarity
+          const visible = dist < 1.6;
+          s.dataset.hidden = visible ? "0" : "1";
+          if (!visible) return;
+          const opacity = z > 60 ? 0 : Math.max(0, 1 - dist * 0.85); // fade as it passes behind/ahead
+          s.style.transform = `translate(-50%, -50%) translateZ(${z.toFixed(0)}px)`;
+          s.style.opacity = String(opacity.toFixed(3));
+          s.style.pointerEvents = dist < 0.4 ? "auto" : "none";
         });
 
-        const active = Math.round(current);
+        // parallax: starfield drifts at a fraction of camera depth
+        starfield.style.transform = `translateZ(${(camZ * 0.5).toFixed(0)}px) translateY(${(current * -2).toFixed(1)}vh)`;
+
+        const active = Math.max(0, Math.min(N - 1, Math.round(current)));
         ticks.forEach((t, i) => t.classList.toggle("active", i === active));
         hudScene.textContent = `SCENE ${String(active).padStart(2, "0")} / ${String(N - 1).padStart(2, "0")}`;
         cue.style.opacity = current > 0.3 ? "0" : "";
-
         requestAnimationFrame(frame);
       }
       requestAnimationFrame(frame);
 
-      // ---- drive the live instruments (deterministic seeded sim) ----
+      // ---- live data ----
       const $ = (id: string) => document.getElementById(id);
       function mulberry32(s: number) { return () => { s|=0; s=(s+0x6d2b79f5)|0; let t=Math.imul(s^(s>>>15),1|s); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; }; }
       const rand = mulberry32(0x7a105);
-      const clamp = (v: number) => Math.round(Math.max(0, Math.min(100, v)));
+      const clamp = (v: number, hi = 100) => Math.max(0, Math.min(hi, v));
+      const r2 = (v: number) => Math.round(v);
+
+      // service-mesh model for the orbital — honest semantics:
+      // ring = tier, load = traffic share, value = error RATE %, rate = req rate.
+      const mesh = [
+        { id: "gw",   ring: 1, label: "GATEWAY" }, { id: "lb", ring: 1, label: "LB" },
+        { id: "api",  ring: 2, label: "API" }, { id: "auth", ring: 2, label: "AUTH" }, { id: "web", ring: 2, label: "WEB" },
+        { id: "db",   ring: 3, label: "DB" }, { id: "cache", ring: 3, label: "CACHE" }, { id: "queue", ring: 3, label: "QUEUE" }, { id: "search", ring: 3, label: "SEARCH" },
+      ];
+      const orb = $("orb") as any;
+
       let k = 0;
       setInterval(() => {
         k += 0.06;
-        const cpu = clamp(50 + 42 * Math.sin(k) + 6 * Math.sin(k * 5));
-        const mem = clamp(55 + 30 * Math.sin(k * .5 + 1));
-        const thru = clamp(50 + 42 * Math.sin(k * .8 + 2) + (rand() - .5) * 6);
+        const cpu = r2(clamp(50 + 42 * Math.sin(k) + 6 * Math.sin(k*5)));
+        const mem = r2(clamp(55 + 30 * Math.sin(k*.5 + 1)));
+        const thru = r2(clamp(50 + 42 * Math.sin(k*.8 + 2) + (rand()-.5)*6));
         $("g1")?.setAttribute("value", String(cpu));
         $("g2")?.setAttribute("value", String(mem));
-        $("m1")?.setAttribute("value", String(clamp(40 + 20 * Math.sin(k * .3))));
+        $("m1")?.setAttribute("value", String(r2(clamp(40 + 20 * Math.sin(k*.3)))));
         ($("t1") as any)?.push(thru);
         $("f1")?.setAttribute("rate", String(thru));
-        $("f2")?.setAttribute("rate", String(clamp(thru * .8)));
+        $("f2")?.setAttribute("rate", String(r2(clamp(thru*.8))));
+        // console scene
+        $("cg1")?.setAttribute("value", String(cpu));
+        $("cg2")?.setAttribute("value", String(r2(clamp(48 + 40*Math.sin(k*.7+2)))));
+        $("cg3")?.setAttribute("value", String(thru));
+
+        // orbital mesh
+        if (orb) orb.nodes = mesh.map((m, i) => {
+          const reqRate = clamp(40 + 55 * Math.sin(k*.7 + i*1.1) + (rand()-.5)*10); // req/s share
+          const errRate = clamp(2 + 16 * Math.max(0, Math.sin(k*.5 + i*1.7))**2);    // % errors → colour band
+          return { ...m, value: errRate, load: 0.3 + 0.6*(reqRate/100), rate: reqRate };
+        });
       }, 280);
     </script>
   </body>
