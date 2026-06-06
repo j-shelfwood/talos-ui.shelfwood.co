@@ -20,6 +20,12 @@ import "@shelfwood/talos-ui/all.css";
       html, body { margin: 0; height: 100%; background: var(--talos-background); }
       a { color: inherit; }
 
+      /* The ambient grid encodes aggregate health (principle 5): its hue is
+         bound by the sim loop via --talos-ambient-hsl, swapped only when the
+         health band changes (nominal/elevated/critical) so it reads as a mood
+         shift, not a flicker. The grid itself cross-fades via its own opacity. */
+      .ambient-overlay { transition: opacity var(--talos-dur-slow) ease; }
+
       /* Hero cell — the pitch, sharing one screen with the proof. */
       .home-hero { gap: var(--talos-space-4); }
       .home-hero h1 {
@@ -221,13 +227,28 @@ import "@shelfwood/talos-ui/all.css";
         $("m-q")?.setAttribute("value", String(queue));
         $("m-err")?.setAttribute("value", String(err));
 
-        // Aggregate health → the status bar colour + word (form encodes function).
+        // Aggregate health → status bar colour + word AND the ambient grid hue
+        // (form encodes function; principle 5 — even the background shows state).
         const peak = Math.max(cpu, mem, load, thru, queue, err * 2);
-        const hsl = peak >= 90 ? "--talos-danger-hsl" : peak >= 72 ? "--talos-warning-hsl" : "--talos-success-hsl";
-        const word = peak >= 90 ? "CRITICAL" : peak >= 72 ? "ELEVATED" : "NOMINAL";
+        const band = peak >= 90 ? "critical" : peak >= 72 ? "elevated" : "nominal";
+        const hsl =
+          band === "critical" ? "--talos-danger-hsl" :
+          band === "elevated" ? "--talos-warning-hsl" : "--talos-success-hsl";
+        const word = band === "critical" ? "CRITICAL" : band === "elevated" ? "ELEVATED" : "NOMINAL";
         const h = $("health");
         if (h) { h.style.setProperty("--_status", `var(${hsl})`); h.textContent = word; }
+
+        // Only retint the ambient layer when the band actually changes — a mood
+        // shift, not per-frame churn. At nominal it stays neutral white.
+        if (band !== lastBand) {
+          lastBand = band;
+          root.style.setProperty(
+            "--talos-ambient-hsl",
+            band === "nominal" ? "0 0% 100%" : `var(${hsl})`,
+          );
+        }
       };
+      let lastBand = "";
       setInterval(tick, 280);
 
       const clock = $("clock");
