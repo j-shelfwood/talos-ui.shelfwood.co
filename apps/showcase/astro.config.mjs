@@ -7,6 +7,12 @@ import mdx from "@astrojs/mdx";
 // component-demo pages.
 export default defineConfig({
   site: "https://talos-ui.shelfwood.co",
+  // /manifesto is the front door — a memorable URL that resolves to the
+  // canonical philosophy doc rather than a duplicate page.
+  redirects: {
+    "/manifesto": "/docs/philosophy/",
+    "/manifesto/": "/docs/philosophy/",
+  },
   integrations: [mdx()],
   markdown: {
     // css-variables theme: shiki emits var(--astro-code-*) instead of inline

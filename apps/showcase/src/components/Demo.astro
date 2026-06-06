@@ -1,7 +1,8 @@
 ---
-// Live-preview surface for Starlight docs pages.
-// Pulls in the full talos.css layer so component demos render styled
-// inside Starlight's content area (Starlight itself only loads tokens.css).
+// Live-preview surface for docs pages (rendered inside DocsShell's .docs-prose).
+// Pulls in the full talos.css layer so component demos render styled. The
+// `.not-content` class on the wrapper is the prose opt-out boundary — DocsShell
+// resets the leaking prose rules for anything under .docs-prose .not-content.
 import "@shelfwood/talos-ui/talos.css";
 
 interface Props {
@@ -19,8 +20,8 @@ const { label = "PREVIEW" } = Astro.props;
 </div>
 
 <style>
-  /* Scoped so it never leaks into Starlight's own chrome.
-     .not-content (Starlight class) opts the block out of prose styling. */
+  /* The .not-content wrapper opts this block out of DocsShell's prose styling
+     (the reset lives in DocsShell so it can override the .docs-prose rules). */
   .talos-demo {
     position: relative;
     margin: 1.25rem 0 1.75rem;

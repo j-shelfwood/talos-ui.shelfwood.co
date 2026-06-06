@@ -29,6 +29,8 @@ const pageTitle = `${title} — Talos UI`;
         <span class="eyebrow">SYS://TALOS-UI</span>
       </a>
       <nav class="row" style="gap:1.25rem">
+        <a class="docs-toplink eyebrow" href="/manifesto/">Manifesto</a>
+        <a class="docs-toplink eyebrow" href="/showcase/">Showcase</a>
         <a class="docs-toplink eyebrow" href="/mosaic/">Mosaic</a>
         <a class="docs-toplink eyebrow" href="/blog/">Blog</a>
         <a class="docs-toplink eyebrow" href="https://github.com/shelfwood">Source</a>
@@ -71,13 +73,9 @@ const pageTitle = `${title} — Talos UI`;
     </div>
 
     <script>
-      // Ambient grid cursor tracking + WC registration (mirrors Landing).
-      import "@shelfwood/talos-ui/wc";
-      const root = document.documentElement;
-      addEventListener("pointermove", (e) => {
-        root.style.setProperty("--talos-cursor-x", e.clientX + "px");
-        root.style.setProperty("--talos-cursor-y", e.clientY + "px");
-      });
+      // WC registration + ambient grid cursor tracking (shared).
+      import { initAmbient } from "../lib/ambient";
+      initAmbient();
     </script>
 
     <style is:global>
@@ -229,6 +227,24 @@ const pageTitle = `${title} — Talos UI`;
         --astro-code-token-constant: hsl(var(--talos-accent-hsl) / 0.85);
         --astro-code-token-function: var(--talos-text-primary);
       }
+
+      /* Prose opt-out boundary. Live demos (<Demo>) render inside .docs-prose
+         and carry .not-content; without this the prose rules above (stray
+         top-margin on the first child, link underlines, body font on slotted
+         <p>/<a>) leak into demo content. This replaces the dead Starlight
+         class that used to supply the opt-out before the Starlight removal. */
+      .docs-prose .not-content { margin-top: 0; }
+      .docs-prose .not-content :where(p, li) {
+        font-family: var(--talos-font-display);
+        font-size: inherit;
+        line-height: inherit;
+        color: inherit;
+      }
+      .docs-prose .not-content :where(a) {
+        color: inherit;
+        border-bottom: 0;
+      }
+      .docs-prose .not-content > * + * { margin-top: 0; }
 
       /* Fenced code blocks — chamfered HUD frame echoing .talos-code.
          Two-layer chamfer: the host carries the edge colour + clip-path, a

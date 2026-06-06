@@ -22,13 +22,9 @@ const { title = "Talos UI" } = Astro.props;
     <main><slot /></main>
 
     <script>
-      // Ambient grid cursor tracking + WC registration.
-      import "@shelfwood/talos-ui/wc";
-      const root = document.documentElement;
-      addEventListener("pointermove", (e) => {
-        root.style.setProperty("--talos-cursor-x", e.clientX + "px");
-        root.style.setProperty("--talos-cursor-y", e.clientY + "px");
-      });
+      // WC registration + ambient grid cursor tracking (shared).
+      import { initAmbient } from "../lib/ambient";
+      initAmbient();
       // Cursor sheen for interactive panels.
       document.querySelectorAll<HTMLElement>(".interactive-panel").forEach((p) => {
         p.addEventListener("pointermove", (e) => {
