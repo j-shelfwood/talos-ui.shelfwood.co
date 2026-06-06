@@ -1,0 +1,112 @@
+---
+// BaseLayout — the single document shell for every non-hero page. Owns the
+// doctype, <head> (+ Meta), the ambient overlay, the shared client script
+// (WC registration + cursor tracking + interactive-panel sheen), the fixed
+// SiteNav, and the global shell CSS. Landing and DocsShell are thin wrappers
+// over this — previously each hand-rolled its own near-identical copy.
+//
+// The 3D hero (index.astro) deliberately does NOT use this; it owns its own
+// document so its scene system can take over the whole viewport.
+//
+// Layout authors choose how content sits under the fixed nav:
+//   • default (`bare`)   — raw slot; the layout supplies its own scroll frame
+//                          and reads var(--site-nav-h) to clear the pill.
+//   • `main`             — wraps the slot in a centered <main> already offset
+//                          below the nav. Reach for this for simple pages.
+import "@shelfwood/talos-ui/all.css";
+import Meta from "../components/Meta.astro";
+import SiteNav from "../components/SiteNav.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Which nav link to mark active. */
+  navActive?: string;
+  /** "main" wraps the slot in a centered, nav-offset <main>; "bare" leaves it raw. */
+  frame?: "main" | "bare";
+}
+const {
+  title = "Talos UI",
+  description = "Dark-monochrome HUD design system — chamfered panels, Oxanium type, ambient grid, composable web components.",
+  navActive,
+  frame = "main",
+} = Astro.props;
+const pageTitle = title === "Talos UI" ? title : `${title} — Talos UI`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <Meta title={pageTitle} description={description} />
+  </head>
+  <body>
+    <div class="ambient-overlay"></div>
+    <SiteNav active={navActive} />
+
+    {
+      frame === "main" ? (
+        <main class="base-main"><slot /></main>
+      ) : (
+        <slot />
+      )
+    }
+
+    <script>
+      // Shared client setup for every page on this shell: register the web
+      // components, track the cursor for the ambient grid (the pack's shipped
+      // lerped tracker — dogfooding our own export), and feed the per-panel
+      // sheen coordinates.
+      import "@shelfwood/talos-ui/wc";
+      import { initAmbientCursor } from "@shelfwood/talos-ui/ambient";
+      initAmbientCursor();
+      document.querySelectorAll<HTMLElement>(".interactive-panel").forEach((p) => {
+        p.addEventListener("pointermove", (e) => {
+          const r = p.getBoundingClientRect();
+          p.style.setProperty("--talos-mx", `${((e.clientX - r.left) / r.width) * 100}%`);
+          p.style.setProperty("--talos-my", `${((e.clientY - r.top) / r.height) * 100}%`);
+        });
+      });
+    </script>
+
+    <style is:global>
+      :root {
+        color-scheme: dark;
+        /* Height the fixed SiteNav pill reserves at the top of every page.
+           Layouts offset their first content by this instead of guessing a
+           magic padding. */
+        --site-nav-h: 5.5rem;
+      }
+      html { background: var(--talos-background); }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--talos-foreground);
+        font-family: var(--talos-font-display);
+        font-weight: 300;
+        letter-spacing: 0.01em;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1, h2, h3 {
+        font-weight: 300;
+        text-transform: uppercase;
+        letter-spacing: var(--talos-tracking-hud);
+        margin: 0;
+      }
+      a.doclink { color: var(--talos-foreground); }
+
+      /* Default centered content frame, already cleared below the nav. */
+      .base-main {
+        position: relative;
+        z-index: 2;
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: calc(var(--site-nav-h) + 2rem) 1.5rem 6rem;
+      }
+      .base-main section { margin-block: 5rem; }
+    </style>
+  </body>
+</html>

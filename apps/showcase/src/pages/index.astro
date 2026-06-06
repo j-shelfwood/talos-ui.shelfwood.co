@@ -82,11 +82,6 @@ import "@shelfwood/talos-ui/all.css";
       .readouts .k { color: var(--talos-text-tertiary, var(--talos-muted-foreground)); }
 
       /* Center-bottom big scroll value. */
-      .scroll-val { position: absolute; left: 50%; bottom: 78px; transform: translateX(-50%); text-align: center; }
-      .scroll-val__num { font-size: 1.6rem; font-weight: 300; font-variant-numeric: tabular-nums; letter-spacing: .04em; color: var(--talos-foreground); line-height: 1; }
-      .scroll-val__num small { font-size: .7rem; color: var(--talos-muted-foreground); }
-      .scroll-val__bar { width: 160px; height: 1px; margin: 8px auto 0; background: var(--talos-edge-default); position: relative; }
-      .scroll-val__bar i { position: absolute; left: 0; top: 0; height: 100%; background: var(--talos-accent); box-shadow: 0 0 6px hsl(var(--talos-accent-hsl)/.6); }
 
       /* Right-edge coordinate ticks that scrub with scroll. */
       .coords { position: absolute; right: 40px; top: 96px; display: flex; flex-direction: column; gap: 6px; align-items: flex-end;
@@ -112,9 +107,244 @@ import "@shelfwood/talos-ui/all.css";
       .mini-cell { border:1px solid var(--talos-edge-subtle); background: var(--talos-surface-1); padding: 1rem; display:flex; flex-direction:column; align-items:center; gap:.5rem; }
       .mini-cell .scene-title { align-self:flex-start; }
 
-      /* anti-grid scene — deliberately non-document spatial scatter */
-      .scatter { position: relative; height: 52vh; }
-      .scatter > * { position: absolute; }
+      /* ---- Scene 06: MISSION CONSOLE — maximal density -------------------
+         Not a centered column — a full telemetry wall. ~50 live signals in
+         grouped blocks, each row carrying a value + an inline mini-bar + a
+         range/delta. A derived stat-strip caps it. Reads like a mission
+         console: everything at once, scanned not read. Every glyph is a real
+         vital of this tab. -------------------------------------------------- */
+      .console-strip {
+        display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+        gap: 0; border: 1px solid var(--talos-edge-subtle);
+        margin-top: 1rem; font-variant-numeric: tabular-nums;
+      }
+      .strip-cell { padding: .5rem .8rem; border-right: 1px solid var(--talos-edge-subtle); }
+      .strip-cell:last-child { border-right: 0; }
+      .strip-cell .sk { font-size:.5rem; letter-spacing:.16em; text-transform:uppercase;
+        color: var(--talos-text-tertiary); display:block; }
+      .strip-cell .sv { font-size:1.1rem; font-weight:300; color: var(--talos-foreground); }
+      .strip-cell .sv small { font-size:.5rem; color: var(--talos-text-tertiary); }
+
+      .console-wall {
+        display: grid; grid-template-columns: repeat(4, 1fr);
+        gap: 0; margin-top: 1rem;
+        border: 1px solid var(--talos-edge-subtle);
+      }
+      .wall-block { border-right: 1px solid var(--talos-edge-subtle);
+        border-bottom: 1px solid var(--talos-edge-subtle); padding: .55rem .7rem .65rem; }
+      /* close the right/bottom seams */
+      .wall-block:nth-child(4n) { border-right: 0; }
+      .block-head { display:flex; justify-content:space-between; align-items:baseline;
+        margin-bottom:.4rem; padding-bottom:.25rem; border-bottom:1px solid var(--talos-edge-default); }
+      .block-head .bt { font-size:.56rem; letter-spacing:.18em; text-transform:uppercase;
+        color: var(--talos-foreground); }
+      .block-head .bm { font-size:.5rem; letter-spacing:.1em; color: var(--talos-text-tertiary); }
+      /* the row primitive: label · value · mini-bar · range */
+      .metric { display:grid; grid-template-columns: 4.2rem 1fr; align-items:center;
+        column-gap:.5rem; padding:.18rem 0; font-size:.6rem; letter-spacing:.04em; }
+      .metric .mk { text-transform:uppercase; color: var(--talos-text-tertiary); }
+      .metric .mr { display:flex; align-items:center; gap:.45rem; }
+      .metric .mv { min-width:3.1rem; text-align:right; color: var(--talos-foreground);
+        font-variant-numeric: tabular-nums; }
+      .metric .mv[data-band="warn"] { color: var(--talos-warning); }
+      .metric .mv[data-band="crit"] { color: var(--talos-danger); }
+      .metric .mbar { flex:1; height:3px; background: var(--talos-surface-2);
+        position:relative; overflow:hidden; min-width:2rem; }
+      .metric .mbar > i { position:absolute; inset:0 auto 0 0; width:0%;
+        background: var(--talos-accent); transition: width .28s var(--talos-ease-out, ease); }
+      .metric .mbar[data-band="warn"] > i { background: var(--talos-warning); }
+      .metric .mbar[data-band="crit"] > i { background: var(--talos-danger); }
+      .metric .mx { min-width:3.4rem; font-size:.5rem; color: var(--talos-text-tertiary);
+        font-variant-numeric: tabular-nums; text-align:right; }
+
+      /* ---- DIVERSE VIZ PRIMITIVES (break the mini-bar monoculture) ------- */
+      /* Sparkline — inline SVG polyline of a metric's recent history. */
+      .spark { display:block; width:100%; height:14px; overflow:visible; }
+      .spark polyline { fill:none; stroke: var(--talos-accent); stroke-width:1; vector-effect:non-scaling-stroke; }
+      .spark[data-band="warn"] polyline { stroke: var(--talos-warning); }
+      .spark[data-band="crit"] polyline { stroke: var(--talos-danger); }
+      .spark .sparkfill { fill: var(--talos-accent); opacity:.1; stroke:none; }
+      /* Dot-matrix — discrete count as filled/empty LED dots. */
+      .dotmx { display:inline-flex; gap:2px; align-items:center; flex-wrap:wrap; max-width:6.5rem; }
+      .dotmx i { width:5px; height:5px; background: var(--talos-surface-3); display:block; }
+      .dotmx i.on { background: var(--talos-accent); box-shadow:0 0 3px hsl(var(--talos-accent-hsl)/.5); }
+      .dotmx[data-band="warn"] i.on { background: var(--talos-warning); box-shadow:none; }
+      .dotmx[data-band="crit"] i.on { background: var(--talos-danger); box-shadow:none; }
+      /* Radial micro-gauge — conic-gradient arc, 0..100 via --p. */
+      .radial { --p:0; width:30px; height:30px; border-radius:50%; flex:none;
+        background: conic-gradient(var(--talos-accent) calc(var(--p)*1%), var(--talos-surface-2) 0);
+        -webkit-mask: radial-gradient(closest-side, transparent 64%, #000 65%);
+                mask: radial-gradient(closest-side, transparent 64%, #000 65%);
+        position:relative; transition: --p .3s ease; }
+      .radial[data-band="warn"] { background: conic-gradient(var(--talos-warning) calc(var(--p)*1%), var(--talos-surface-2) 0); }
+      .radial[data-band="crit"] { background: conic-gradient(var(--talos-danger) calc(var(--p)*1%), var(--talos-surface-2) 0); }
+      .radial-wrap { display:flex; flex-direction:column; align-items:center; gap:.25rem; }
+      .radial-wrap .rl { font-size:.5rem; letter-spacing:.12em; text-transform:uppercase; color: var(--talos-text-tertiary); }
+      .radial-wrap .rv { position:absolute; inset:0; display:grid; place-items:center; font-size:.5rem;
+        font-variant-numeric:tabular-nums; color: var(--talos-foreground); }
+      /* Delta — direction arrow + change magnitude. */
+      .delta { font-size:.5rem; font-variant-numeric:tabular-nums; min-width:2.2rem; text-align:right; }
+      .delta--up   { color: var(--talos-success); } .delta--up::before   { content:"▲ "; font-size:.8em; }
+      .delta--down { color: var(--talos-danger);  } .delta--down::before { content:"▼ "; font-size:.8em; }
+      .delta--flat { color: var(--talos-text-tertiary); } .delta--flat::before { content:"▬ "; font-size:.8em; }
+      @property --p { syntax:"<number>"; inherits:false; initial-value:0; }
+
+      /* Scene 01 — CORE CONSOLE. One zoned reactor panel that fills the field:
+         header rail · asymmetric body (big primary trend + secondary column) ·
+         micro-instrument rail · footer aggregate. Reads as a single instrument
+         with a mood, not a row of widgets. */
+      .rcon { position:relative; width:100%;
+        border:1px solid var(--talos-edge-default);
+        background:
+          linear-gradient(180deg, hsl(0 0% 100% / 0.022), transparent 40%),
+          var(--talos-surface-1);
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+      }
+      .rcon-head { display:flex; align-items:center; gap:1rem; padding:.7rem 1.1rem;
+        border-bottom:1px solid var(--talos-edge-subtle);
+        font-size:.62rem; letter-spacing:.16em; text-transform:uppercase; color: var(--talos-text-tertiary); }
+      .rcon-id { display:inline-flex; align-items:center; gap:.5rem; color: var(--talos-foreground); }
+      .rcon-state { margin-left:.25rem; padding:.12rem .55rem; border:1px solid var(--talos-edge-subtle);
+        color: var(--talos-success); letter-spacing:.18em; }
+      .rcon-state[data-band="warn"] { color: var(--talos-warning); border-color: hsl(var(--talos-warning-hsl)/.5); }
+      .rcon-state[data-band="crit"] { color: var(--talos-danger);  border-color: hsl(var(--talos-danger-hsl)/.6); }
+      .rcon-clock { margin-left:auto; } .rcon-clock b { color: var(--talos-foreground); font-weight:400; }
+
+      .rcon-body { display:grid; grid-template-columns: 1.55fr 1fr; gap:0; }
+      .rcon-primary { padding:1.1rem 1.2rem; border-right:1px solid var(--talos-edge-subtle); display:flex; flex-direction:column; gap:.9rem; }
+      .rcon-side { display:flex; flex-direction:column; }
+      .rcon-sub { padding:1rem 1.2rem; }
+      .rcon-sub + .rcon-sub { border-top:1px solid var(--talos-edge-subtle); }
+      .rcon-cap { display:flex; align-items:baseline; justify-content:space-between; gap:.6rem; margin-bottom:.55rem;
+        font-size:.72rem; letter-spacing:.06em; color: var(--talos-foreground); }
+      .ires-why { font-size:.5rem; letter-spacing:.14em; text-transform:uppercase; font-weight:400;
+        color: var(--talos-text-tertiary); border:1px solid var(--talos-edge-subtle); padding:.1rem .4rem; }
+
+      /* PRIMARY trend with the big load number overlaid top-right. */
+      .rcon-trend-wrap { position:relative; }
+      .rcon-trend-wrap talos-trend { width:100%; display:block; }
+      .rcon-bignum { position:absolute; top:-.2rem; right:0; display:flex; align-items:baseline; gap:.35rem;
+        pointer-events:none; }
+      .rcon-bignum b { font-size:3rem; font-weight:300; line-height:.9; letter-spacing:.01em;
+        font-variant-numeric:tabular-nums; color: var(--talos-foreground); }
+      .rcon-bignum b[data-band="warn"] { color: var(--talos-warning); }
+      .rcon-bignum b[data-band="crit"] { color: var(--talos-danger); }
+      .rcon-bignum i { font-style:normal; font-size:.55rem; letter-spacing:.12em; text-transform:uppercase; color: var(--talos-text-tertiary); }
+
+      /* supporting micro-instrument rail under the primary trend. */
+      .rcon-microrow { display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem;
+        padding-top:.85rem; border-top:1px solid var(--talos-edge-subtle); }
+      .umetric { display:flex; align-items:baseline; gap:.35rem; font-size:.62rem; letter-spacing:.04em; }
+      .umetric .uk { text-transform:uppercase; font-size:.5rem; letter-spacing:.12em; color: var(--talos-text-tertiary); min-width:2.4rem; }
+      .umetric .uv { font-variant-numeric:tabular-nums; color: var(--talos-foreground); }
+      .umetric .uv[data-band="warn"] { color: var(--talos-warning); }
+      .umetric .uv[data-band="crit"] { color: var(--talos-danger); }
+      .umetric .uu { font-size:.5rem; color: var(--talos-text-tertiary); }
+      .rcon-subrow { display:flex; flex-wrap:wrap; gap:.4rem 1.1rem; margin-top:.6rem; }
+      .rcon-side talos-meter { width:100%; display:block; }
+
+      /* containment count instrument */
+      .rcon-count { display:grid; grid-template-columns:auto auto 1fr; align-items:baseline; column-gap:.5rem; }
+      .rcon-count .ires-num { font-size:2.4rem; font-weight:300; line-height:1; font-variant-numeric:tabular-nums; color: var(--talos-foreground); }
+      .rcon-count i { font-style:normal; font-size:.55rem; letter-spacing:.12em; text-transform:uppercase; color: var(--talos-text-tertiary); }
+      .rcon-count .delta { justify-self:end; align-self:center; }
+      .rcon-count .spark { grid-column:1/-1; width:100%; height:18px; margin-top:.2rem; }
+      .rcon-count .spark polyline { stroke: var(--talos-accent); }
+
+      /* FOOTER aggregate rail */
+      .rcon-foot { display:flex; align-items:center; gap:.85rem; padding:.7rem 1.1rem;
+        border-top:1px solid var(--talos-edge-subtle); background: hsl(0 0% 100% / 0.012);
+        font-size:.58rem; letter-spacing:.12em; text-transform:uppercase; color: var(--talos-text-tertiary); }
+      .rcon-foot-k { color: var(--talos-foreground); }
+      .rcon-foot-bar { flex:0 0 200px; height:4px; background: var(--talos-surface-2); position:relative; overflow:hidden; }
+      .rcon-foot-bar > i { position:absolute; inset:0 auto 0 0; width:0%; background: var(--talos-accent);
+        transition: width .3s var(--talos-ease-out,ease), background .3s ease; }
+      .rcon-foot-v { font-variant-numeric:tabular-nums; color: var(--talos-foreground); min-width:3rem; }
+      .rcon-foot-note { margin-left:auto; text-transform:none; letter-spacing:.02em; color: var(--talos-text-tertiary); }
+
+      .dotmx { display:inline-flex; }
+
+      @media (max-width: 860px) {
+        .rcon-body { grid-template-columns:1fr; }
+        .rcon-primary { border-right:0; border-bottom:1px solid var(--talos-edge-subtle); }
+        .rcon-microrow { grid-template-columns:repeat(2,1fr); }
+        .rcon-foot-note { display:none; }
+      }
+      /* Scene 02 — trend + signal-stats side panel */
+      .signal-grid { display:grid; grid-template-columns: 1.7fr 1fr; gap:1.5rem; align-items:stretch; }
+      .signal-main { display:flex; flex-direction:column; gap:1rem; }
+      .signal-flows { display:flex; gap:1rem; align-items:center; color: var(--talos-text-tertiary);
+        font-size:.6rem; text-transform:uppercase; letter-spacing:.14em; }
+      .signal-stats { border:1px solid var(--talos-edge-subtle);
+        background: linear-gradient(180deg, hsl(0 0% 100% / 0.015), transparent); padding:.7rem 1rem; }
+      @media (max-width: 820px) { .signal-grid { grid-template-columns: 1fr; } }
+      /* Scene 03 — zoned console shell (rail · scope · aside · status) */
+      .cshell { display:grid; grid-template-columns: 8rem 1fr 13rem; grid-template-rows: 1fr auto;
+        grid-template-areas: "rail scope aside" "status status status";
+        border:1px solid var(--talos-edge-default); min-height:38vh; }
+      .cshell-rail { grid-area:rail; display:flex; flex-direction:column; gap:.5rem; padding:.8rem;
+        border-right:1px solid var(--talos-edge-subtle); background: var(--talos-surface-0); }
+      .crail-brand { display:flex; align-items:center; gap:.4rem; font-size:.6rem; letter-spacing:.12em;
+        color: var(--talos-foreground); margin-bottom:.5rem; }
+      .crail-brand .dot { width:6px; height:6px; border-radius:50%; background: var(--talos-accent); box-shadow:0 0 6px var(--talos-accent); }
+      .crail-item { font-size:.58rem; letter-spacing:.14em; color: var(--talos-text-tertiary); padding:.25rem 0; cursor:default; }
+      .crail-item--on { color: var(--talos-foreground); border-left:2px solid var(--talos-accent); padding-left:.5rem; margin-left:-.5rem; }
+      .crail-spacer { flex:1; }
+      .crail-meta { font-size:.54rem; color: var(--talos-text-tertiary); font-variant-numeric:tabular-nums; }
+      .cshell-scope { grid-area:scope; display:grid; grid-template-columns:repeat(3,1fr); gap:0; }
+      .ccell { display:flex; flex-direction:column; align-items:center; gap:.4rem; padding:1rem .6rem;
+        border-right:1px solid var(--talos-edge-subtle); }
+      .ccell:last-child { border-right:0; }
+      .ccell-t { font-size:.55rem; letter-spacing:.16em; color: var(--talos-text-tertiary); align-self:flex-start; }
+      .ccell-sub { display:flex; align-items:center; gap:.4rem; width:100%; font-size:.58rem; }
+      .ccell-sub .mk { color: var(--talos-text-tertiary); } .ccell-sub .spark { flex:1; }
+      .ccell-sub .mv { color: var(--talos-foreground); font-variant-numeric:tabular-nums; }
+      .cshell-aside { grid-area:aside; display:flex; flex-direction:column; gap:.45rem; padding:.8rem;
+        border-left:1px solid var(--talos-edge-subtle); background: var(--talos-surface-0); }
+      .caside-label { font-size:.55rem; letter-spacing:.14em; color: var(--talos-text-tertiary); margin-bottom:.2rem; }
+      .cshell-status { grid-area:status; display:flex; align-items:center; gap:1rem; padding:.5rem .8rem;
+        border-top:1px solid var(--talos-edge-default); font-size:.55rem; letter-spacing:.1em; }
+      .cstat { color: hsl(var(--_status)); text-transform:uppercase; font-weight:500; }
+      .cstat-sep { width:1px; height:12px; background: var(--talos-edge-default); }
+      .cstat-k { color: var(--talos-text-tertiary); text-transform:uppercase; font-variant-numeric:tabular-nums; }
+      .cstat-k b { color: var(--talos-foreground); font-weight:400; }
+      @media (max-width: 820px) { .cshell { grid-template-columns:1fr; grid-template-areas:"scope" "aside" "status"; }
+        .cshell-rail { display:none; } }
+      /* Scene 05 — forms + telemetry/validation panel */
+      .ctrl-grid { display:grid; grid-template-columns: 1.2fr 1fr; gap:1.5rem; align-items:start; }
+      .ctrl-form { display:flex; flex-direction:column; gap:1rem; }
+      .ctrl-panel { border:1px solid var(--talos-edge-subtle); padding:.8rem 1rem;
+        background: linear-gradient(180deg, hsl(0 0% 100% / 0.015), transparent); display:flex; flex-direction:column; gap:.5rem; }
+      .radial-rail { display:flex; gap:1.5rem; justify-content:space-around; padding:.5rem 0 .8rem; }
+      @media (max-width: 820px) { .ctrl-grid { grid-template-columns:1fr; } }
+      /* Scene 04 — orbital + subsystem legend table */
+      .mesh-grid { display:grid; grid-template-columns: minmax(0,440px) 1fr; gap:1.5rem; align-items:center; }
+      .mesh-orb { display:flex; justify-content:center; }
+      .mesh-legend { border:1px solid var(--talos-edge-subtle); padding:.7rem 1rem;
+        background: linear-gradient(180deg, hsl(0 0% 100% / 0.015), transparent); }
+      .mesh-row { display:grid; grid-template-columns: 6rem 2.5rem 1fr 2.5rem; align-items:center; gap:1rem;
+        font-size:.6rem; padding:.32rem 0; border-bottom:1px solid var(--talos-edge-subtle); font-variant-numeric:tabular-nums; }
+      .mesh-row > span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .mesh-row:last-child { border-bottom:0; }
+      .mesh-row--head { color: var(--talos-text-tertiary); text-transform:uppercase; letter-spacing:.12em;
+        border-bottom:1px solid var(--talos-edge-default); }
+      .mesh-row .mn { color: var(--talos-foreground); text-transform:uppercase; }
+      .mesh-row .mt { color: var(--talos-text-tertiary); }
+      .mesh-row .mp { display:flex; align-items:center; gap:.4rem; }
+      .mesh-row .mp .mbar { flex:1; }
+      .mesh-row .ma { color: var(--talos-text-tertiary); }
+      @media (max-width: 820px) { .mesh-grid { grid-template-columns:1fr; } }
+
+      /* the dial rail across the top of the wall — glanceable primaries */
+      .console-dials { display:flex; gap:1.5rem; align-items:flex-end; flex-wrap:wrap;
+        margin-top:1rem; }
+      .console-dials .dwrap { display:flex; flex-direction:column; align-items:center; gap:.3rem; }
+      .console-dials .dtag { font-size:.5rem; letter-spacing:.16em; text-transform:uppercase;
+        color: var(--talos-text-tertiary); }
+      .core-panel { width: 200px; }
+      @media (max-width: 980px) { .console-wall { grid-template-columns: repeat(2,1fr); }
+        .wall-block:nth-child(4n){border-right:1px solid var(--talos-edge-subtle);}
+        .wall-block:nth-child(2n){border-right:0;} }
 
       @media (prefers-reduced-motion: reduce) { .scroll-cue { animation:none; } }
       @media (max-width: 720px) { .mini-console { grid-template-columns: 1fr; } }
@@ -125,87 +355,303 @@ import "@shelfwood/talos-ui/all.css";
       <div class="world" id="world">
         <div class="starfield" id="starfield"></div>
 
-        <!-- 0 — THESIS -->
+        <!-- 0 — THESIS. The hero is framed as a reactor console: every instrument
+             below binds to a REAL signal of this tab, reframed as a core reading
+             (load/coolant/flux). The numbers are honest telemetry; the stakes are
+             the reactor. The page is the running system it depicts. -->
         <section class="scene" data-scene>
-          <span class="eyebrow">// @shelfwood/talos-ui — v0.0.1</span>
+          <span class="eyebrow">// @shelfwood/talos-ui — v0.0.1 · CORE://TALOS-1</span>
           <h1 class="display">Interfaces that<br />visualise a<br />running system</h1>
-          <p class="lede">Gauges, trends, meters, flows — colour and motion bound to live domain state. Scroll to fly through them.</p>
+          <p class="lede">This page is a reactor console — and the reactor is the page itself. Every gauge, trend and meter ahead is bound to a <em>real</em> signal of this tab, read as a core vital. Scroll to run it.</p>
         </section>
 
-        <!-- 1 — RESOURCE INSTRUMENTS -->
-        <section class="scene center" data-scene>
-          <span class="scene-title">01 — Resource instruments</span>
-          <div class="row" style="margin-top:2rem">
-            <talos-gauge id="g1" value="20" warn="70" crit="90" unit="%" label="CPU" size="180"></talos-gauge>
-            <talos-gauge id="g2" value="50" warn="70" crit="90" unit="%" label="Memory" size="180"></talos-gauge>
-            <talos-meter id="m1" value="30" warn="70" crit="90" label="Disk" unit="%" width="260"></talos-meter>
+        <!-- 1 — CORE CONSOLE. Not three cards in the void — one zoned reactor
+             panel that fills the field (philosophy #1: use the whole field; #4:
+             density is a feature). Header rail = core id + LIVE aggregate state +
+             clock. Body = a PRIMARY (core-load trend, given the room) flanked by
+             SECONDARY vitals (coolant meter, containment count) and a rail of
+             supporting micro-instruments. Footer = the aggregate pressure bar.
+             The panel's own edge reflects aggregate pressure (activity-edge),
+             so the whole console has a mood (#5). Every figure is real tab
+             telemetry reframed as a reactor reading; nothing decorative. -->
+        <section class="scene" data-scene>
+          <span class="scene-title">01 — Core console</span>
+          <div class="rcon activity-edge" id="rcon" style="--talos-rate:0">
+            <!-- HEADER RAIL -->
+            <header class="rcon-head">
+              <span class="rcon-id"><span class="talos-dot" id="rcon-dot"></span> CORE://TALOS-1</span>
+              <span class="rcon-state" id="rcon-state" data-band="">NOMINAL</span>
+              <span class="rcon-clock">RUN <b id="rcon-clock">00:00</b></span>
+            </header>
+
+            <div class="rcon-body">
+              <!-- PRIMARY — core load. The big trend; its slope is the core's
+                   thermal trajectory. A bound sweep crosses it (motion=telemetry). -->
+              <div class="rcon-primary">
+                <div class="rcon-cap"><span>Core load</span><span class="ires-why">rate → trend</span></div>
+                <div class="rcon-trend-wrap">
+                  <talos-trend id="t-frame" min="0" max="100" label="" width="560" height="150"></talos-trend>
+                  <span class="rcon-bignum"><b id="d-coreload">—</b><i>% budget</i></span>
+                </div>
+                <div class="rcon-microrow">
+                  <div class="umetric"><span class="uk">fps</span><span class="uv" id="d-g1fps">—</span></div>
+                  <div class="umetric"><span class="uk">flux</span><span class="uv" id="d-flux">—</span><span class="uu">u/s</span></div>
+                  <div class="umetric"><span class="uk">stalls</span><span class="dotmx" id="dm-g1long"></span><span class="uv" id="d-g1long">—</span></div>
+                  <div class="umetric"><span class="uk">link</span><span class="uv" id="d-rtt01">—</span><span class="uu">ms</span></div>
+                </div>
+              </div>
+
+              <!-- SECONDARY COLUMN — coolant (meter) over containment (count). -->
+              <div class="rcon-side">
+                <div class="rcon-sub">
+                  <div class="rcon-cap"><span>Coolant</span><span class="ires-why">load → meter</span></div>
+                  <talos-meter id="mt-heap" value="0" warn="70" crit="90" unit="%" label="thermal load" width="240"></talos-meter>
+                  <div class="rcon-subrow">
+                    <span class="umetric"><span class="uk">used</span><span class="uv" id="d-g2used">—</span><span class="uu">MB</span></span>
+                    <span class="umetric"><span class="uk">cap</span><span class="uv" id="d-g2tot">—</span><span class="uu">MB</span></span>
+                    <span class="umetric"><span class="uk">peak</span><span class="uv" id="d-g2pk">—</span></span>
+                  </div>
+                </div>
+                <div class="rcon-sub">
+                  <div class="rcon-cap"><span>Containment</span><span class="ires-why">count → number</span></div>
+                  <div class="rcon-count">
+                    <b class="ires-num" id="d-m1n">—</b><i>nodes</i>
+                    <span class="delta" id="dl-m1"></span>
+                    <svg class="spark" id="sp-m1n"></svg>
+                  </div>
+                  <div class="rcon-subrow">
+                    <span class="umetric"><span class="uk">depth</span><span class="dotmx" id="dm-m1d"></span><span class="uv" id="d-m1d">—</span></span>
+                    <span class="umetric"><span class="uk">sheets</span><span class="dotmx" id="dm-m1c"></span><span class="uv" id="d-m1c">—</span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FOOTER STATUS RAIL — the aggregate that drives the core state. -->
+            <footer class="rcon-foot">
+              <span class="rcon-foot-k">Reactor pressure</span>
+              <span class="rcon-foot-bar"><i id="rcon-pbar"></i></span>
+              <span class="rcon-foot-v" id="rcon-pval">0%</span>
+              <span class="rcon-foot-note" id="rcon-note">all subsystems nominal — push the page to load the core</span>
+            </footer>
           </div>
-          <p class="lede" style="margin:2rem auto 0">Colour <em>is</em> the band. The number and colour move together, on their own.</p>
         </section>
 
-        <!-- 2 — SIGNAL & THROUGHPUT -->
-        <section class="scene center" data-scene>
+        <!-- 2 — SIGNAL & THROUGHPUT (trend + signal-statistics panel) -->
+        <section class="scene" data-scene>
           <span class="scene-title">02 — Signal &amp; throughput</span>
-          <div style="margin:2rem auto 0;max-width:680px">
-            <talos-trend id="t1" value="40" points="72" warn="70" crit="90" unit="%" label="Throughput" width="660" height="160" fill></talos-trend>
+          <p class="lede" style="margin:.5rem 0 0;max-width:58ch">The line's shape is the rate; the dash speed is the throughput. Freeze it and you lose nothing — the motion is the data moving.</p>
+          <div class="signal-grid" style="margin-top:1.5rem">
+            <div class="signal-main">
+              <talos-trend id="t1" value="40" points="96" warn="70" crit="90" unit="%" label="Render throughput — fps" width="640" height="170" fill></talos-trend>
+              <div class="signal-flows">
+                <span>INGEST</span>
+                <talos-flow id="f1" rate="40" max="100" warn="70" crit="90" width="130" height="30"></talos-flow>
+                <span>PROCESS</span>
+                <talos-flow id="f2" rate="40" max="100" warn="70" crit="90" width="130" height="30" curve="12"></talos-flow>
+                <span>STORE</span>
+              </div>
+            </div>
+            <div class="signal-stats">
+              <div class="block-head"><span class="bt">Signal stats</span><span class="bm">live window</span></div>
+              <div class="metric"><span class="mk">current</span><span class="mr"><span class="mbar"><i id="b-s2cur"></i></span><span class="mv" id="d-s2cur">—</span><span class="delta" id="dl-s2cur"></span></span></div>
+              <div class="metric"><span class="mk">avg</span><span class="mr"><svg class="spark" id="sp-s2"></svg><span class="mv" id="d-s2avg">—</span><span class="mx">%</span></span></div>
+              <div class="metric"><span class="mk">min</span><span class="mr"><span class="mbar"><i id="b-s2min"></i></span><span class="mv" id="d-s2min">—</span><span class="mx">low</span></span></div>
+              <div class="metric"><span class="mk">peak</span><span class="mr"><span class="mbar"><i id="b-s2max"></i></span><span class="mv" id="d-s2max">—</span><span class="mx">high</span></span></div>
+              <div class="metric"><span class="mk">jitter</span><span class="mr"><span class="dotmx" id="dm-s2jit"></span><span class="mv" id="d-s2jit">—</span><span class="mx">σ</span></span></div>
+              <div class="metric"><span class="mk">ingest</span><span class="mr"><span class="mbar"><i id="b-s2ing"></i></span><span class="mv" id="d-s2ing">—</span><span class="mx">sc/s</span></span></div>
+              <div class="metric"><span class="mk">lag</span><span class="mr"><span class="mbar"><i id="b-s2lag"></i></span><span class="mv" id="d-s2lag">—</span><span class="mx">ms</span></span></div>
+            </div>
           </div>
-          <div class="row" style="margin-top:2rem;color:var(--talos-muted-foreground);font-size:.7rem;text-transform:uppercase;letter-spacing:.12em">
-            <span>INGEST</span>
-            <talos-flow id="f1" rate="40" max="100" warn="70" crit="90" width="150" height="34"></talos-flow>
-            <span>PROCESS</span>
-            <talos-flow id="f2" rate="40" max="100" warn="70" crit="90" width="150" height="34" curve="12"></talos-flow>
-            <span>STORE</span>
-          </div>
-          <p class="lede" style="margin:2rem auto 0">The line's shape is the rate; the dash speed is the throughput. Freeze it and you lose nothing — the motion is the data moving.</p>
         </section>
 
-        <!-- 3 — MISSION CONSOLE -->
-        <section class="scene center" data-scene>
+        <!-- 3 — COMPOSED CONSOLE (zoned shell: rail · cells · aside · status) -->
+        <section class="scene" data-scene>
           <span class="scene-title">03 — Composed into a console</span>
-          <div class="mini-console" style="margin-top:2rem;text-align:left">
-            <div class="mini-cell"><span class="scene-title">CPU</span><talos-gauge id="cg1" value="40" warn="70" crit="90" unit="%" size="130"></talos-gauge></div>
-            <div class="mini-cell"><span class="scene-title">LOAD</span><talos-gauge id="cg2" value="60" warn="75" crit="92" unit="%" size="130"></talos-gauge></div>
-            <div class="mini-cell"><span class="scene-title">NET</span><talos-gauge id="cg3" value="30" warn="70" crit="90" unit="%" size="130"></talos-gauge></div>
+          <p class="lede" style="margin:.5rem 0 0;max-width:58ch">Instruments compose into a real cockpit — a non-document, zoned, fixed-viewport shell. Rail, instrument cells, telemetry aside, status bar.</p>
+          <div class="cshell" style="margin-top:1.25rem">
+            <div class="cshell-rail">
+              <span class="crail-brand"><span class="dot"></span>ATLAS-01</span>
+              <span class="crail-item crail-item--on">OVERVIEW</span>
+              <span class="crail-item">METRICS</span>
+              <span class="crail-item">LOGS</span>
+              <span class="crail-item">CONFIG</span>
+              <span class="crail-spacer"></span>
+              <span class="crail-meta" id="c-uptime">—</span>
+            </div>
+            <div class="cshell-scope">
+              <div class="ccell"><span class="ccell-t">FRAME</span><talos-gauge id="cg1" value="0" warn="70" crit="90" unit="%" size="120"></talos-gauge><div class="ccell-sub"><span class="mk">fps</span><svg class="spark" id="sp-cg1"></svg><span class="mv" id="d-cg1">—</span></div></div>
+              <div class="ccell"><span class="ccell-t">HEAP</span><talos-gauge id="cg2" value="0" warn="70" crit="90" unit="%" size="120"></talos-gauge><div class="ccell-sub"><span class="mk">mb</span><span class="mbar" style="flex:1"><i id="b-cg2"></i></span><span class="mv" id="d-cg2">—</span></div></div>
+              <div class="ccell"><span class="ccell-t">SIGNAL</span><talos-gauge id="cg3" value="0" warn="70" crit="90" unit="%" size="120"></talos-gauge><div class="ccell-sub"><span class="mk">fps</span><svg class="spark" id="sp-cg3"></svg><span class="mv" id="d-cg3">—</span></div></div>
+            </div>
+            <div class="cshell-aside">
+              <span class="caside-label">// Telemetry</span>
+              <div class="metric"><span class="mk">budget</span><span class="mr"><span class="mbar"><i id="b-cab"></i></span><span class="mv" id="d-cab">—</span></span></div>
+              <div class="metric"><span class="mk">dom</span><span class="mr"><span class="mbar"><i id="b-cad"></i></span><span class="mv" id="d-cad">—</span></span></div>
+              <div class="metric"><span class="mk">rtt</span><span class="mr"><svg class="spark" id="sp-cart"></svg><span class="mv" id="d-cart">—</span></span></div>
+              <div class="metric"><span class="mk">cores</span><span class="mr"><span class="dotmx" id="dm-cac"></span><span class="mv" id="d-cac">—</span></span></div>
+              <talos-meter id="cam" value="0" warn="70" crit="90" label="Pressure" unit="%" width="180"></talos-meter>
+            </div>
+            <div class="cshell-status">
+              <span class="cstat" id="c-st1" style="--_status:var(--talos-success-hsl)">NOMINAL</span>
+              <span class="cstat-sep"></span>
+              <span class="cstat-k">heap <b id="c-st-heap">—</b></span>
+              <span class="cstat-k">fps <b id="c-st-fps">—</b></span>
+              <span class="cstat-k">nodes <b id="c-st-nodes">—</b></span>
+              <span class="crail-spacer"></span>
+              <span class="cstat-k">VER 0.0.1</span>
+            </div>
           </div>
-          <p class="lede" style="margin:2rem auto 0">Instruments compose into a real cockpit — the console shell is a non-document, zoned, fixed-viewport layout.</p>
         </section>
 
-        <!-- 4 — ORBITAL / SERVICE MESH (honest data) -->
-        <section class="scene center" data-scene>
-          <span class="scene-title">04 — Service mesh</span>
-          <div style="margin:1rem auto 0;width:min(60vh,560px)">
-            <talos-orbital id="orb" rings="3" warn="6" crit="14" core-label="ATLAS" size="560"></talos-orbital>
+        <!-- 4 — SERVICE MESH (orbital + live subsystem legend table) -->
+        <section class="scene" data-scene>
+          <span class="scene-title">04 — This tab's subsystems</span>
+          <p class="lede" style="margin:.5rem 0 0;max-width:60ch">The mesh is this page's own runtime. Node colour = real pressure, orbit speed = real activity, ring = tier. The legend is the same data as a sortable table.</p>
+          <div class="mesh-grid" style="margin-top:1rem">
+            <div class="mesh-orb">
+              <talos-orbital id="orb" rings="3" warn="50" crit="80" core-label="THIS TAB" size="440"></talos-orbital>
+            </div>
+            <div class="mesh-legend">
+              <div class="block-head"><span class="bt">Subsystem map</span><span class="bm">8 nodes · 3 tiers</span></div>
+              <div class="mesh-row mesh-row--head"><span>node</span><span>tier</span><span>pressure</span><span>activity</span></div>
+              <div class="mesh-rows" id="mesh-rows"></div>
+            </div>
           </div>
-          <p class="lede" style="margin:1rem auto 0">Ring = tier (edge · app · data). Node size = traffic share, colour = error rate, orbit speed = request rate, arc = live calls. Motion is the call volume — nothing is decorative.</p>
         </section>
 
-        <!-- 5 — CONTROLS (interactive, not just read-out) -->
-        <section class="scene center" data-scene>
+        <!-- 5 — CONTROLS (forms + live validation/telemetry panel) -->
+        <section class="scene" data-scene>
           <span class="scene-title">05 — Controls</span>
-          <div style="margin:2rem auto 0;max-width:560px;text-align:left;display:flex;flex-direction:column;gap:1.25rem">
-            <div class="talos-field">
-              <label class="talos-label talos-label--required">Node hostname</label>
-              <input class="talos-input" value="atlas-01" />
+          <p class="lede" style="margin:.5rem 0 0;max-width:58ch">Talos is not only read-outs — inputs, validation, and toggles carry the same chamfered HUD language, with state shown in colour.</p>
+          <div class="ctrl-grid" style="margin-top:1.5rem">
+            <div class="ctrl-form">
+              <div class="talos-field">
+                <label class="talos-label talos-label--required">Node hostname</label>
+                <input class="talos-input" value="atlas-01" />
+                <span class="talos-field__help">Lowercase, no spaces.</span>
+              </div>
+              <div class="talos-field talos-field--error">
+                <label class="talos-label">Port</label>
+                <input class="talos-input talos-input--error" value="99999" />
+                <span class="talos-field__error">Out of range (1–65535).</span>
+              </div>
+              <label style="display:flex;gap:.6rem;align-items:center;color:var(--talos-muted-foreground)"><input type="checkbox" class="talos-checkbox" checked /> Enable auto-scaling</label>
+              <label style="display:flex;gap:.6rem;align-items:center;color:var(--talos-muted-foreground)"><input type="checkbox" class="talos-switch" checked /> Live telemetry</label>
             </div>
-            <div class="talos-field talos-field--error">
-              <label class="talos-label">Port</label>
-              <input class="talos-input talos-input--error" value="99999" />
+            <div class="ctrl-panel">
+              <div class="block-head"><span class="bt">Form telemetry</span><span class="bm">live</span></div>
+              <div class="radial-rail">
+                <div class="radial-wrap"><div class="radial" id="rad-valid"><span class="rv" id="rv-valid">—</span></div><span class="rl">valid</span></div>
+                <div class="radial-wrap"><div class="radial" id="rad-heap"><span class="rv" id="rv-heap">—</span></div><span class="rl">heap</span></div>
+                <div class="radial-wrap"><div class="radial" id="rad-frame"><span class="rv" id="rv-frame">—</span></div><span class="rl">frame</span></div>
+              </div>
+              <div class="metric"><span class="mk">fields</span><span class="mr"><span class="dotmx" id="dm-fields"></span><span class="mv">2 / 4</span></span></div>
+              <div class="metric"><span class="mk">errors</span><span class="mr"><span class="mv" id="d-errs" data-band="warn">1</span><span class="mx">port</span></span></div>
+              <div style="border-top:1px solid var(--talos-edge-subtle);padding-top:.6rem;margin-top:.3rem">
+                <talos-readout id="hr1" value="0.0" unit="MB" label="This tab — live heap" warn="60" crit="85"></talos-readout>
+                <span class="eyebrow" style="display:block;margin-top:.4rem">↞ decoding on every change</span>
+              </div>
             </div>
-            <label style="display:flex;gap:.6rem;align-items:center;color:var(--talos-muted-foreground)"><input type="checkbox" class="talos-checkbox" checked /> Enable auto-scaling</label>
           </div>
-          <p class="lede" style="margin:2rem auto 0">Talos is not only read-outs — inputs, validation, and toggles carry the same chamfered HUD language, with state shown in colour.</p>
         </section>
 
-        <!-- 6 — DEFY THE GRID -->
+        <!-- 6 — MISSION CONSOLE (maximal density, ~50 live vitals) -->
         <section class="scene" data-scene>
           <span class="scene-title">06 — Defy the default</span>
-          <div class="scatter" style="margin-top:1.5rem">
-            <talos-gauge style="left:4%;top:0" value="82" warn="70" crit="90" unit="%" size="120"></talos-gauge>
-            <talos-meter style="left:34%;top:30%" value="46" warn="70" crit="90" label="Net" unit="%" width="200"></talos-meter>
-            <talos-flow style="left:30%;top:6%" rate="70" warn="70" crit="90" width="180" height="34"></talos-flow>
-            <talos-gauge style="right:6%;top:18%" value="33" warn="70" crit="90" unit="%" size="100"></talos-gauge>
-            <talos-trend style="left:8%;bottom:0" value="50" points="40" warn="70" crit="90" width="280" height="80" fill></talos-trend>
-            <div style="right:2%;bottom:6%;max-width:30ch" class="lede">No column. No reading-line. A field of live instruments, arranged in space — because an instrument is monitored, not read.</div>
+          <p class="lede" style="margin:.5rem 0 0;max-width:64ch">Not a centered column — a mission console. Every signal this tab emits, at once: render, memory, DOM, network, timing, device, power, storage. ~50 live vitals, each a value, a bar, a range. Scanned, not read.</p>
+
+          <!-- derived stat-strip — the headline aggregates -->
+          <div class="console-strip">
+            <div class="strip-cell"><span class="sk">Pressure</span><span class="sv" id="st-pressure">0<small>%</small></span></div>
+            <div class="strip-cell"><span class="sk">FPS avg</span><span class="sv" id="st-fpsavg">60</span></div>
+            <div class="strip-cell"><span class="sk">Heap</span><span class="sv" id="st-heap">0<small>MB</small></span></div>
+            <div class="strip-cell"><span class="sk">DOM</span><span class="sv" id="st-dom">0</span></div>
+            <div class="strip-cell"><span class="sk">Net</span><span class="sv" id="st-net">—</span></div>
+            <div class="strip-cell"><span class="sk">Uptime</span><span class="sv" id="st-uptime">0<small>s</small></span></div>
+          </div>
+
+          <!-- dial rail + pressure core — glanceable primaries over the data -->
+          <div class="console-dials">
+            <div class="dwrap"><talos-gauge id="s6-frame" value="0" warn="70" crit="90" unit="%" size="96"></talos-gauge><span class="dtag">Frame</span></div>
+            <div class="dwrap"><talos-gauge id="s6-dom" value="0" warn="70" crit="90" unit="%" size="96"></talos-gauge><span class="dtag">DOM load</span></div>
+            <div class="dwrap"><talos-gauge id="s6-heap" value="0" warn="70" crit="90" unit="%" size="96"></talos-gauge><span class="dtag">Heap</span></div>
+            <div class="glass-panel activity-edge core-panel" id="s6-pressure" style="--talos-rate:0">
+              <div class="glass-panel-content" style="padding:.7rem 1rem;display:flex;flex-direction:column;gap:.25rem;align-items:center">
+                <span class="dtag">System pressure</span>
+                <talos-readout id="s6-read" value="0" unit="%" warn="70" crit="90" duration="300"></talos-readout>
+              </div>
+            </div>
+            <div class="dwrap" style="flex:1;min-width:200px"><talos-trend id="s6-fps" value="60" points="80" warn="40" crit="20" width="320" height="60" fill></talos-trend><span class="dtag">Frame rate — live (60 ceiling)</span></div>
+          </div>
+
+          <!-- the telemetry wall — 8 blocks, every row = value · bar · range -->
+          <div class="console-wall">
+
+            <div class="wall-block">
+              <div class="block-head"><span class="bt">Render</span><span class="bm">rAF · paint</span></div>
+              <div class="metric"><span class="mk">fps</span><span class="mr"><svg class="spark" id="sp-fps"></svg><span class="mv" id="d-fps">—</span><span class="delta" id="dl-fps"></span></span></div>
+              <div class="metric"><span class="mk">frame ms</span><span class="mr"><svg class="spark" id="sp-ms"></svg><span class="mv" id="d-ms">—</span><span class="mx" id="r-ms"></span></span></div>
+              <div class="metric"><span class="mk">budget</span><span class="mr"><span class="mbar"><i id="b-budget"></i></span><span class="mv" id="d-budget">—</span><span class="mx">of 16.7</span></span></div>
+              <div class="metric"><span class="mk">long tasks</span><span class="mr"><span class="dotmx" id="dm-long"></span><span class="mv" id="d-long">—</span><span class="mx">≥50ms</span></span></div>
+            </div>
+
+            <div class="wall-block">
+              <div class="block-head"><span class="bt">Memory</span><span class="bm">JS heap</span></div>
+              <div class="metric"><span class="mk">used</span><span class="mr"><span class="mbar"><i id="b-used"></i></span><span class="mv" id="d-used">—</span><span class="mx" id="r-used"></span></span></div>
+              <div class="metric"><span class="mk">total</span><span class="mr"><span class="mbar"><i id="b-total"></i></span><span class="mv" id="d-total">—</span><span class="mx">alloc</span></span></div>
+              <div class="metric"><span class="mk">limit</span><span class="mr"><span class="mbar"><i id="b-limit" style="width:100%"></i></span><span class="mv" id="d-limit">—</span><span class="mx">cap</span></span></div>
+              <div class="metric"><span class="mk">heap %</span><span class="mr"><svg class="spark" id="sp-heap"></svg><span class="mv" id="d-heappct">—</span><span class="delta" id="dl-heap"></span></span></div>
+            </div>
+
+            <div class="wall-block">
+              <div class="block-head"><span class="bt">DOM · render</span><span class="bm">tree</span></div>
+              <div class="metric"><span class="mk">nodes</span><span class="mr"><span class="mbar"><i id="b-nodes"></i></span><span class="mv" id="d-nodes">—</span><span class="delta" id="dl-nodes"></span></span></div>
+              <div class="metric"><span class="mk">depth</span><span class="mr"><span class="dotmx" id="dm-depth"></span><span class="mv" id="d-depth">—</span><span class="mx">levels</span></span></div>
+              <div class="metric"><span class="mk">stylesheets</span><span class="mr"><span class="dotmx" id="dm-css"></span><span class="mv" id="d-css">—</span><span class="mx">CSSOM</span></span></div>
+              <div class="metric"><span class="mk">custom el</span><span class="mr"><span class="dotmx" id="dm-ce"></span><span class="mv" id="d-ce">—</span><span class="mx">defined</span></span></div>
+            </div>
+
+            <div class="wall-block">
+              <div class="block-head"><span class="bt">Network</span><span class="bm" id="d-conn">—</span></div>
+              <div class="metric"><span class="mk">rtt</span><span class="mr"><svg class="spark" id="sp-rtt"></svg><span class="mv" id="d-rtt">—</span><span class="delta" id="dl-rtt"></span></span></div>
+              <div class="metric"><span class="mk">downlink</span><span class="mr"><span class="mbar"><i id="b-down"></i></span><span class="mv" id="d-down">—</span><span class="mx">Mb/s</span></span></div>
+              <div class="metric"><span class="mk">transfer</span><span class="mr"><span class="mbar"><i id="b-xfer"></i></span><span class="mv" id="d-xfer">—</span><span class="mx">KB</span></span></div>
+              <div class="metric"><span class="mk">requests</span><span class="mr"><span class="dotmx" id="dm-reqs"></span><span class="mv" id="d-reqs">—</span><span class="mx">res</span></span></div>
+            </div>
+
+            <div class="wall-block">
+              <div class="block-head"><span class="bt">Timing</span><span class="bm">navigation</span></div>
+              <div class="metric"><span class="mk">ttfb</span><span class="mr"><span class="mbar"><i id="b-ttfb"></i></span><span class="mv" id="d-ttfb">—</span><span class="mx">ms</span></span></div>
+              <div class="metric"><span class="mk">dom int</span><span class="mr"><span class="mbar"><i id="b-domi"></i></span><span class="mv" id="d-domi">—</span><span class="mx">ms</span></span></div>
+              <div class="metric"><span class="mk">dom done</span><span class="mr"><span class="mbar"><i id="b-domc"></i></span><span class="mv" id="d-domc">—</span><span class="mx">ms</span></span></div>
+              <div class="metric"><span class="mk">load</span><span class="mr"><span class="mbar"><i id="b-load"></i></span><span class="mv" id="d-load">—</span><span class="mx">ms</span></span></div>
+            </div>
+
+            <div class="wall-block">
+              <div class="block-head"><span class="bt">Scroll · cam</span><span class="bm">journey</span></div>
+              <div class="metric"><span class="mk">scroll px</span><span class="mr"><span class="mbar"><i id="b-scroll"></i></span><span class="mv" id="d-scroll">—</span><span class="mx" id="r-scroll"></span></span></div>
+              <div class="metric"><span class="mk">cam.z</span><span class="mr"><span class="mbar"><i id="b-camz"></i></span><span class="mv" id="d-camz">—</span><span class="mx">depth</span></span></div>
+              <div class="metric"><span class="mk">velocity</span><span class="mr"><span class="mbar"><i id="b-vel"></i></span><span class="mv" id="d-vel">—</span><span class="mx">sc/f</span></span></div>
+              <div class="metric"><span class="mk">progress</span><span class="mr"><span class="mbar"><i id="b-prog"></i></span><span class="mv" id="d-prog">—</span><span class="mx">%</span></span></div>
+            </div>
+
+            <div class="wall-block">
+              <div class="block-head"><span class="bt">Device</span><span class="bm" id="d-platform">—</span></div>
+              <div class="metric"><span class="mk">cores</span><span class="mr"><span class="dotmx" id="dm-cores"></span><span class="mv" id="d-cores">—</span><span class="mx">CPU</span></span></div>
+              <div class="metric"><span class="mk">memory</span><span class="mr"><span class="mbar"><i id="b-devmem"></i></span><span class="mv" id="d-devmem">—</span><span class="mx">GB</span></span></div>
+              <div class="metric"><span class="mk">dpr</span><span class="mr"><span class="mbar"><i id="b-dpr"></i></span><span class="mv" id="d-dpr">—</span><span class="mx">×</span></span></div>
+              <div class="metric"><span class="mk">viewport</span><span class="mr"><span class="mv" id="d-vp" style="min-width:5.5rem">—</span><span class="mx">px</span></span></div>
+            </div>
+
+            <div class="wall-block">
+              <div class="block-head"><span class="bt">Power · store</span><span class="bm" id="d-online">—</span></div>
+              <div class="metric"><span class="mk">battery</span><span class="mr"><span class="mbar"><i id="b-batt"></i></span><span class="mv" id="d-batt">—</span><span class="mx" id="r-batt"></span></span></div>
+              <div class="metric"><span class="mk">storage</span><span class="mr"><span class="mbar"><i id="b-store"></i></span><span class="mv" id="d-store">—</span><span class="mx">used</span></span></div>
+              <div class="metric"><span class="mk">quota</span><span class="mr"><span class="mv" id="d-quota">—</span><span class="mx">avail</span></span></div>
+              <div class="metric"><span class="mk">uptime</span><span class="mr"><span class="mv" id="d-uptime">—</span><span class="mx">s live</span></span></div>
+            </div>
+
           </div>
         </section>
 
@@ -264,11 +710,6 @@ import "@shelfwood/talos-ui/all.css";
       </div>
 
       <!-- center-bottom big scroll value -->
-      <div class="scroll-val">
-        <div class="scroll-val__num"><span id="sv-num">0</span><small>%</small></div>
-        <div class="scroll-val__bar"><i id="sv-bar" style="width:0%"></i></div>
-      </div>
-
       <div class="hud-progress" id="progress"></div>
       <div class="scroll-cue">Scroll ▼</div>
     </div>
@@ -290,7 +731,6 @@ import "@shelfwood/talos-ui/all.css";
       const $id = (id: string) => document.getElementById(id)!;
       const roScroll = $id("ro-scroll"), roZ = $id("ro-z"), roVel = $id("ro-vel");
       const roSect = $id("ro-sect"), roLat = $id("ro-lat"), roLon = $id("ro-lon"), roSig = $id("ro-sig");
-      const svNum = $id("sv-num"), svBar = $id("sv-bar");
       const rulerMarker = $id("ruler-marker"), rulerPct = $id("ruler-pct");
 
       const GAP = 900; // px of Z between scenes
@@ -366,6 +806,7 @@ import "@shelfwood/talos-ui/all.css";
         const pct = (N > 1 ? current / (N - 1) : 0);
         const pctR = Math.round(pct * 100);
         const vel = Math.abs(target - current);                 // camera velocity (scenes/frame-ish)
+        (window as any).__talosVel = vel;                       // expose to the self-instrument data loop
         roScroll.textContent = String(Math.round(scroll)).padStart(4, "0");
         roZ.textContent = (camZ >= 0 ? "-" : "+") + String(Math.round(camZ)).padStart(4, "0");
         roVel.textContent = vel.toFixed(2);
@@ -376,8 +817,6 @@ import "@shelfwood/talos-ui/all.css";
         roLon.textContent = (current * 23.7 % 180 - 90 >= 0 ? "+" : "") + (current * 23.7 % 180 - 90).toFixed(3);
         roSig.textContent = vel > 0.25 ? "TRACKING" : "NOMINAL";
         roSig.style.color = vel > 0.25 ? "var(--talos-accent)" : "";
-        svNum.textContent = String(pctR);
-        svBar.style.width = pctR + "%";
         rulerMarker.style.top = (pct * 100).toFixed(1) + "%";
         rulerPct.style.top = (pct * 100).toFixed(1) + "%";
         rulerPct.textContent = pctR + "%";
@@ -386,45 +825,440 @@ import "@shelfwood/talos-ui/all.css";
       }
       requestAnimationFrame(frame);
 
-      // ---- live data ----
+      // ======================================================================
+      // SELF-INSTRUMENT — the running system this page visualises is ITSELF.
+      // Every instrument below binds to a REAL runtime signal of this very tab.
+      // No simulation, no Math.sin: the numbers are this page's own vitals, so
+      // "interfaces that visualise a running system" is literal, not a metaphor.
+      // Where a browser doesn't expose a signal (e.g. performance.memory outside
+      // Chromium), the instrument degrades honestly and is labelled UNAVAIL —
+      // never faked. (See the same honesty rule the instruments enforce.)
+      // ======================================================================
       const $ = (id: string) => document.getElementById(id);
-      function mulberry32(s: number) { return () => { s|=0; s=(s+0x6d2b79f5)|0; let t=Math.imul(s^(s>>>15),1|s); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; }; }
-      const rand = mulberry32(0x7a105);
       const clamp = (v: number, hi = 100) => Math.max(0, Math.min(hi, v));
       const r2 = (v: number) => Math.round(v);
 
-      // service-mesh model for the orbital — honest semantics:
-      // ring = tier, load = traffic share, value = error RATE %, rate = req rate.
-      const mesh = [
-        { id: "gw",   ring: 1, label: "GATEWAY" }, { id: "lb", ring: 1, label: "LB" },
-        { id: "api",  ring: 2, label: "API" }, { id: "auth", ring: 2, label: "AUTH" }, { id: "web", ring: 2, label: "WEB" },
-        { id: "db",   ring: 3, label: "DB" }, { id: "cache", ring: 3, label: "CACHE" }, { id: "queue", ring: 3, label: "QUEUE" }, { id: "search", ring: 3, label: "SEARCH" },
-      ];
+      // ---- real signal sources ----
+      const perfMem = (performance as any).memory; // Chromium only
+      const memSupported = !!perfMem;
+
+      // Frame rate: sampled from the rAF clock as a rolling average. This IS the
+      // render throughput of the page — the realest "is the system keeping up?".
+      let fps = 60, frameMs = 16.7, lastFrameT = performance.now();
+      // Event-loop lag: long tasks (>50ms) block the main thread. PerformanceObserver
+      // reports them; we decay the reading so a stall spikes then recovers — exactly
+      // how a real load indicator behaves.
+      let loopLagMs = 0, longTaskCount = 0;
+      if ("PerformanceObserver" in window) {
+        try {
+          new PerformanceObserver((list) => {
+            for (const e of list.getEntries()) { loopLagMs = Math.max(loopLagMs, e.duration); longTaskCount++; }
+          }).observe({ entryTypes: ["longtask"] });
+        } catch { /* longtask unsupported — loopLag stays 0, honest */ }
+      }
+      // Scroll velocity is already computed in the camera loop; expose it.
+      // (window as any).__talosVel is written by frame() each tick.
+      const vel = () => (window as any).__talosVel ?? 0;
+
+      // Sample the per-frame FPS off a dedicated rAF so it reflects true paint
+      // cadence independent of the camera loop's own work.
+      (function sampleFps(t: number) {
+        const dt = t - lastFrameT; lastFrameT = t;
+        if (dt > 0) { const inst = 1000 / dt; fps = fps * 0.9 + inst * 0.1; frameMs = frameMs * 0.9 + dt * 0.1; }
+        requestAnimationFrame(sampleFps);
+      })(performance.now());
+
+      // rolling windows + peaks for the console's min/max/avg readouts
+      const fpsHist: number[] = [];
+      let usedPeak = 0;
+
+      // ---- DIVERSE-VIZ helper layer (sparkline/dot-matrix/radial/delta) -----
+      // Per-metric history buffers feed sparklines + deltas; renderers paint
+      // into pre-built elements by id. Shared across every scene.
+      const hist: Record<string, number[]> = {};
+      const prev: Record<string, number> = {};
+      const pushHist = (key: string, v: number, cap = 32) => {
+        (hist[key] ||= []).push(v); if (hist[key].length > cap) hist[key].shift();
+      };
+      // Sparkline: build an SVG polyline (0..100 domain over the buffer width).
+      function spark(id: string, key: string, band?: "warn" | "crit", domainMax = 100) {
+        const el = document.getElementById(id); if (!el) return;
+        const h = hist[key] || []; if (h.length < 2) return;
+        const w = 100, ht = 14, n = h.length;
+        const pts = h.map((v, i) => `${((i / (n - 1)) * w).toFixed(1)},${(ht - clamp((v / domainMax) * 100) / 100 * ht).toFixed(1)}`).join(" ");
+        const fillPts = `0,${ht} ${pts} ${w},${ht}`;
+        el.setAttribute("viewBox", `0 0 ${w} ${ht}`); el.setAttribute("preserveAspectRatio", "none");
+        if (band) el.setAttribute("data-band", band); else el.removeAttribute("data-band");
+        el.innerHTML = `<polygon class="sparkfill" points="${fillPts}"/><polyline points="${pts}"/>`;
+      }
+      // Dot-matrix: fill `on` of `total` dots.
+      function dotmx(id: string, on: number, total: number, band?: "warn" | "crit") {
+        const el = document.getElementById(id); if (!el) return;
+        const o = Math.max(0, Math.min(total, Math.round(on)));
+        if (el.childElementCount !== total) el.innerHTML = Array.from({ length: total }, () => "<i></i>").join("");
+        [...el.children].forEach((c, i) => c.classList.toggle("on", i < o));
+        if (band) el.setAttribute("data-band", band); else el.removeAttribute("data-band");
+      }
+      // Radial micro-gauge: set --p (0..100) + center text + band.
+      function radial(id: string, pct: number, band?: "warn" | "crit", text?: string) {
+        const el = document.getElementById(id); if (!el) return;
+        (el as HTMLElement).style.setProperty("--p", String(r2(clamp(pct))));
+        if (band) el.setAttribute("data-band", band); else el.removeAttribute("data-band");
+        if (text != null) { const rv = el.querySelector(".rv"); if (rv) rv.textContent = text; }
+      }
+      // Delta: arrow + magnitude vs previous tick.
+      function delta(id: string, key: string, cur: number, fmt = (n: number) => String(Math.round(n))) {
+        const el = document.getElementById(id); if (!el) return;
+        const p = prev[key]; prev[key] = cur;
+        if (p == null) { el.className = "delta delta--flat"; el.textContent = "0"; return; }
+        const d = cur - p, eps = Math.abs(cur) * 0.005 + 0.01;
+        el.className = "delta " + (d > eps ? "delta--up" : d < -eps ? "delta--down" : "delta--flat");
+        el.textContent = fmt(Math.abs(d));
+      }
+
+      // ---- boot-once STATIC vitals (measured once, they don't change) ----
+      function paintStatics() {
+        const setV = (id: string, text: string, fillPct?: number) => {
+          const v = $("d-" + id); if (v) v.textContent = text;
+          const b = $("b-" + id); if (b && fillPct != null) (b as HTMLElement).style.width = clamp(fillPct) + "%";
+        };
+        const nav = performance.getEntriesByType("navigation")[0] as any || {};
+        const res = performance.getEntriesByType("resource");
+        // DOM structure
+        let depth = 0; document.querySelectorAll("*").forEach((e) => { let d = 0, n: Element | null = e; while (n) { d++; n = n.parentElement; } depth = Math.max(depth, d); });
+        setV("depth", String(depth)); dotmx("dm-depth", depth, 16, depth > 14 ? "warn" : undefined);
+        const dmEl = $("d-m1d"); if (dmEl) dmEl.textContent = String(depth); dotmx("dm-m1d", depth, 16, depth>14?"warn":undefined);
+        setV("css", String(document.styleSheets.length)); dotmx("dm-css", document.styleSheets.length, 10);
+        const cmEl = $("d-m1c"); if (cmEl) cmEl.textContent = String(document.styleSheets.length); dotmx("dm-m1c", document.styleSheets.length, 10);
+        const ce = ["talos-gauge","talos-trend","talos-meter","talos-flow","talos-orbital","talos-readout","talos-panel","talos-sheen"].filter((t) => customElements.get(t)).length;
+        setV("ce", String(ce)); dotmx("dm-ce", ce, 8);
+        // NETWORK static-ish
+        setV("xfer", String(Math.round((nav.transferSize || 0) / 1024)), Math.min((nav.transferSize || 0) / 1024 / 5, 100));
+        setV("reqs", String(res.length)); dotmx("dm-reqs", Math.round(res.length / 6), 8);
+        // TIMING (navigation)
+        setV("ttfb", String(Math.round((nav.responseStart || 0) - (nav.requestStart || 0))), Math.min((nav.responseStart - nav.requestStart) / 5, 100));
+        setV("domi", String(Math.round(nav.domInteractive || 0)), Math.min((nav.domInteractive || 0) / 2, 100));
+        setV("domc", String(Math.round(nav.domComplete || 0)), Math.min((nav.domComplete || 0) / 2, 100));
+        setV("load", String(Math.round(nav.loadEventEnd || nav.domComplete || 0)), Math.min((nav.loadEventEnd || 0) / 2, 100));
+        // DEVICE
+        setV("cores", String(navigator.hardwareConcurrency || "—")); dotmx("dm-cores", navigator.hardwareConcurrency || 0, 16);
+        setV("devmem", String((navigator as any).deviceMemory ?? "—"), (((navigator as any).deviceMemory || 0) / 32) * 100);
+        setV("dpr", devicePixelRatio.toFixed(1), (devicePixelRatio / 3) * 100);
+        const vp = $("d-vp"); if (vp) vp.textContent = `${innerWidth}×${innerHeight}`;
+        const plat = $("d-platform"); if (plat) plat.textContent = (navigator as any).platform || "—";
+        const onl = $("d-online"); if (onl) onl.textContent = navigator.onLine ? "online" : "offline";
+        const conn = (navigator as any).connection; const cEl = $("d-conn"); if (cEl) cEl.textContent = conn?.effectiveType ?? "—";
+      }
+      // statics need the layout present; run after first paint + on resize for viewport
+      setTimeout(paintStatics, 60);
+      addEventListener("resize", () => { const vp = $("d-vp"); if (vp) vp.textContent = `${innerWidth}×${innerHeight}`; });
+
+      // ---- async APIs: BATTERY + STORAGE (real, permissionless) ----
+      if ("getBattery" in navigator) {
+        (navigator as any).getBattery().then((bat: any) => {
+          const paintBat = () => {
+            const pct = Math.round(bat.level * 100);
+            const v = $("d-batt"); if (v) v.textContent = pct + "%";
+            const b = $("b-batt"); if (b) (b as HTMLElement).style.width = pct + "%";
+            const r = $("r-batt"); if (r) r.textContent = bat.charging ? "charging" : "on batt";
+          };
+          paintBat(); bat.addEventListener("levelchange", paintBat); bat.addEventListener("chargingchange", paintBat);
+        }).catch(() => {});
+      } else { const v = $("d-batt"); if (v) v.textContent = "n/a"; }
+      if (navigator.storage?.estimate) {
+        navigator.storage.estimate().then((est) => {
+          const usedMB = ((est.usage || 0) / 1048576).toFixed(1);
+          const quotaMB = ((est.quota || 0) / 1048576 / 1024).toFixed(1);
+          const v = $("d-store"); if (v) v.textContent = usedMB + "MB";
+          const q = $("d-quota"); if (q) q.textContent = quotaMB + "GB";
+          const b = $("b-store"); if (b && est.quota) (b as HTMLElement).style.width = clamp(((est.usage || 0) / est.quota) * 100) + "%";
+        }).catch(() => {});
+      }
+
+      // ---- the real subsystems behind the orbital "service mesh" ----
+      // Each node is an actual runtime subsystem of this tab; its activity is the
+      // genuine pressure on that subsystem right now.
       const orb = $("orb") as any;
 
-      let k = 0;
-      setInterval(() => {
-        k += 0.06;
-        const cpu = r2(clamp(50 + 42 * Math.sin(k) + 6 * Math.sin(k*5)));
-        const mem = r2(clamp(55 + 30 * Math.sin(k*.5 + 1)));
-        const thru = r2(clamp(50 + 42 * Math.sin(k*.8 + 2) + (rand()-.5)*6));
-        $("g1")?.setAttribute("value", String(cpu));
-        $("g2")?.setAttribute("value", String(mem));
-        $("m1")?.setAttribute("value", String(r2(clamp(40 + 20 * Math.sin(k*.3)))));
-        ($("t1") as any)?.push(thru);
-        $("f1")?.setAttribute("rate", String(thru));
-        $("f2")?.setAttribute("rate", String(r2(clamp(thru*.8))));
-        // console scene
-        $("cg1")?.setAttribute("value", String(cpu));
-        $("cg2")?.setAttribute("value", String(r2(clamp(48 + 40*Math.sin(k*.7+2)))));
-        $("cg3")?.setAttribute("value", String(thru));
+      // Trend ring-buffer is fed real FPS each tick (the shape IS the frame rate).
+      let domCount = document.querySelectorAll("*").length;
+      // DOM count changes rarely; refresh it occasionally rather than every tick.
+      let domTick = 0;
 
-        // orbital mesh
-        if (orb) orb.nodes = mesh.map((m, i) => {
-          const reqRate = clamp(40 + 55 * Math.sin(k*.7 + i*1.1) + (rand()-.5)*10); // req/s share
-          const errRate = clamp(2 + 16 * Math.max(0, Math.sin(k*.5 + i*1.7))**2);    // % errors → colour band
-          return { ...m, value: errRate, load: 0.3 + 0.6*(reqRate/100), rate: reqRate };
-        });
+      function heapPct(): number {
+        if (!memSupported) return 0;
+        // Against the CURRENTLY-ALLOCATED heap (totalJSHeapSize), not the 4GB
+        // hard cap — used/limit is always ~0% and dead. used/total is the real
+        // "how full is the heap we've been given", and it actually moves as the
+        // page allocates and the GC reclaims.
+        const denom = perfMem.totalJSHeapSize || perfMem.jsHeapSizeLimit;
+        return clamp((perfMem.usedJSHeapSize / denom) * 100);
+      }
+      function heapMB(): number {
+        return memSupported ? perfMem.usedJSHeapSize / 1048576 : 0;
+      }
+
+      setInterval(() => {
+        // ---- Scene 01: resource instruments ----
+        // CPU gauge → frame BUDGET used: how much of the 16.7ms frame we burn.
+        // 100% = dropping frames; low = idle. This is the page's real load.
+        const frameBudget = r2(clamp((frameMs / 16.7) * 50));     // 60fps→~50, 30fps→100
+        const heap = r2(heapPct());
+        if (++domTick % 8 === 0) domCount = document.querySelectorAll("*").length;
+        const domLoad = r2(clamp((domCount / 1200) * 100));        // vs a 1200-node ceiling
+
+        // ---- FOUNDATIONAL derived signals — computed ONCE at the top so every
+        //      scene block below can read them (avoids const TDZ across blocks) --
+        fpsHist.push(fps); if (fpsHist.length > 60) fpsHist.shift();
+        const fpsMin = Math.round(Math.min(...fpsHist)), fpsMax = Math.round(Math.max(...fpsHist));
+        const fpsAvg = Math.round(fpsHist.reduce((a, b) => a + b, 0) / fpsHist.length);
+        if (memSupported) usedPeak = Math.max(usedPeak, perfMem.usedJSHeapSize);
+        const scrollRate = r2(clamp(vel() * 120));                 // camera velocity → ingest
+        const lagRate = r2(clamp(loopLagMs * 1.2));                // longtask pressure → process
+        const pressure = r2(Math.max(frameBudget, memSupported ? heap : 0, domLoad));
+        const conn = (navigator as any).connection || {};
+        const rtt = conn.rtt ?? 0;
+        const camZ = current * GAP;
+        const scrollPx = Math.round((lenis as any).scroll ?? window.scrollY);
+        const progPct = r2((scrollPx / Math.max(1, document.documentElement.scrollHeight - innerHeight)) * 100);
+
+        // ---- Scene 01: CORE CONSOLE — one zoned reactor panel, all real tab
+        // telemetry reframed. CORE LOAD = frame budget (trend). COOLANT = heap %
+        // (meter). CONTAINMENT = DOM count (number). FLUX = camera velocity,
+        // LINK = connection RTT. Aggregate `pressure` drives the core STATE +
+        // the panel's own activity-edge mood (philosophy #5: the system shows it).
+        {
+          const setBand = (el: Element | null, b?: string) => {
+            if (!el) return; if (b) el.setAttribute("data-band", b); else el.removeAttribute("data-band");
+          };
+
+          // PRIMARY — core load trend + big number, banded.
+          ($("t-frame") as any)?.push(frameBudget);
+          const loadBand = frameBudget >= 90 ? "crit" : frameBudget >= 70 ? "warn" : undefined;
+          const loadEl = $("d-coreload");
+          if (loadEl) { loadEl.textContent = String(Math.round(frameBudget)); setBand(loadEl, loadBand); }
+          $("d-g1fps")!.textContent = String(Math.round(fps));
+          // FLUX — camera velocity as particle flux; LINK — real connection RTT.
+          $("d-flux")!.textContent = String(Math.round(scrollRate));
+          const linkEl = $("d-rtt01"); if (linkEl) { linkEl.textContent = rtt ? String(rtt) : "—";
+            setBand(linkEl, rtt > 300 ? "crit" : rtt > 150 ? "warn" : undefined); }
+          dotmx("dm-g1long", longTaskCount, 8, longTaskCount>0?"warn":undefined);
+          $("d-g1long")!.textContent = String(longTaskCount);
+
+          // SECONDARY — coolant meter (real heap %, native high=bad band).
+          if (memSupported) {
+            $("mt-heap")?.setAttribute("value", String(heap));
+            const u = perfMem.usedJSHeapSize/1048576, t = perfMem.totalJSHeapSize/1048576;
+            $("d-g2used")!.textContent = u.toFixed(0);
+            $("d-g2tot")!.textContent = t.toFixed(0);
+            $("d-g2pk")!.textContent = (usedPeak/1048576).toFixed(0)+" MB";
+          } else {
+            $("mt-heap")?.setAttribute("value", "0");
+            $("d-g2used")!.textContent = "n/a"; $("d-g2tot")!.textContent = "n/a"; $("d-g2pk")!.textContent = "n/a";
+          }
+
+          // CONTAINMENT — DOM count headline + drift spark + delta.
+          pushHist("nodes", domCount, 32);
+          $("d-m1n")!.textContent = domCount.toLocaleString();
+          spark("sp-m1n", "nodes", undefined, Math.max(domCount, 1)*1.1);
+          delta("dl-m1", "m1nodes", domCount);
+
+          // HEADER STATE + FOOTER AGGREGATE + PANEL MOOD — all from `pressure`,
+          // the worst of {core load, coolant, containment load}. One signal, the
+          // whole console responds: state word, dot, pressure bar, and the edge.
+          const aggBand = pressure >= 90 ? "crit" : pressure >= 70 ? "warn" : undefined;
+          const stateEl = $("rcon-state");
+          if (stateEl) { stateEl.textContent = aggBand === "crit" ? "CRITICAL" : aggBand === "warn" ? "ELEVATED" : "NOMINAL";
+            setBand(stateEl, aggBand); }
+          const dotEl = $("rcon-dot");
+          if (dotEl) (dotEl as HTMLElement).style.background = aggBand === "crit" ? "var(--talos-danger)"
+            : aggBand === "warn" ? "var(--talos-warning)" : "var(--talos-accent)";
+          const pbar = $("rcon-pbar");
+          if (pbar) { (pbar as HTMLElement).style.width = clamp(pressure)+"%";
+            (pbar as HTMLElement).style.background = aggBand === "crit" ? "var(--talos-danger)"
+              : aggBand === "warn" ? "var(--talos-warning)" : "var(--talos-accent)"; }
+          $("rcon-pval")!.textContent = Math.round(pressure)+"%";
+          const note = $("rcon-note");
+          if (note) note.textContent = aggBand === "crit"
+            ? "core load exceeding safe budget — frames dropping"
+            : aggBand === "warn" ? "one subsystem elevated — under load"
+            : "all subsystems nominal — push the page to load the core";
+          // The panel's edge haloes at the aggregate rate. activity-edge expects
+          // --talos-rate ~0..1 (period/rate = revolution time); pressure is a
+          // 0..100 %, so SCALE to 0..1 and CAP — feeding raw 0..100 made the
+          // ring spin ~18×/s (a strobe / photosensitivity hazard). Cap at 0.5
+          // (≥8s/rev) so it reads as a slow, calm halo even at full pressure.
+          $("rcon")?.style.setProperty("--talos-rate", String(Math.min(0.5, pressure / 200)));
+          // RUN clock — real uptime since page load, mm:ss.
+          const up = Math.floor(performance.now()/1000);
+          $("rcon-clock")!.textContent = `${String(Math.floor(up/60)).padStart(2,"0")}:${String(up%60).padStart(2,"0")}`;
+        }
+
+        // ---- Scene 02: signal & throughput ----
+        // Trend → real FPS (0..100 scaled so 60fps reads high). Flows → scroll
+        // velocity (ingest) and event-loop lag recovery (process).
+        const fpsPct = r2(clamp((fps / 60) * 100));
+        ($("t1") as any)?.push(fpsPct);
+        // Scene 02 signal statistics — derived from the live fps window
+        {
+          const setRow = (id: string, txt: string, fill?: number, bnd?: "warn"|"crit") => {
+            const v = $("d-" + id); if (v) { v.textContent = txt; bnd?v.setAttribute("data-band",bnd):v.removeAttribute("data-band"); }
+            const b = $("b-" + id); if (b && fill != null) (b as HTMLElement).style.width = clamp(fill) + "%";
+          };
+          const sBand = band(60 - fps, 20, 30);
+          setRow("s2cur", fpsPct + "%", fpsPct, sBand); delta("dl-s2cur", "s2cur", fpsPct);
+          setRow("s2avg", String(fpsAvg), fpsAvg); pushHist("s2", fpsPct); spark("sp-s2", "s2", sBand, 100);
+          setRow("s2min", String(Math.round((fpsMin/60)*100)), (fpsMin/60)*100);
+          setRow("s2max", String(Math.round((fpsMax/60)*100)), (fpsMax/60)*100);
+          const jit = fpsHist.length>1 ? Math.round(Math.sqrt(fpsHist.reduce((a,b)=>a+(b-fpsAvg)**2,0)/fpsHist.length)) : 0;
+          setRow("s2jit", String(jit)); dotmx("dm-s2jit", jit, 8, jit>4?"warn":undefined);
+          setRow("s2ing", String(scrollRate), scrollRate);
+          setRow("s2lag", loopLagMs.toFixed(0), Math.min(loopLagMs*1.5,100), loopLagMs>50?"warn":undefined);
+        }
+        $("f1")?.setAttribute("rate", String(scrollRate));
+        $("f2")?.setAttribute("rate", String(lagRate));
+        loopLagMs *= 0.6;                                          // decay the stall reading
+
+        // ---- Scene 03: composed console (zoned shell, live cells + aside) ----
+        {
+          const setT = (id: string, txt: string) => { const e = $(id); if (e) e.textContent = txt; };
+          const setB = (id: string, fill: number) => { const e = $(id); if (e) (e as HTMLElement).style.width = clamp(fill) + "%"; };
+          $("cg1")?.setAttribute("value", String(frameBudget));
+          $("cg2")?.setAttribute("value", String(memSupported ? heap : 0));
+          $("cg3")?.setAttribute("value", String(fpsPct));
+          setT("d-cg1", String(Math.round(fps))); spark("sp-cg1", "fps", band(60-fps,20,30), 80);
+          setT("d-cg2", memSupported ? heapMB().toFixed(0) : "n/a"); setB("b-cg2", memSupported ? heap : 0);
+          setT("d-cg3", String(fpsPct)); spark("sp-cg3", "s2", band(60-fps,20,30), 100);
+          // aside telemetry
+          setT("d-cab", frameBudget + "%"); setB("b-cab", frameBudget);
+          setT("d-cad", domLoad + "%"); setB("b-cad", domLoad);
+          setT("d-cart", String(rtt)); spark("sp-cart", "rtt", band(rtt,150,300), 300);
+          setT("d-cac", String(navigator.hardwareConcurrency || "—")); dotmx("dm-cac", navigator.hardwareConcurrency || 0, 16);
+          $("cam")?.setAttribute("value", String(pressure));
+          // status bar
+          setT("c-uptime", `↑ ${Math.floor(performance.now()/1000)}s`);
+          setT("c-st-heap", (memSupported ? heap + "%" : "n/a"));
+          setT("c-st-fps", String(Math.round(fps)));
+          setT("c-st-nodes", String(domCount));
+          const st1 = $("c-st1");
+          if (st1) { const sev = pressure >= 90 ? ["CRITICAL","--talos-danger-hsl"] : pressure >= 70 ? ["DEGRADED","--talos-warning-hsl"] : ["NOMINAL","--talos-success-hsl"];
+            st1.textContent = sev[0]; (st1 as HTMLElement).style.setProperty("--_status", `var(${sev[1]})`); }
+        }
+
+        // ---- Scene 05: controls — readout + validation/telemetry radials ----
+        $("hr1")?.setAttribute("value", memSupported ? heapMB().toFixed(1) : "—");
+        radial("rad-valid", 50, "warn", "50%");                      // 2 of 4 fields valid (1 error)
+        radial("rad-heap", memSupported ? heap : 0, band(heap,70,90), (memSupported?heap:0) + "%");
+        radial("rad-frame", frameBudget, band(frameBudget,70,90), frameBudget + "%");
+        dotmx("dm-fields", 2, 4, "warn");
+
+        // ============ Scene 06: MISSION CONSOLE — ~50 live vitals ============
+        // dials + core
+        $("s6-frame")?.setAttribute("value", String(frameBudget));
+        $("s6-dom")?.setAttribute("value", String(domLoad));
+        $("s6-heap")?.setAttribute("value", String(memSupported ? heap : 0));
+        ($("s6-fps") as any)?.push(r2(clamp((fps / 60) * 100)));
+        $("s6-read")?.setAttribute("value", String(pressure));
+        $("s6-pressure")?.style.setProperty("--talos-rate", (pressure / 100).toFixed(2));
+
+        // a row = value text (+band) + bar fill% (+band) + optional range text
+        // NB: function declaration (hoisted) — earlier scene blocks call band()
+        // before this line, which a `const` arrow would TDZ-throw on.
+        function band(v: number, w: number, c: number): "warn" | "crit" | undefined {
+          return v >= c ? "crit" : v >= w ? "warn" : undefined;
+        }
+        const setM = (id: string, text: string, fillPct?: number, bnd?: "warn" | "crit", range?: string) => {
+          const v = $("d-" + id); if (v) { v.textContent = text; bnd ? v.setAttribute("data-band", bnd) : v.removeAttribute("data-band"); }
+          const b = $("b-" + id); if (b && fillPct != null) { (b as HTMLElement).style.width = clamp(fillPct) + "%";
+            const bar = b.parentElement!; bnd ? bar.setAttribute("data-band", bnd) : bar.removeAttribute("data-band"); }
+          if (range != null) { const r = $("r-" + id); if (r) r.textContent = range; }
+        };
+        const mb = (bytes: number) => (bytes / 1048576).toFixed(0);
+
+        // RENDER — sparklines (live history) + delta + dot-matrix, not bars
+        const fpsBand = band(60 - fps, 20, 30), msBand = band(frameMs, 20, 33);
+        pushHist("fps", fps); pushHist("ms", frameMs);
+        setM("fps", String(Math.round(fps)), undefined, fpsBand);
+        spark("sp-fps", "fps", fpsBand, 80); delta("dl-fps", "fps", fps);
+        setM("ms", frameMs.toFixed(1), undefined, msBand, `${fpsMin}-${fpsMax}`);
+        spark("sp-ms", "ms", msBand, 40);
+        setM("budget", frameBudget + "%", frameBudget, band(frameBudget, 70, 90));   // keeps a bar (contrast)
+        setM("long", String(longTaskCount), undefined, longTaskCount > 0 ? "warn" : undefined);
+        dotmx("dm-long", longTaskCount, 8, longTaskCount > 0 ? "warn" : undefined);
+        // MEMORY
+        if (memSupported) {
+          const u = perfMem.usedJSHeapSize, t = perfMem.totalJSHeapSize, l = perfMem.jsHeapSizeLimit;
+          setM("used", mb(u), (u / t) * 100, band(heap, 70, 90), `pk ${mb(usedPeak)}`);
+          setM("total", mb(t), (t / l) * 100);
+          setM("limit", mb(l), 100);
+          const hBand = band(heap, 70, 90); pushHist("heap", heap);
+          setM("heappct", heap + "%", undefined, hBand);
+          spark("sp-heap", "heap", hBand, 100); delta("dl-heap", "heap", heap);
+        } else { ["used","total","limit","heappct"].forEach(i => setM(i, "n/a", 0)); }
+        // DOM — node count keeps a bar + gains a delta (it climbs as scenes mount)
+        setM("nodes", String(domCount), (domCount / 1200) * 100, band(domLoad, 70, 90));
+        delta("dl-nodes", "nodes", domCount);
+        // NETWORK — rtt sparkline + delta
+        const rBand = band(rtt, 150, 300); pushHist("rtt", rtt);
+        setM("rtt", rtt ? String(rtt) : "—", undefined, rBand);
+        spark("sp-rtt", "rtt", rBand, 300); delta("dl-rtt", "rtt", rtt);
+        setM("down", conn.downlink ? String(conn.downlink) : "—", conn.downlink ? (conn.downlink / 20) * 100 : 0);
+        // SCROLL · CAM
+        setM("scroll", String(scrollPx), progPct, undefined, `${Math.round(camZ)}z`);
+        setM("camz", String(Math.round(camZ)), (Math.abs(camZ) / (N * GAP)) * 100);
+        setM("vel", vel().toFixed(2), vel() * 100, vel() > 0.5 ? "warn" : undefined);
+        setM("prog", progPct + "%", progPct);
+
+        // stat-strip aggregates
+        const setS = (id: string, html: string) => { const e = $(id); if (e) e.innerHTML = html; };
+        setS("st-pressure", `${pressure}<small>%</small>`);
+        setS("st-fpsavg", String(fpsAvg));
+        setS("st-heap", memSupported ? `${mb(perfMem.usedJSHeapSize)}<small>MB</small>` : "n/a");
+        setS("st-dom", String(domCount));
+        setS("st-net", conn.effectiveType ? `${conn.effectiveType} · ${rtt}<small>ms</small>` : "—");
+        setS("st-uptime", `${Math.floor(performance.now() / 1000)}<small>s</small>`);
+        // POWER · STORE live row
+        setM("uptime", `${Math.floor(performance.now() / 1000)}`);
+
+        // ---- Scene 04: the orbital IS this tab's subsystem map ----
+        // ring 1 = render pipeline, ring 2 = main thread, ring 3 = resources.
+        // value = pressure % (→ colour band), load = relative weight, rate = activity.
+        const meshNodes = [
+          { id: "raf",    ring: 1, label: "RAF",    value: frameBudget,           load: 0.4 + 0.5*(frameBudget/100), rate: clamp(fps/60*100) },
+          { id: "paint",  ring: 1, label: "PAINT",  value: clamp(frameMs/33*100), load: 0.4,                          rate: clamp(fps/60*100) },
+          { id: "scroll", ring: 2, label: "SCROLL", value: clamp(vel()*200),      load: 0.3 + 0.5*clamp(vel(),1),     rate: scrollRate },
+          { id: "loop",   ring: 2, label: "EVENT-LOOP", value: clamp(loopLagMs*2), load: 0.5,                          rate: clamp(60 - loopLagMs) },
+          { id: "dom",    ring: 2, label: "DOM",    value: domLoad,               load: 0.3 + 0.5*(domLoad/100),      rate: clamp(domLoad) },
+          { id: "heap",   ring: 3, label: "HEAP",   value: memSupported ? heap : 0, load: 0.4,                        rate: memSupported ? heap : 5 },
+          { id: "net",    ring: 3, label: "NET",    value: clamp(rtt / 3),        load: 0.3,                          rate: clamp((conn.downlink ?? 10) * 6) },
+          { id: "time",   ring: 3, label: "UPTIME", value: clamp(performance.now()/600000*100), load: 0.25,           rate: 20 },
+        ];
+        if (orb) orb.nodes = meshNodes;
+        // Scene 04 legend table — same node data, rows with bar + band + activity
+        const meshEl = $("mesh-rows");
+        if (meshEl) {
+          meshEl.innerHTML = meshNodes.map((n) => {
+            const v = r2(n.value), bnd = v >= 80 ? "crit" : v >= 50 ? "warn" : "";
+            const col = bnd === "crit" ? "var(--talos-danger)" : bnd === "warn" ? "var(--talos-warning)" : "var(--talos-accent)";
+            return `<div class="mesh-row"><span class="mn">${n.label}</span><span class="mt">R${n.ring}</span>`
+              + `<span class="mp"><span class="mbar" style="position:relative;overflow:hidden;height:3px;background:var(--talos-surface-2)"><i style="position:absolute;inset:0 auto 0 0;width:${v}%;background:${col}"></i></span><span style="color:${col};min-width:2.2rem;text-align:right">${v}%</span></span>`
+              + `<span class="ma">${r2(n.rate)}</span></div>`;
+          }).join("");
+        }
+      }, 280);
+
+      // ---- HUD: replace the synthetic lat/lon with REAL vitals, labelled true ----
+      const hudFps = $("ro-lat"), hudHeap = $("ro-lon"), hudSig = $("ro-sig");
+      // relabel the coord cluster keys to their real meaning
+      const coordKeys = document.querySelectorAll(".coords .k");
+      if (coordKeys[1]) coordKeys[1].textContent = "FPS";
+      if (coordKeys[2]) coordKeys[2].textContent = "HEAP";
+      setInterval(() => {
+        if (hudFps) hudFps.textContent = String(Math.round(fps)).padStart(2, "0") + " fps";
+        if (hudHeap) hudHeap.textContent = memSupported ? heapMB().toFixed(1) + " MB" : "N/A";
+        // SIG already reflects scroll tracking from the camera loop; overlay a
+        // real health verdict when the frame budget blows out.
+        if (hudSig && frameMs > 24) { hudSig.textContent = "FRAME DROP"; (hudSig as HTMLElement).style.color = "var(--talos-warning, orange)"; }
       }, 280);
     </script>
   </body>

@@ -13,10 +13,10 @@ const rows = [
 ];
 ---
 
-<Landing title="Gallery — Talos UI">
+<Landing title="Gallery" navActive="gallery">
   <span class="talos-eyebrow">// Primitive gallery</span>
   <h1 style="font-size:2rem;margin:0.5rem 0 0">Component primitives</h1>
-  <p class="muted" style="max-width:60ch;margin-top:0.5rem">
+  <p class="talos-muted" style="max-width:60ch;margin-top:0.5rem">
     Every Phase-1 primitive in one place — feedback, data display, navigation,
     and the full form control set. Monochrome HUD; status colour is the only
     chroma.
@@ -24,11 +24,11 @@ const rows = [
 
   <!-- ===================== FEEDBACK ===================== -->
   <section>
-    <h2 style="font-size:1rem"><span class="muted">01</span> &nbsp;Feedback</h2>
+    <h2 style="font-size:1rem"><span class="talos-muted">01</span> &nbsp;Feedback</h2>
     <hr class="talos-rule" style="margin:1rem 0 2rem" />
 
-    <div class="stack" style="gap:2rem">
-      <div class="row">
+    <div class="talos-stack" style="gap:2rem">
+      <div class="talos-row">
         <span class="talos-badge talos-badge--dot talos-badge--success">Operational</span>
         <span class="talos-badge talos-badge--dot talos-badge--warning">Degraded</span>
         <span class="talos-badge talos-badge--dot talos-badge--danger">Offline</span>
@@ -38,7 +38,7 @@ const rows = [
         <span class="talos-badge talos-badge--sm">v0.0.1</span>
       </div>
 
-      <div class="grid">
+      <div class="talos-grid-auto">
         <div class="talos-alert talos-alert--info">
           <span class="talos-alert__icon">◆</span>
           <div class="talos-alert__title">Deployment queued</div>
@@ -57,22 +57,22 @@ const rows = [
         </div>
       </div>
 
-      <div class="row" style="align-items:flex-start;gap:3rem">
-        <div class="stack" style="min-width:240px">
+      <div class="talos-row" style="align-items:flex-start;gap:3rem">
+        <div class="talos-stack" style="min-width:240px">
           <span class="talos-eyebrow">Progress</span>
           <div class="talos-progress"><div class="talos-progress__bar" style="--talos-value:68"></div></div>
           <div class="talos-progress talos-progress--lg"><div class="talos-progress__bar" style="--talos-value:32"></div></div>
           <div class="talos-progress talos-progress--indeterminate"><div class="talos-progress__bar"></div></div>
         </div>
-        <div class="stack">
+        <div class="talos-stack">
           <span class="talos-eyebrow">Loaders</span>
-          <div class="row">
+          <div class="talos-row">
             <span class="talos-spinner talos-spinner--sm"></span>
             <span class="talos-spinner"></span>
             <span class="talos-spinner talos-spinner--lg"></span>
           </div>
         </div>
-        <div class="stack" style="min-width:200px">
+        <div class="talos-stack" style="min-width:200px">
           <span class="talos-eyebrow">Skeleton</span>
           <span class="talos-skeleton talos-skeleton--text" style="width:90%"></span>
           <span class="talos-skeleton talos-skeleton--text" style="width:70%"></span>
@@ -80,7 +80,7 @@ const rows = [
         </div>
       </div>
 
-      <div class="stack" style="min-width:300px;max-width:340px">
+      <div class="talos-stack" style="min-width:300px;max-width:340px">
         <span class="talos-eyebrow">Toasts</span>
         <div class="talos-toast-region" style="position:static;inset:auto">
           <div class="talos-toast talos-toast--success">
@@ -98,7 +98,7 @@ const rows = [
         </div>
       </div>
 
-      <div class="row">
+      <div class="talos-row">
         <span class="talos-has-tooltip" data-tooltip="Tooltip on hover">
           <span class="talos-badge">Hover me</span>
         </span>
@@ -120,10 +120,10 @@ const rows = [
 
   <!-- ===================== DATA ===================== -->
   <section>
-    <h2 style="font-size:1rem"><span class="muted">02</span> &nbsp;Data display</h2>
+    <h2 style="font-size:1rem"><span class="talos-muted">02</span> &nbsp;Data display</h2>
     <hr class="talos-rule" style="margin:1rem 0 2rem" />
 
-    <div class="grid" style="margin-bottom:2rem">
+    <div class="talos-grid-auto" style="margin-bottom:2rem">
       <div class="talos-stat">
         <span class="talos-stat__label">Throughput</span>
         <span class="talos-stat__value">14.2k</span>
@@ -164,7 +164,7 @@ const rows = [
       </table>
     </div>
 
-    <div class="row" style="align-items:flex-start;gap:2rem">
+    <div class="talos-row" style="align-items:flex-start;gap:2rem">
       <div class="talos-readout" style="min-width:260px">
         <div class="talos-readout__head"><span class="talos-readout__live"></span> System status</div>
         <div class="talos-readout__rows">
@@ -180,7 +180,7 @@ const rows = [
         <dt>Cores</dt><dd>8</dd>
       </dl>
 
-      <div class="stack" style="min-width:220px">
+      <div class="talos-stack" style="min-width:220px">
         <span class="talos-eyebrow">Meters</span>
         <div class="talos-meter talos-meter--ok"><div class="talos-meter__fill" style="--talos-value:48"></div></div>
         <div class="talos-meter talos-meter--warn"><div class="talos-meter__fill" style="--talos-value:74"></div></div>
@@ -188,21 +188,21 @@ const rows = [
       </div>
     </div>
 
-    <div class="row" style="margin-top:2rem;align-items:flex-start;gap:2rem">
+    <div class="talos-row" style="margin-top:2rem;align-items:flex-start;gap:2rem">
       <div class="talos-log talos-log--feed" style="min-width:340px">
         <div class="talos-log__row talos-log__row--info"><span class="talos-log__ts">12:04:11</span><span class="talos-log__msg">handshake ok</span></div>
         <div class="talos-log__row talos-log__row--success"><span class="talos-log__ts">12:04:13</span><span class="talos-log__msg">sync complete</span></div>
         <div class="talos-log__row talos-log__row--warn"><span class="talos-log__ts">12:04:19</span><span class="talos-log__msg">retry backoff 2s</span></div>
         <div class="talos-log__row talos-log__row--error"><span class="talos-log__ts">12:04:31</span><span class="talos-log__msg">node borealis unreachable</span></div>
       </div>
-      <div class="stack">
+      <div class="talos-stack">
         <span class="talos-eyebrow">Avatars + kbd</span>
         <div class="talos-avatar-group">
           <span class="talos-avatar">JS</span>
           <span class="talos-avatar">KP<span class="talos-avatar__status talos-avatar__status--online"></span></span>
           <span class="talos-avatar talos-avatar--lg">AB</span>
         </div>
-        <div class="row" style="margin-top:0.5rem">
+        <div class="talos-row" style="margin-top:0.5rem">
           <kbd class="talos-kbd">⌘</kbd><kbd class="talos-kbd">K</kbd>
           <span class="talos-inline-code">npm i @shelfwood/talos-ui</span>
         </div>
@@ -217,10 +217,10 @@ const rows = [
 
   <!-- ===================== NAVIGATION ===================== -->
   <section>
-    <h2 style="font-size:1rem"><span class="muted">03</span> &nbsp;Navigation</h2>
+    <h2 style="font-size:1rem"><span class="talos-muted">03</span> &nbsp;Navigation</h2>
     <hr class="talos-rule" style="margin:1rem 0 2rem" />
 
-    <div class="stack" style="gap:2rem">
+    <div class="talos-stack" style="gap:2rem">
       <div class="talos-tabs" role="tablist">
         <button class="talos-tab" role="tab" aria-selected="true">Overview</button>
         <button class="talos-tab" role="tab" aria-selected="false">Metrics</button>
@@ -256,7 +256,7 @@ const rows = [
         <div class="talos-step"><span class="talos-step__index">4</span><span class="talos-step__label">Ship</span></div>
       </div>
 
-      <div class="row" style="align-items:flex-start;gap:2rem">
+      <div class="talos-row" style="align-items:flex-start;gap:2rem">
         <div class="talos-menu" style="position:relative">
           <div class="talos-menu__label">Actions</div>
           <button class="talos-menu__item">Restart node <span class="talos-menu__shortcut">⌘R</span></button>
@@ -278,7 +278,7 @@ const rows = [
 
   <!-- ===================== FORMS ===================== -->
   <section>
-    <h2 style="font-size:1rem"><span class="muted">04</span> &nbsp;Forms</h2>
+    <h2 style="font-size:1rem"><span class="talos-muted">04</span> &nbsp;Forms</h2>
     <hr class="talos-rule" style="margin:1rem 0 2rem" />
 
     <div class="talos-field-grid" style="max-width:760px">

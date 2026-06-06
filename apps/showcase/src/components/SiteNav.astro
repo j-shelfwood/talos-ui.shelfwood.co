@@ -1,0 +1,75 @@
+---
+// Shared persistent top nav — fixed pill that collapses on scroll. Consumed by
+// Landing.astro (showcase, gallery) and DocsShell.astro so every non-hero page
+// has a Home affordance and a consistent route set. The 3D hero (index.astro)
+// keeps its own bespoke HUD nav by design. Uses the design system's own
+// .talos-navbar primitives (talos-blog.css) wrapped around a GlassPanel.
+import GlassPanel from "@shelfwood/talos-ui/astro/GlassPanel.astro";
+
+interface Props {
+  /** Collection id / route key of the current page, for active state. */
+  active?: string;
+}
+const { active } = Astro.props;
+
+const links = [
+  { label: "Home", href: "/", key: "home" },
+  { label: "Showcase", href: "/showcase/", key: "showcase" },
+  { label: "Gallery", href: "/gallery/", key: "gallery" },
+  { label: "Docs", href: "/docs/getting-started/", key: "docs" },
+];
+const pathname = Astro.url.pathname;
+const isActive = (l: (typeof links)[number]) =>
+  active === l.key ||
+  (l.href !== "/" && pathname.startsWith(l.href)) ||
+  (l.key === "home" && pathname === "/");
+---
+
+<header class="talos-navbar" id="site-navbar" data-compact="false">
+  <GlassPanel class="talos-navbar-pill glass-panel--navbar-dense" style="overflow:visible">
+    <div class="talos-navbar-inner">
+      <div>
+        <a class="talos-nav-link" href="/" aria-label="Home">
+          <span class="talos-dot"></span>
+          <span class="talos-nav-text">Talos&nbsp;UI</span>
+        </a>
+      </div>
+      <div></div>
+      <nav class="site-nav-links">
+        {
+          links
+            .filter((l) => l.key !== "home")
+            .map((l) => (
+              <a
+                class="talos-nav-link"
+                href={l.href}
+                aria-current={isActive(l) ? "page" : undefined}
+                data-active={isActive(l) ? "true" : undefined}
+              >
+                <span class="talos-nav-text">{l.label}</span>
+              </a>
+            ))
+        }
+      </nav>
+    </div>
+  </GlassPanel>
+</header>
+
+<script>
+  const nav = document.getElementById("site-navbar");
+  const onScroll = () =>
+    nav?.setAttribute("data-compact", String(window.scrollY > 48));
+  addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+</script>
+
+<style>
+  .site-nav-links {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .talos-nav-link[data-active="true"] {
+    color: var(--talos-foreground);
+  }
+</style>

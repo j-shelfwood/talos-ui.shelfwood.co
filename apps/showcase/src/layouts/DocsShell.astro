@@ -1,6 +1,5 @@
 ---
-import "@shelfwood/talos-ui/all.css";
-import Meta from "../components/Meta.astro";
+import BaseLayout from "./BaseLayout.astro";
 import { docsNav, slugToHref } from "../docs-nav";
 
 interface Props {
@@ -10,35 +9,10 @@ interface Props {
   slug: string;
 }
 const { title, description, slug } = Astro.props;
-const pageTitle = `${title} — Talos UI`;
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{pageTitle}</title>
-    {description && <meta name="description" content={description} />}
-    <Meta title={pageTitle} description={description} />
-  </head>
-  <body>
-    <div class="ambient-overlay"></div>
-
-    <header class="docs-topbar">
-      <a class="docs-brand" href="/">
-        <span class="dot"></span>
-        <span class="eyebrow">SYS://TALOS-UI</span>
-      </a>
-      <nav class="row" style="gap:1.25rem">
-        <a class="docs-toplink eyebrow" href="/manifesto/">Manifesto</a>
-        <a class="docs-toplink eyebrow" href="/showcase/">Showcase</a>
-        <a class="docs-toplink eyebrow" href="/mosaic/">Mosaic</a>
-        <a class="docs-toplink eyebrow" href="https://github.com/shelfwood">Source</a>
-      </nav>
-    </header>
-
-    <div class="docs-frame">
+<BaseLayout title={title} description={description} navActive="docs" frame="bare">
+  <div class="docs-frame">
       <aside class="talos-sidebar docs-sidebar">
         {
           docsNav.map((group) => (
@@ -62,10 +36,10 @@ const pageTitle = `${title} — Talos UI`;
       </aside>
 
       <main class="docs-main">
-        <div class="docs-head stack">
-          <span class="eyebrow">// {title}</span>
+        <div class="docs-head talos-stack">
+          <span class="talos-eyebrow">// {title}</span>
           <h1 class="docs-title">{title}</h1>
-          {description && <p class="muted docs-lede">{description}</p>}
+          {description && <p class="talos-muted docs-lede">{description}</p>}
         </div>
         <article class="docs-prose">
           <slot />
@@ -73,54 +47,9 @@ const pageTitle = `${title} — Talos UI`;
       </main>
     </div>
 
-    <script>
-      // WC registration + ambient grid cursor tracking (shared).
-      import { initAmbient } from "../lib/ambient";
-      initAmbient();
-    </script>
-
     <style is:global>
-      :root { color-scheme: dark; }
-      html { background: var(--talos-background); }
-      body {
-        margin: 0;
-        min-height: 100vh;
-        color: var(--talos-foreground);
-        font-family: var(--talos-font-display);
-        font-weight: 300;
-        letter-spacing: 0.01em;
-        -webkit-font-smoothing: antialiased;
-      }
-      .eyebrow {
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: var(--talos-tracking-hud);
-        color: var(--talos-muted-foreground);
-      }
-      .stack { display: flex; flex-direction: column; gap: 1rem; }
-      .row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
-      .muted { color: var(--talos-muted-foreground); }
-      .dot {
-        width: 7px; height: 7px; border-radius: 50%;
-        background: var(--talos-accent);
-        box-shadow: 0 0 8px var(--talos-accent);
-      }
-
-      /* --- Top bar -------------------------------------------------------- */
-      .docs-topbar {
-        position: relative;
-        z-index: 2;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid var(--talos-edge-subtle);
-        background: hsl(var(--talos-background-hsl) / 0.7);
-        backdrop-filter: blur(8px);
-      }
-      .docs-brand { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
-      .docs-toplink { text-decoration: none; transition: color var(--talos-dur-fast) ease; }
-      .docs-toplink:hover { color: var(--talos-text-primary); }
+      /* The document shell (:root/html/body, ambient, nav, scripts) lives in
+         BaseLayout. Only the docs-specific two-column frame + prose live here. */
 
       /* --- Two-column frame ---------------------------------------------- */
       .docs-frame {
@@ -130,13 +59,14 @@ const pageTitle = `${title} — Talos UI`;
         grid-template-columns: 15rem minmax(0, 1fr);
         max-width: 1180px;
         margin: 0 auto;
+        padding-top: calc(var(--site-nav-h) + 1rem); /* clear the fixed SiteNav */
         align-items: start;
       }
       .docs-sidebar {
         position: sticky;
-        top: 0;
+        top: calc(var(--site-nav-h) + 1rem);
         align-self: start;
-        max-height: 100vh;
+        max-height: calc(100vh - var(--site-nav-h));
         overflow-y: auto;
         background: transparent;
       }
@@ -311,5 +241,4 @@ const pageTitle = `${title} — Talos UI`;
       .docs-prose li { margin-top: 0.35rem; }
       .docs-prose li::marker { color: var(--talos-accent); }
     </style>
-  </body>
-</html>
+</BaseLayout>

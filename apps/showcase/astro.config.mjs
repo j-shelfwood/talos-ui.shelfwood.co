@@ -9,10 +9,11 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
   site: "https://talos-ui.shelfwood.co",
   // /manifesto is the front door — a memorable URL that resolves to the
-  // canonical philosophy doc rather than a duplicate page.
+  // canonical philosophy doc rather than a duplicate page. trailingSlash
+  // defaults to "ignore", so a single key matches both /manifesto and
+  // /manifesto/ — defining both collides (two static routes, one output).
   redirects: {
     "/manifesto": "/docs/philosophy/",
-    "/manifesto/": "/docs/philosophy/",
   },
   integrations: [mdx(), sitemap()],
   markdown: {

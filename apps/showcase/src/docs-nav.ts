@@ -32,6 +32,9 @@ export const docsNav: DocsNavGroup[] = [
     label: "Components",
     items: [
       { label: "Panels & buttons", slug: "docs/components" },
+      { label: "Forms", slug: "docs/forms" },
+      { label: "Feedback", slug: "docs/feedback" },
+      { label: "Data & navigation", slug: "docs/data-nav" },
       { label: "Web components", slug: "docs/web-components" },
       { label: "Laravel / Blade", slug: "docs/blade" },
     ],
