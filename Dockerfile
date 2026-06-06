@@ -23,5 +23,7 @@ FROM nginx:1.27-alpine AS serve
 COPY apps/showcase/dist /usr/share/nginx/html
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget -qO- http://localhost/ >/dev/null 2>&1 || exit 1
+# NOTE: deliberately NO Dockerfile HEALTHCHECK — Coolify caches
+# custom_healthcheck_found and then wedges rolling updates on every later deploy
+# (see infrastructure.shelfwood.co/docs/COOLIFY_API.md gotchas). Coolify does its
+# own container health probing.
