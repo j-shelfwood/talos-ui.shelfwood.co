@@ -1,8 +1,10 @@
 ---
-// The home page IS one live instrument (PHILOSOPHY.md): a believable node being
-// monitored in real time, every panel bound to a deterministic sim loop. This
-// is the proof of the thesis — not a catalog of cards. The component showcase
-// lives at /showcase; the CSS primitive reference at /gallery.
+// The homepage is a scroll-JOURNEY (ref: Hyper Scroll). A fixed HUD viewport
+// you fly through; each scene shows a different part of the library doing what
+// it is best at. Lenis provides momentum smooth-scroll; a small rAF layer adds
+// per-scene parallax/scale from scroll progress. Motion here is honest: the
+// camera moves with YOUR scroll (real, user-driven input), and each scene's
+// instruments bind to real/scroll-derived state.
 import "@shelfwood/talos-ui/all.css";
 ---
 
@@ -11,250 +13,246 @@ import "@shelfwood/talos-ui/all.css";
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Talos UI — live HUD instruments</title>
-    <meta
-      name="description"
-      content="A component system for building functional instruments — dashboards, consoles, monitors — where colour, motion, and form are bound to live domain state."
-    />
+    <title>Talos UI — interfaces that visualise a running system</title>
+    <meta name="description" content="A component system for building functional instruments — gauges, trends, meters, flows — where colour and motion are bound to live domain state. Scroll to fly through it." />
     <style>
-      html, body { margin: 0; height: 100%; background: var(--talos-background); }
-      a { color: inherit; }
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; background: var(--talos-background); color: var(--talos-foreground); font-family: var(--talos-font-display); }
+      html.lenis, html.lenis body { height: auto; }
+      .lenis.lenis-smooth { scroll-behavior: auto !important; }
 
-      /* The ambient grid encodes aggregate health (principle 5): its hue is
-         bound by the sim loop via --talos-ambient-hsl, swapped only when the
-         health band changes (nominal/elevated/critical) so it reads as a mood
-         shift, not a flicker. The grid itself cross-fades via its own opacity. */
-      .ambient-overlay { transition: opacity var(--talos-dur-slow) ease; }
+      /* The fixed window we fly through. */
+      .viewport { position: fixed; inset: 0; overflow: hidden; z-index: 1; }
+      .world { position: absolute; inset: 0; will-change: transform; }
 
-      /* Hero cell — the pitch, sharing one screen with the proof. */
-      .home-hero { gap: var(--talos-space-4); }
-      .home-hero h1 {
-        margin: 0;
-        font-weight: 300;
-        text-transform: uppercase;
-        letter-spacing: var(--talos-tracking-hud);
-        font-size: clamp(1.6rem, 3.2vw, 2.6rem);
-        line-height: 1.04;
+      /* Each scene is a full-viewport stage, stacked; the camera (scroll) reveals
+         them one at a time. They are absolutely positioned and shown/parallaxed
+         by the rAF layer via --p (this scene's progress, -1..1, 0 = centred). */
+      .scene {
+        position: absolute; inset: 0;
+        display: grid; place-items: center;
+        padding: 6vh 6vw;
+        opacity: 0;
+        will-change: transform, opacity;
       }
-      .home-hero p {
-        margin: 0;
-        max-width: 52ch;
+      .scene__inner { width: min(1100px, 92vw); }
+
+      /* The scroll proxy gives the page its height — one viewport-height per
+         scene; JS maps scrollY to the active scene. */
+      .scroll-proxy { position: relative; z-index: 0; }
+
+      /* ---- HUD overlay: fixed chrome over the moving world ---- */
+      .hud { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+      .hud a, .hud button { pointer-events: auto; }
+      .hud-line { position: absolute; background: var(--talos-edge-subtle); }
+      .hud-line--top { top: 56px; left: 24px; right: 24px; height: 1px; }
+      .hud-line--bottom { bottom: 56px; left: 24px; right: 24px; height: 1px; }
+      .hud-top, .hud-bottom {
+        position: absolute; left: 24px; right: 24px;
+        display: flex; align-items: center; justify-content: space-between;
+        font-size: 0.7rem; text-transform: uppercase; letter-spacing: var(--talos-tracking-hud);
         color: var(--talos-muted-foreground);
-        font-size: 0.98rem;
-        line-height: 1.6;
       }
-      .home-cta { display: flex; gap: var(--talos-space-3); flex-wrap: wrap; margin-top: var(--talos-space-2); }
-      .home-cta a {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.55rem 1.1rem;
-        font-family: var(--talos-font-display);
-        font-size: 0.78rem;
-        text-transform: uppercase;
-        letter-spacing: var(--talos-tracking-hud-tight);
-        text-decoration: none;
-        border: 1px solid var(--talos-edge-default);
-        color: var(--talos-foreground);
-        transition: border-color var(--talos-dur-fast) ease, background var(--talos-dur-fast) ease;
-        /* bottom-right chamfer echoing the button geometry */
-        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
-      }
-      .home-cta a:hover { border-color: var(--talos-edge-strong); background: var(--talos-surface-2); }
-      .home-cta a.primary { border-color: hsl(var(--talos-accent-hsl) / 0.5); color: var(--talos-accent); }
-      .home-cta a.primary:hover { background: hsl(var(--talos-accent-hsl) / 0.08); }
+      .hud-top { top: 20px; }
+      .hud-bottom { bottom: 20px; }
+      .hud-top a, .hud-bottom a { color: var(--talos-muted-foreground); text-decoration: none; margin-left: 1.25rem; transition: color .18s ease; }
+      .hud-top a:hover, .hud-bottom a:hover { color: var(--talos-foreground); }
+      .brand { display: inline-flex; align-items: center; gap: .5rem; color: var(--talos-foreground); }
+      .brand .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--talos-accent); box-shadow: 0 0 8px var(--talos-accent); }
 
-      .instrument-label {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        font-size: var(--talos-text-2xs, 0.62rem);
-        text-transform: uppercase;
-        letter-spacing: var(--talos-tracking-hud);
-        color: var(--talos-text-tertiary, var(--talos-muted-foreground));
-      }
-      .gauge-row { display: flex; gap: var(--talos-space-5); flex-wrap: wrap; justify-content: space-around; }
-      .pipeline {
-        display: flex;
-        align-items: center;
-        gap: var(--talos-space-3);
-        flex-wrap: wrap;
-        font-size: var(--talos-text-2xs, 0.62rem);
-        text-transform: uppercase;
-        letter-spacing: var(--talos-tracking-hud-tight);
-        color: var(--talos-muted-foreground);
+      /* Progress ticks down the right edge — which scene you're in. */
+      .hud-progress { position: absolute; right: 22px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; }
+      .hud-progress span { width: 8px; height: 1px; background: var(--talos-edge-default); transition: width .25s ease, background .25s ease; }
+      .hud-progress span.active { width: 22px; background: var(--talos-accent); }
+
+      .scroll-cue { position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%); font-size: .62rem; letter-spacing: var(--talos-tracking-hud); color: var(--talos-muted-foreground); text-transform: uppercase; animation: cue 2.4s ease-in-out infinite; }
+      @keyframes cue { 0%,100%{opacity:.3;transform:translate(-50%,0)} 50%{opacity:1;transform:translate(-50%,4px)} }
+
+      /* CRT atmospherics — scanlines, vignette, grain. Decorative *frame*, kept
+         faint; the information lives in the scenes, not the chrome. */
+      .scanlines { position: fixed; inset: 0; z-index: 2; pointer-events: none;
+        background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0,0,0,0.18) 2px 3px);
+        mix-blend-mode: multiply; opacity: .5; }
+      .vignette { position: fixed; inset: 0; z-index: 2; pointer-events: none;
+        background: radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(0,0,0,0.55) 100%); }
+
+      /* Scene typography */
+      .eyebrow { font-size: .7rem; text-transform: uppercase; letter-spacing: var(--talos-tracking-hud); color: var(--talos-muted-foreground); }
+      .display { font-weight: 300; text-transform: uppercase; letter-spacing: var(--talos-tracking-hud); line-height: 1.02; margin: .5rem 0; font-size: clamp(2.4rem, 6vw, 5.5rem); }
+      .lede { max-width: 46ch; color: var(--talos-muted-foreground); font-size: clamp(1rem,1.4vw,1.2rem); line-height: 1.6; }
+      .scene-title { font-size: .72rem; text-transform: uppercase; letter-spacing: var(--talos-tracking-hud); color: var(--talos-text-tertiary, var(--talos-muted-foreground)); }
+      .cta { display: inline-flex; gap: .9rem; margin-top: 1.5rem; flex-wrap: wrap; }
+      .cta a { display:inline-flex; align-items:center; padding:.6rem 1.2rem; font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; text-decoration:none; border:1px solid var(--talos-edge-default); color:var(--talos-foreground); transition:border-color .18s, background .18s; clip-path: polygon(0 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%); }
+      .cta a:hover { border-color: var(--talos-edge-strong); background: var(--talos-surface-2); }
+      .cta a.primary { border-color: hsl(var(--talos-accent-hsl)/.5); color: var(--talos-accent); }
+
+      .row { display:flex; gap:2.5rem; flex-wrap:wrap; align-items:center; justify-content:center; }
+      .quote { font-weight: 300; text-transform: uppercase; letter-spacing: .04em; line-height: 1.15; font-size: clamp(1.6rem,3.4vw,3rem); max-width: 18ch; }
+      .quote .accent { color: var(--talos-accent); }
+
+      @media (prefers-reduced-motion: reduce) {
+        .scene { transition: none; }
+        .scroll-cue { animation: none; }
       }
     </style>
   </head>
   <body>
-    <div class="ambient-overlay"></div>
-
-    <div class="talos-console talos-console--viewport">
-      <!-- RAIL -->
-      <header class="console-rail">
-        <span class="console-rail__brand">
-          <span style="width:7px;height:7px;border-radius:50%;background:var(--talos-accent);box-shadow:0 0 8px var(--talos-accent)"></span>
-          SYS://TALOS-UI
-        </span>
-        <span class="console-rail__spacer"></span>
-        <span class="console-rail__meta">
-          <a href="/showcase/" style="text-decoration:none">Showcase</a>
-          <a href="/gallery/" style="text-decoration:none">Gallery</a>
-          <a href="/docs/philosophy/" style="text-decoration:none">Philosophy</a>
-          <a href="/docs/getting-started/" style="text-decoration:none">Docs</a>
-          <span id="clock">--:--:--</span>
-        </span>
-      </header>
-
-      <!-- SCOPE -->
-      <main class="console-scope">
-        <!-- Hero: the pitch, on the same screen as the proof -->
-        <div class="console-cell console-cell--full home-hero">
-          <span class="instrument-label"><span>// @shelfwood/talos-ui — v0.0.1</span><span>LIVE</span></span>
-          <h1>Interfaces that visualise<br />a running system</h1>
-          <p>
-            Talos UI builds <strong style="color:var(--talos-foreground);font-weight:400">instruments</strong>,
-            not static pages — gauges, trend lines, meters, and flows where colour
-            and motion are bound to live domain state. Everything on this screen is
-            one component library driven by a single sim loop. Read it twice; it
-            differs.
-          </p>
-          <div class="home-cta">
-            <a class="primary" href="/docs/getting-started/">Get started</a>
-            <a href="/docs/philosophy/">Read the philosophy</a>
-            <a href="/showcase/">Component showcase</a>
+    <div class="viewport">
+      <div class="world" id="world">
+        <!-- SCENE 0 — Thesis -->
+        <section class="scene" data-scene>
+          <div class="scene__inner">
+            <span class="eyebrow">// @shelfwood/talos-ui — v0.0.1</span>
+            <h1 class="display">Interfaces that<br />visualise a<br />running system</h1>
+            <p class="lede">Gauges, trends, meters, and flows where colour and motion are bound to live domain state. Scroll to fly through them.</p>
           </div>
-        </div>
+        </section>
 
-        <!-- Core gauges -->
-        <div class="console-cell console-cell--wide">
-          <span class="instrument-label"><span>Node atlas-01 — resources</span></span>
-          <div class="gauge-row">
-            <talos-gauge id="g-cpu" value="20" min="0" max="100" warn="70" crit="90" label="CPU" unit="%" size="148"></talos-gauge>
-            <talos-gauge id="g-mem" value="40" min="0" max="100" warn="70" crit="90" label="Memory" unit="%" size="148"></talos-gauge>
-            <talos-gauge id="g-load" value="30" min="0" max="100" warn="75" crit="92" label="Load" unit="%" size="148"></talos-gauge>
+        <!-- SCENE 1 — Live resource instruments -->
+        <section class="scene" data-scene>
+          <div class="scene__inner" style="text-align:center">
+            <span class="scene-title">01 — Resource instruments</span>
+            <div class="row" style="margin-top:2rem">
+              <talos-gauge id="g1" value="20" warn="70" crit="90" unit="%" label="CPU" size="180"></talos-gauge>
+              <talos-gauge id="g2" value="50" warn="70" crit="90" unit="%" label="Memory" size="180"></talos-gauge>
+              <talos-meter id="m1" value="30" warn="70" crit="90" label="Disk" unit="%" width="260"></talos-meter>
+            </div>
+            <p class="lede" style="margin:2rem auto 0">Colour <em>is</em> the band — nominal, warning, critical. The number and colour change together, on their own.</p>
           </div>
-        </div>
+        </section>
 
-        <!-- Throughput trend -->
-        <div class="console-cell">
-          <span class="instrument-label"><span>Throughput</span><span>60s</span></span>
-          <talos-trend id="t-thru" value="40" points="60" min="0" max="100" warn="70" crit="90" unit="%" width="360" height="120" fill></talos-trend>
-        </div>
-
-        <!-- Pipeline flow -->
-        <div class="console-cell console-cell--full">
-          <span class="instrument-label"><span>Pipeline</span></span>
-          <div class="pipeline">
-            <span>INGEST</span>
-            <talos-flow id="f-a" rate="30" max="100" warn="70" crit="90" width="150" height="34"></talos-flow>
-            <span>TRANSFORM</span>
-            <talos-flow id="f-b" rate="30" max="100" warn="70" crit="90" width="150" height="34"></talos-flow>
-            <span>VALIDATE</span>
-            <talos-flow id="f-c" rate="30" max="100" warn="70" crit="90" width="150" height="34"></talos-flow>
-            <span>STORE</span>
+        <!-- SCENE 2 — Signal / throughput -->
+        <section class="scene" data-scene>
+          <div class="scene__inner" style="text-align:center">
+            <span class="scene-title">02 — Signal &amp; throughput</span>
+            <div style="margin:2rem auto 0;max-width:680px">
+              <talos-trend id="t1" value="40" points="72" warn="70" crit="90" unit="%" label="Throughput" width="660" height="160" fill></talos-trend>
+            </div>
+            <div class="row" style="margin-top:2rem;justify-content:center;color:var(--talos-muted-foreground);font-size:.7rem;text-transform:uppercase;letter-spacing:.12em">
+              <span>INGEST</span>
+              <talos-flow id="f1" rate="40" max="100" warn="70" crit="90" width="160" height="34"></talos-flow>
+              <span>PROCESS</span>
+              <talos-flow id="f2" rate="40" max="100" warn="70" crit="90" width="160" height="34" curve="12"></talos-flow>
+              <span>STORE</span>
+            </div>
+            <p class="lede" style="margin:2rem auto 0">The line's shape is the rate; the dash speed is the throughput. Freeze the frame and you lose nothing — but the motion is the data moving.</p>
           </div>
-        </div>
-      </main>
+        </section>
 
-      <!-- ASIDE -->
-      <aside class="console-aside">
-        <span class="console-aside__label">// Telemetry</span>
-        <talos-meter id="m-disk" value="30" min="0" max="100" warn="70" crit="90" label="Disk" unit="%" width="240"></talos-meter>
-        <talos-meter id="m-net" value="50" min="0" max="100" warn="70" crit="90" label="Network" unit="%" width="240"></talos-meter>
-        <talos-meter id="m-q" value="10" min="0" max="100" warn="60" crit="85" label="Queue depth" width="240"></talos-meter>
-        <talos-meter id="m-err" value="2" min="0" max="100" warn="20" crit="50" label="Error rate" unit="%" width="240"></talos-meter>
-      </aside>
+        <!-- SCENE 3 — Manifesto + CTA -->
+        <section class="scene" data-scene>
+          <div class="scene__inner" style="text-align:center">
+            <p class="quote">The interface is an <span class="accent">instrument</span>, not a document.</p>
+            <div class="cta" style="justify-content:center">
+              <a class="primary" href="/docs/getting-started/">Get started</a>
+              <a href="/docs/philosophy/">Read the manifesto</a>
+              <a href="/showcase/">See every component</a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
 
-      <!-- STATUS -->
-      <footer class="console-status">
-        <span class="console-status__stat" id="health" style="--_status:var(--talos-success-hsl)">NOMINAL</span>
-        <span class="console-status__spacer"></span>
-        <span>NODE atlas-01</span>
-        <span>UPTIME 14d 06h</span>
-        <span>BUILD 0.0.1</span>
-      </footer>
+    <!-- scroll proxy: one viewport per scene -->
+    <div class="scroll-proxy" id="proxy"></div>
+
+    <!-- fixed HUD chrome -->
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    <div class="hud">
+      <div class="hud-line hud-line--top"></div>
+      <div class="hud-line hud-line--bottom"></div>
+      <div class="hud-top">
+        <a class="brand" href="/"><span class="dot"></span>SYS://TALOS-UI</a>
+        <nav>
+          <a href="/docs/philosophy/">Manifesto</a>
+          <a href="/showcase/">Showcase</a>
+          <a href="/docs/getting-started/">Docs</a>
+        </nav>
+      </div>
+      <div class="hud-bottom">
+        <span id="hud-scene">SCENE 00 / 04</span>
+        <span>MIT — Shelfwood ◢</span>
+      </div>
+      <div class="hud-progress" id="progress"></div>
+      <div class="scroll-cue">Scroll ▼</div>
     </div>
 
     <script>
       import "@shelfwood/talos-ui/wc";
-      const root = document.documentElement;
-      addEventListener("pointermove", (e) => {
-        root.style.setProperty("--talos-cursor-x", e.clientX + "px");
-        root.style.setProperty("--talos-cursor-y", e.clientY + "px");
+      import Lenis from "lenis";
+
+      const scenes = Array.from(document.querySelectorAll<HTMLElement>("[data-scene]"));
+      const N = scenes.length;
+      const world = document.getElementById("world")!;
+      const proxy = document.getElementById("proxy")!;
+      const progress = document.getElementById("progress")!;
+      const hudScene = document.getElementById("hud-scene")!;
+      const cue = document.querySelector<HTMLElement>(".scroll-cue")!;
+
+      // proxy height = one viewport per scene (so scrollable range = (N-1) vh)
+      proxy.style.height = `${N * 100}vh`;
+
+      // progress ticks
+      progress.innerHTML = scenes.map(() => "<span></span>").join("");
+      const ticks = Array.from(progress.children) as HTMLElement[];
+
+      const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+      let target = 0; // scroll progress in "scenes" (0..N-1)
+      let current = 0;
+
+      const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+      lenis.on("scroll", ({ scroll, limit }: any) => {
+        target = limit > 0 ? (scroll / limit) * (N - 1) : 0;
       });
 
-      const $ = (id: string) => document.getElementById(id);
+      function frame(time: number) {
+        lenis.raf(time);
+        current = reduce ? target : lerp(current, target, 0.1);
 
-      // Deterministic seeded PRNG (mulberry32) so the sim is reproducible —
-      // the philosophy values a system whose behaviour is defined, not random.
-      function mulberry32(seed: number) {
-        return function () {
-          seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
-          let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-        };
+        scenes.forEach((scene, i) => {
+          const p = current - i; // -.. 0 (centred) ..+
+          const dist = Math.abs(p);
+          // each scene is a stage that flies in from below and out the top,
+          // with a touch of scale + depth so it reads as a camera move.
+          const y = p * -16; // vh offset
+          const scale = 1 - Math.min(dist, 1) * 0.12;
+          const opacity = Math.max(0, 1 - dist * 1.15);
+          scene.style.transform = `translate3d(0, ${y}vh, 0) scale(${scale.toFixed(3)})`;
+          scene.style.opacity = String(opacity.toFixed(3));
+          scene.style.pointerEvents = dist < 0.5 ? "auto" : "none";
+        });
+
+        const active = Math.round(current);
+        ticks.forEach((t, i) => t.classList.toggle("active", i === active));
+        hudScene.textContent = `SCENE ${String(active).padStart(2, "0")} / ${String(N - 1).padStart(2, "0")}`;
+        cue.style.opacity = current > 0.3 ? "0" : "";
+
+        requestAnimationFrame(frame);
       }
+      requestAnimationFrame(frame);
+
+      // ---- drive the live instruments (deterministic seeded sim) ----
+      const $ = (id: string) => document.getElementById(id);
+      function mulberry32(s: number) { return () => { s|=0; s=(s+0x6d2b79f5)|0; let t=Math.imul(s^(s>>>15),1|s); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; }; }
       const rand = mulberry32(0x7a105);
       const clamp = (v: number) => Math.round(Math.max(0, Math.min(100, v)));
-
-      // Each signal: a slow sine carrier + a faster wobble + a little seeded
-      // noise, phased apart so the instruments don't move in lockstep.
       let k = 0;
-      const signal = (carrier: number, wobble: number, phase: number, amp: number, base: number) =>
-        clamp(base + amp * Math.sin(k * carrier + phase) + (amp * 0.18) * Math.sin(k * wobble) + (rand() - 0.5) * 6);
-
-      const tick = () => {
-        k += 0.05;
-        const cpu = signal(1.0, 5, 0, 42, 50);
-        const mem = signal(0.4, 3, 1.2, 28, 55);
-        const load = signal(0.7, 6, 2.0, 40, 48);
-        const thru = signal(0.8, 4, 2.6, 40, 50);
-        const disk = signal(0.25, 2, 0.5, 18, 45);
-        const net = signal(0.9, 7, 3.1, 38, 50);
-        const queue = clamp(12 + 55 * Math.max(0, Math.sin(k * 1.2 + 1)));
-        const err = clamp(3 + 22 * Math.max(0, Math.sin(k * 0.6 - 1.5)) ** 2);
-
-        $("g-cpu")?.setAttribute("value", String(cpu));
-        $("g-mem")?.setAttribute("value", String(mem));
-        $("g-load")?.setAttribute("value", String(load));
-        ($("t-thru") as any)?.push(thru);
-        $("f-a")?.setAttribute("rate", String(thru));
-        $("f-b")?.setAttribute("rate", String(clamp(thru * 0.85)));
-        $("f-c")?.setAttribute("rate", String(clamp(thru * 0.7)));
-        $("m-disk")?.setAttribute("value", String(disk));
-        $("m-net")?.setAttribute("value", String(net));
-        $("m-q")?.setAttribute("value", String(queue));
-        $("m-err")?.setAttribute("value", String(err));
-
-        // Aggregate health → status bar colour + word AND the ambient grid hue
-        // (form encodes function; principle 5 — even the background shows state).
-        const peak = Math.max(cpu, mem, load, thru, queue, err * 2);
-        const band = peak >= 90 ? "critical" : peak >= 72 ? "elevated" : "nominal";
-        const hsl =
-          band === "critical" ? "--talos-danger-hsl" :
-          band === "elevated" ? "--talos-warning-hsl" : "--talos-success-hsl";
-        const word = band === "critical" ? "CRITICAL" : band === "elevated" ? "ELEVATED" : "NOMINAL";
-        const h = $("health");
-        if (h) { h.style.setProperty("--_status", `var(${hsl})`); h.textContent = word; }
-
-        // Only retint the ambient layer when the band actually changes — a mood
-        // shift, not per-frame churn. At nominal it stays neutral white.
-        if (band !== lastBand) {
-          lastBand = band;
-          root.style.setProperty(
-            "--talos-ambient-hsl",
-            band === "nominal" ? "0 0% 100%" : `var(${hsl})`,
-          );
-        }
-      };
-      let lastBand = "";
-      setInterval(tick, 280);
-
-      const clock = $("clock");
-      const updateClock = () => { if (clock) clock.textContent = new Date().toTimeString().slice(0, 8); };
-      updateClock();
-      setInterval(updateClock, 1000);
+      setInterval(() => {
+        k += 0.06;
+        const cpu = clamp(50 + 42 * Math.sin(k) + 6 * Math.sin(k * 5));
+        const mem = clamp(55 + 30 * Math.sin(k * .5 + 1));
+        const thru = clamp(50 + 42 * Math.sin(k * .8 + 2) + (rand() - .5) * 6);
+        $("g1")?.setAttribute("value", String(cpu));
+        $("g2")?.setAttribute("value", String(mem));
+        $("m1")?.setAttribute("value", String(clamp(40 + 20 * Math.sin(k * .3))));
+        ($("t1") as any)?.push(thru);
+        $("f1")?.setAttribute("rate", String(thru));
+        $("f2")?.setAttribute("rate", String(clamp(thru * .8)));
+      }, 280);
     </script>
   </body>
 </html>
