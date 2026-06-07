@@ -444,30 +444,36 @@ import "@shelfwood/talos-ui/all.css";
           </div>
         </section>
 
-        <!-- 2 — SIGNAL & THROUGHPUT (trend + signal-statistics panel) -->
+        <!-- 2 — NEUTRON FLUX & COOLANT LOOP. The "motion is telemetry" scene:
+             the trend's shape is the flux rate, the flow dashes' speed is the
+             coolant throughput. Both bound to the live sim — freeze the frame and
+             the shape/level survive; only the travel (the rate) is lost. -->
         <section class="scene" data-scene>
-          <span class="scene-title">02 — Signal &amp; throughput</span>
-          <p class="lede" style="margin:.5rem 0 0;max-width:58ch">The line's shape is the rate; the dash speed is the throughput. Freeze it and you lose nothing — the motion is the data moving.</p>
+          <span class="scene-title">02 — Flux &amp; coolant loop</span>
+          <p class="lede" style="margin:.5rem 0 0;max-width:58ch">The line's shape is the neutron flux; the dash speed is coolant throughput. Freeze it and you keep the shape and the level — only the motion (the rate itself) is what's lost.</p>
           <div class="signal-grid" style="margin-top:1.5rem">
             <div class="signal-main">
-              <talos-trend id="t1" value="40" points="96" warn="70" crit="90" unit="%" label="Render throughput — fps" width="640" height="170" fill></talos-trend>
+              <div class="block-head" style="margin-bottom:.4rem"><span class="bt">Neutron flux</span><span class="bm">u/s · live</span></div>
+              <talos-trend id="t1" min="200" max="1100" width="640" height="170" fill></talos-trend>
+              <!-- coolant loop: feedwater pumps -> core -> heat exchanger. dash
+                   speed = throughput; idle segments simply don't travel. -->
               <div class="signal-flows">
-                <span>INGEST</span>
-                <talos-flow id="f1" rate="40" max="100" warn="70" crit="90" width="130" height="30"></talos-flow>
-                <span>PROCESS</span>
-                <talos-flow id="f2" rate="40" max="100" warn="70" crit="90" width="130" height="30" curve="12"></talos-flow>
-                <span>STORE</span>
+                <span>FEEDWATER</span>
+                <talos-flow id="f1" rate="40" max="100" warn="70" crit="90" width="150" height="30"></talos-flow>
+                <span>CORE</span>
+                <talos-flow id="f2" rate="40" max="100" warn="70" crit="90" width="150" height="30" curve="12"></talos-flow>
+                <span>EXCHANGER</span>
               </div>
             </div>
             <div class="signal-stats">
-              <div class="block-head"><span class="bt">Signal stats</span><span class="bm">live window</span></div>
+              <div class="block-head"><span class="bt">Flux window</span><span class="bm">live · u/s</span></div>
               <div class="metric"><span class="mk">current</span><span class="mr"><span class="mbar"><i id="b-s2cur"></i></span><span class="mv" id="d-s2cur">—</span><span class="delta" id="dl-s2cur"></span></span></div>
-              <div class="metric"><span class="mk">avg</span><span class="mr"><svg class="spark" id="sp-s2"></svg><span class="mv" id="d-s2avg">—</span><span class="mx">%</span></span></div>
+              <div class="metric"><span class="mk">avg</span><span class="mr"><svg class="spark" id="sp-s2"></svg><span class="mv" id="d-s2avg">—</span></span></div>
               <div class="metric"><span class="mk">min</span><span class="mr"><span class="mbar"><i id="b-s2min"></i></span><span class="mv" id="d-s2min">—</span><span class="mx">low</span></span></div>
               <div class="metric"><span class="mk">peak</span><span class="mr"><span class="mbar"><i id="b-s2max"></i></span><span class="mv" id="d-s2max">—</span><span class="mx">high</span></span></div>
               <div class="metric"><span class="mk">jitter</span><span class="mr"><span class="dotmx" id="dm-s2jit"></span><span class="mv" id="d-s2jit">—</span><span class="mx">σ</span></span></div>
-              <div class="metric"><span class="mk">ingest</span><span class="mr"><span class="mbar"><i id="b-s2ing"></i></span><span class="mv" id="d-s2ing">—</span><span class="mx">sc/s</span></span></div>
-              <div class="metric"><span class="mk">lag</span><span class="mr"><span class="mbar"><i id="b-s2lag"></i></span><span class="mv" id="d-s2lag">—</span><span class="mx">ms</span></span></div>
+              <div class="metric"><span class="mk">coolant</span><span class="mr"><span class="mbar"><i id="b-s2ing"></i></span><span class="mv" id="d-s2ing">—</span><span class="mx">%</span></span></div>
+              <div class="metric"><span class="mk">load</span><span class="mr"><span class="mbar"><i id="b-s2lag"></i></span><span class="mv" id="d-s2lag">—</span><span class="mx">%</span></span></div>
             </div>
           </div>
         </section>
@@ -879,6 +885,7 @@ import "@shelfwood/talos-ui/all.css";
       const fpsHist: number[] = [];
       let usedPeak = 0;
       let coolPeak = 0; // reactor coolant-load peak (sim)
+      const fluxHist: number[] = []; // neutron-flux window for Scene 02 stats
 
       // ---- DIVERSE-VIZ helper layer (sparkline/dot-matrix/radial/delta) -----
       // Per-metric history buffers feed sparklines + deltas; renderers paint
@@ -1157,30 +1164,36 @@ import "@shelfwood/talos-ui/all.css";
           $("rcon-clock")!.textContent = `${String(Math.floor(up/60)).padStart(2,"0")}:${String(up%60).padStart(2,"0")}`;
         }
 
-        // ---- Scene 02: signal & throughput ----
-        // Trend → real FPS (0..100 scaled so 60fps reads high). Flows → scroll
-        // velocity (ingest) and event-loop lag recovery (process).
-        const fpsPct = r2(clamp((fps / 60) * 100));
-        ($("t1") as any)?.push(fpsPct);
-        // Scene 02 signal statistics — derived from the live fps window
+        // ---- Scene 02: FLUX & COOLANT LOOP ----
+        // Trend = neutron flux (u/s) from the sim — a real moving shape, scaled
+        // 200..1100 so it reads as flux, not a pinned percentage. The flux window
+        // stats are ALL computed from one coherent flux history (no contradictory
+        // min>current nonsense), and the flows carry coolant throughput.
+        ($("t1") as any)?.push(fluxV);
+        fluxHist.push(fluxV); if (fluxHist.length > 48) fluxHist.shift();
         {
           const setRow = (id: string, txt: string, fill?: number, bnd?: "warn"|"crit") => {
             const v = $("d-" + id); if (v) { v.textContent = txt; bnd?v.setAttribute("data-band",bnd):v.removeAttribute("data-band"); }
             const b = $("b-" + id); if (b && fill != null) (b as HTMLElement).style.width = clamp(fill) + "%";
           };
-          const sBand = band(60 - fps, 20, 30);
-          setRow("s2cur", fpsPct + "%", fpsPct, sBand); delta("dl-s2cur", "s2cur", fpsPct);
-          setRow("s2avg", String(fpsAvg), fpsAvg); pushHist("s2", fpsPct); spark("sp-s2", "s2", sBand, 100);
-          setRow("s2min", String(Math.round((fpsMin/60)*100)), (fpsMin/60)*100);
-          setRow("s2max", String(Math.round((fpsMax/60)*100)), (fpsMax/60)*100);
-          const jit = fpsHist.length>1 ? Math.round(Math.sqrt(fpsHist.reduce((a,b)=>a+(b-fpsAvg)**2,0)/fpsHist.length)) : 0;
-          setRow("s2jit", String(jit)); dotmx("dm-s2jit", jit, 8, jit>4?"warn":undefined);
-          setRow("s2ing", String(scrollRate), scrollRate);
-          setRow("s2lag", loopLagMs.toFixed(0), Math.min(loopLagMs*1.5,100), loopLagMs>50?"warn":undefined);
+          const fMin = Math.round(Math.min(...fluxHist)), fMax = Math.round(Math.max(...fluxHist));
+          const fAvg = Math.round(fluxHist.reduce((a, b) => a + b, 0) / fluxHist.length);
+          // % of the flux scale (200..1100) for the bar fills — a real common scale.
+          const pct = (v: number) => clamp(((v - 200) / 900) * 100);
+          const loadBnd = reactor.load >= 90 ? "crit" : reactor.load >= 70 ? "warn" : undefined;
+          setRow("s2cur", fluxV.toLocaleString(), pct(fluxV), loadBnd); delta("dl-s2cur", "s2cur", fluxV);
+          setRow("s2avg", fAvg.toLocaleString()); pushHist("s2", pct(fluxV)); spark("sp-s2", "s2", loadBnd, 100);
+          setRow("s2min", fMin.toLocaleString(), pct(fMin));
+          setRow("s2max", fMax.toLocaleString(), pct(fMax));
+          const jit = fluxHist.length > 1 ? Math.round(Math.sqrt(fluxHist.reduce((a, b) => a + (b - fAvg) ** 2, 0) / fluxHist.length)) : 0;
+          setRow("s2jit", String(jit)); dotmx("dm-s2jit", Math.round(jit / 20), 8, jit > 120 ? "warn" : undefined);
+          setRow("s2ing", Math.round(reactor.coolant) + "", reactor.coolant, reactor.coolant > 70 ? "warn" : undefined);
+          setRow("s2lag", Math.round(reactor.load) + "", reactor.load, loadBnd);
         }
-        $("f1")?.setAttribute("rate", String(scrollRate));
-        $("f2")?.setAttribute("rate", String(lagRate));
-        loopLagMs *= 0.6;                                          // decay the stall reading
+        // Coolant loop flows: feedwater throughput (= demand met) and core→exchanger
+        // transfer (= heat being moved). Both bound to live sim rates.
+        $("f1")?.setAttribute("rate", String(r2(clamp(reactor.load))));
+        $("f2")?.setAttribute("rate", String(r2(clamp(reactor.coolant + 25))));
 
         // ---- Scene 03: composed console (zoned shell, live cells + aside) ----
         {
