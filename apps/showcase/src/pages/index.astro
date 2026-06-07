@@ -223,6 +223,10 @@ import "@shelfwood/talos-ui/all.css";
       /* PRIMARY trend with the big load number overlaid top-right. */
       .rcon-trend-wrap { position:relative; }
       .rcon-trend-wrap talos-trend { width:100%; display:block; }
+      /* The big banded number is the rcon-bignum overlay; suppress the trend's
+         own built-in readout so the figure isn't shown twice. */
+      .rcon-trend-wrap talos-trend::part(readout),
+      .rcon-trend-wrap talos-trend::part(caption) { display:none; }
       .rcon-bignum { position:absolute; top:-.2rem; right:0; display:flex; align-items:baseline; gap:.35rem;
         pointer-events:none; }
       .rcon-bignum b { font-size:3rem; font-weight:300; line-height:.9; letter-spacing:.01em;
@@ -322,17 +326,20 @@ import "@shelfwood/talos-ui/all.css";
       .mesh-orb { display:flex; justify-content:center; }
       .mesh-legend { border:1px solid var(--talos-edge-subtle); padding:.7rem 1rem;
         background: linear-gradient(180deg, hsl(0 0% 100% / 0.015), transparent); }
-      .mesh-row { display:grid; grid-template-columns: 6rem 2.5rem 1fr 2.5rem; align-items:center; gap:1rem;
+      /* :global so innerHTML-injected legend rows pick up the grid (Astro scopes
+         <style> by a hash that injected nodes don't carry). Column widths sized
+         for the longest reactor label (CONTAINMENT) so cells never collide. */
+      :global(.mesh-row) { display:grid; grid-template-columns: 7.5rem 2.2rem 1fr 2.6rem; align-items:center; gap:.9rem;
         font-size:.6rem; padding:.32rem 0; border-bottom:1px solid var(--talos-edge-subtle); font-variant-numeric:tabular-nums; }
-      .mesh-row > span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-      .mesh-row:last-child { border-bottom:0; }
+      :global(.mesh-row) > span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      :global(.mesh-row:last-child) { border-bottom:0; }
       .mesh-row--head { color: var(--talos-text-tertiary); text-transform:uppercase; letter-spacing:.12em;
         border-bottom:1px solid var(--talos-edge-default); }
-      .mesh-row .mn { color: var(--talos-foreground); text-transform:uppercase; }
-      .mesh-row .mt { color: var(--talos-text-tertiary); }
-      .mesh-row .mp { display:flex; align-items:center; gap:.4rem; }
-      .mesh-row .mp .mbar { flex:1; }
-      .mesh-row .ma { color: var(--talos-text-tertiary); }
+      :global(.mesh-row .mn) { color: var(--talos-foreground); text-transform:uppercase; }
+      :global(.mesh-row .mt) { color: var(--talos-text-tertiary); }
+      :global(.mesh-row .mp) { display:flex; align-items:center; gap:.4rem; }
+      :global(.mesh-row .mp .mbar) { flex:1; }
+      :global(.mesh-row .ma) { color: var(--talos-text-tertiary); }
       @media (max-width: 820px) { .mesh-grid { grid-template-columns:1fr; } }
 
       /* the dial rail across the top of the wall — glanceable primaries */
@@ -504,17 +511,17 @@ import "@shelfwood/talos-ui/all.css";
           </div>
         </section>
 
-        <!-- 4 — SERVICE MESH (orbital + live subsystem legend table) -->
+        <!-- 4 — REACTOR SUBSYSTEM MESH (orbital + live legend, same sim data) -->
         <section class="scene" data-scene>
-          <span class="scene-title">04 — This tab's subsystems</span>
-          <p class="lede" style="margin:.5rem 0 0;max-width:60ch">The mesh is this page's own runtime. Node colour = real pressure, orbit speed = real activity, ring = tier. The legend is the same data as a sortable table.</p>
+          <span class="scene-title">04 — Reactor subsystems</span>
+          <p class="lede" style="margin:.5rem 0 0;max-width:60ch">The core's eight subsystems — pumps, rods, exchanger, turbine, containment. Node colour = pressure, orbit speed = activity, ring = tier. The mesh and the legend are one dataset, two instruments.</p>
           <div class="mesh-grid" style="margin-top:1rem">
             <div class="mesh-orb">
-              <talos-orbital id="orb" rings="3" warn="50" crit="80" core-label="THIS TAB" size="440"></talos-orbital>
+              <talos-orbital id="orb" rings="3" warn="50" crit="80" core-label="CORE" core-sub="CORE://TALOS-1" size="440"></talos-orbital>
             </div>
             <div class="mesh-legend">
-              <div class="block-head"><span class="bt">Subsystem map</span><span class="bm">8 nodes · 3 tiers</span></div>
-              <div class="mesh-row mesh-row--head"><span>node</span><span>tier</span><span>pressure</span><span>activity</span></div>
+              <div class="block-head"><span class="bt">Subsystem map</span><span class="bm">8 subsystems · 3 tiers</span></div>
+              <div class="mesh-row mesh-row--head"><span>subsystem</span><span>tier</span><span>pressure</span><span>activity</span></div>
               <div class="mesh-rows" id="mesh-rows"></div>
             </div>
           </div>
@@ -871,6 +878,7 @@ import "@shelfwood/talos-ui/all.css";
       // rolling windows + peaks for the console's min/max/avg readouts
       const fpsHist: number[] = [];
       let usedPeak = 0;
+      let coolPeak = 0; // reactor coolant-load peak (sim)
 
       // ---- DIVERSE-VIZ helper layer (sparkline/dot-matrix/radial/delta) -----
       // Per-metric history buffers feed sparklines + deltas; renderers paint
@@ -998,24 +1006,79 @@ import "@shelfwood/talos-ui/all.css";
         return memSupported ? perfMem.usedJSHeapSize / 1048576 : 0;
       }
 
-      setInterval(() => {
-        // ---- Scene 01: resource instruments ----
-        // CPU gauge → frame BUDGET used: how much of the 16.7ms frame we burn.
-        // 100% = dropping frames; low = idle. This is the page's real load.
-        const frameBudget = r2(clamp((frameMs / 16.7) * 50));     // 60fps→~50, 30fps→100
-        const heap = r2(heapPct());
-        if (++domTick % 8 === 0) domCount = document.querySelectorAll("*").length;
-        const domLoad = r2(clamp((domCount / 1200) * 100));        // vs a 1200-node ceiling
+      // ---- REACTOR SIMULATION ------------------------------------------------
+      // The hero depicts a reactor, and the reactor is a real (if fictional)
+      // running system — a small deterministic model with genuine feedback, so
+      // the instruments actually MOVE and the bands trip for real. This is the
+      // honest answer to "an idle tab flatlines": we visualise a system that is
+      // genuinely doing something. Labelled SIM in the UI; nothing here pretends
+      // to be live tab telemetry.
+      //
+      // Model: demand drives core LOAD; load heats the core; coolant DRAINS while
+      // hot and recovers while cool; PRESSURE rises with heat and falls as coolant
+      // works; a rare TRANSIENT spikes demand toward a SCRAM threshold. Subsystems
+      // (pumps/rods/exchanger/…) carry their own derived load + activity.
+      const reactor = {
+        t: 0,
+        load: 28,        // % of core budget in use
+        coolant: 18,     // % thermal load on the coolant loop (low = cool)
+        pressure: 30,    // aggregate stress
+        flux: 540,       // neutron flux, u/s
+        demand: 28,      // target load the governor chases
+        transient: 0,    // decays; injects extra demand
+      };
+      const SUB = [
+        { id: "pump-a",   label: "PUMP-A",     ring: 1, base: 0.30 },
+        { id: "pump-b",   label: "PUMP-B",     ring: 1, base: 0.28 },
+        { id: "rods",     label: "ROD-BANK",   ring: 2, base: 0.55 },
+        { id: "exch",     label: "EXCHANGER",  ring: 2, base: 0.62 },
+        { id: "turbine",  label: "TURBINE",    ring: 3, base: 0.70 },
+        { id: "feedwtr",  label: "FEEDWATER",  ring: 3, base: 0.40 },
+        { id: "contain",  label: "CONTAINMENT",ring: 3, base: 0.20 },
+        { id: "aux",      label: "AUX-BUS",    ring: 2, base: 0.33 },
+      ];
+      function tickReactor(): void {
+        const r = reactor;
+        r.t += 1;
+        // Demand: slow sine baseline + periodic load steps + decaying transients.
+        const baseline = 34 + 18 * Math.sin(r.t / 22) + 8 * Math.sin(r.t / 7);
+        if (r.t % 47 === 0) r.demand = 40 + Math.random() * 45;       // load event
+        if (r.t % 130 === 0) r.transient = 55 + Math.random() * 30;   // rare transient
+        r.transient *= 0.86;                                          // transients decay
+        const target = clamp(Math.max(baseline, r.demand) + r.transient);
+        r.load += (target - r.load) * 0.14;                           // governor chases demand
+        // Coolant heats when load is high, recovers when low (the feedback loop).
+        const heatIn = Math.max(0, r.load - 55) * 0.10;
+        const cool = Math.max(0, 45 - r.load) * 0.04 + 0.6;
+        r.coolant = clamp(r.coolant + heatIn - cool);
+        // Pressure: worst of load and coolant heat, eased (the aggregate stress).
+        const pTarget = Math.max(r.load * 0.9, r.coolant * 1.05);
+        r.pressure += (pTarget - r.pressure) * 0.2;
+        // Flux tracks load with a little noise (neutron economy).
+        r.flux = 200 + r.load * 9 + (Math.random() - 0.5) * 40;
+      }
 
-        // ---- FOUNDATIONAL derived signals — computed ONCE at the top so every
-        //      scene block below can read them (avoids const TDZ across blocks) --
+      setInterval(() => {
+        // ---- Advance the reactor sim, then map its state onto the foundational
+        //      signal names every scene reads. (Same variable names as before so
+        //      the per-scene blocks below are unchanged — only the SOURCE moved
+        //      from flatlining idle-tab metrics to the live reactor model.) ----
+        tickReactor();
+        const frameBudget = r2(reactor.load);          // CORE LOAD
+        const heap = r2(reactor.coolant);              // COOLANT thermal load
+        const pressure = r2(reactor.pressure);         // aggregate reactor pressure
+        const fluxV = Math.round(reactor.flux);        // neutron flux u/s
+
+        if (++domTick % 8 === 0) domCount = document.querySelectorAll("*").length;
+        const domLoad = r2(reactor.pressure);          // containment ~ tracks pressure
+
+        // fps history still feeds Scene 02's trend stats (real paint cadence).
         fpsHist.push(fps); if (fpsHist.length > 60) fpsHist.shift();
         const fpsMin = Math.round(Math.min(...fpsHist)), fpsMax = Math.round(Math.max(...fpsHist));
         const fpsAvg = Math.round(fpsHist.reduce((a, b) => a + b, 0) / fpsHist.length);
         if (memSupported) usedPeak = Math.max(usedPeak, perfMem.usedJSHeapSize);
-        const scrollRate = r2(clamp(vel() * 120));                 // camera velocity → ingest
-        const lagRate = r2(clamp(loopLagMs * 1.2));                // longtask pressure → process
-        const pressure = r2(Math.max(frameBudget, memSupported ? heap : 0, domLoad));
+        const scrollRate = fluxV;                       // flux drives the throughput readouts
+        const lagRate = r2(clamp(reactor.coolant * 1.1)); // coolant-loop work
         const conn = (navigator as any).connection || {};
         const rtt = conn.rtt ?? 0;
         const camZ = current * GAP;
@@ -1032,36 +1095,36 @@ import "@shelfwood/talos-ui/all.css";
             if (!el) return; if (b) el.setAttribute("data-band", b); else el.removeAttribute("data-band");
           };
 
-          // PRIMARY — core load trend + big number, banded.
+          // PRIMARY — core LOAD trend (its own readout shows the number; no
+          // duplicate overlay). The sim gives the line real shape now.
           ($("t-frame") as any)?.push(frameBudget);
           const loadBand = frameBudget >= 90 ? "crit" : frameBudget >= 70 ? "warn" : undefined;
           const loadEl = $("d-coreload");
           if (loadEl) { loadEl.textContent = String(Math.round(frameBudget)); setBand(loadEl, loadBand); }
-          $("d-g1fps")!.textContent = String(Math.round(fps));
-          // FLUX — camera velocity as particle flux; LINK — real connection RTT.
-          $("d-flux")!.textContent = String(Math.round(scrollRate));
+          // FLUX — neutron flux (u/s) from the sim; STALLS — coolant-pump trips;
+          // LINK — real connection RTT (the one genuinely-live garnish).
+          $("d-flux")!.textContent = fluxV.toLocaleString();
           const linkEl = $("d-rtt01"); if (linkEl) { linkEl.textContent = rtt ? String(rtt) : "—";
             setBand(linkEl, rtt > 300 ? "crit" : rtt > 150 ? "warn" : undefined); }
-          dotmx("dm-g1long", longTaskCount, 8, longTaskCount>0?"warn":undefined);
-          $("d-g1long")!.textContent = String(longTaskCount);
+          const trips = reactor.coolant > 80 ? 2 : reactor.coolant > 60 ? 1 : 0;
+          dotmx("dm-g1long", trips, 8, trips>0?"warn":undefined);
+          $("d-g1long")!.textContent = String(trips);
 
-          // SECONDARY — coolant meter (real heap %, native high=bad band).
-          if (memSupported) {
-            $("mt-heap")?.setAttribute("value", String(heap));
-            const u = perfMem.usedJSHeapSize/1048576, t = perfMem.totalJSHeapSize/1048576;
-            $("d-g2used")!.textContent = u.toFixed(0);
-            $("d-g2tot")!.textContent = t.toFixed(0);
-            $("d-g2pk")!.textContent = (usedPeak/1048576).toFixed(0)+" MB";
-          } else {
-            $("mt-heap")?.setAttribute("value", "0");
-            $("d-g2used")!.textContent = "n/a"; $("d-g2tot")!.textContent = "n/a"; $("d-g2pk")!.textContent = "n/a";
-          }
+          // SECONDARY — COOLANT meter (sim thermal load; high = bad). USED/CAP/PEAK
+          // expressed as coolant-loop figures derived from the sim.
+          $("mt-heap")?.setAttribute("value", String(heap));
+          $("d-g2used")!.textContent = (reactor.coolant * 1.8 + 12).toFixed(0);
+          $("d-g2tot")!.textContent = "200";
+          coolPeak = Math.max(coolPeak, reactor.coolant);
+          $("d-g2pk")!.textContent = (coolPeak * 1.8 + 12).toFixed(0) + " u";
 
-          // CONTAINMENT — DOM count headline + drift spark + delta.
-          pushHist("nodes", domCount, 32);
-          $("d-m1n")!.textContent = domCount.toLocaleString();
-          spark("sp-m1n", "nodes", undefined, Math.max(domCount, 1)*1.1);
-          delta("dl-m1", "m1nodes", domCount);
+          // CONTAINMENT — node count drifts with pressure (integrity load). The
+          // count is the headline; spark = drift, delta = direction.
+          const contain = Math.round(1200 + reactor.pressure * 14);
+          pushHist("nodes", contain, 32);
+          $("d-m1n")!.textContent = contain.toLocaleString();
+          spark("sp-m1n", "nodes", undefined, 1200 + 100 * 14);
+          delta("dl-m1", "m1nodes", contain);
 
           // HEADER STATE + FOOTER AGGREGATE + PANEL MOOD — all from `pressure`,
           // the worst of {core load, coolant, containment load}. One signal, the
@@ -1220,28 +1283,28 @@ import "@shelfwood/talos-ui/all.css";
         // POWER · STORE live row
         setM("uptime", `${Math.floor(performance.now() / 1000)}`);
 
-        // ---- Scene 04: the orbital IS this tab's subsystem map ----
-        // ring 1 = render pipeline, ring 2 = main thread, ring 3 = resources.
-        // value = pressure % (→ colour band), load = relative weight, rate = activity.
-        const meshNodes = [
-          { id: "raf",    ring: 1, label: "RAF",    value: frameBudget,           load: 0.4 + 0.5*(frameBudget/100), rate: clamp(fps/60*100) },
-          { id: "paint",  ring: 1, label: "PAINT",  value: clamp(frameMs/33*100), load: 0.4,                          rate: clamp(fps/60*100) },
-          { id: "scroll", ring: 2, label: "SCROLL", value: clamp(vel()*200),      load: 0.3 + 0.5*clamp(vel(),1),     rate: scrollRate },
-          { id: "loop",   ring: 2, label: "EVENT-LOOP", value: clamp(loopLagMs*2), load: 0.5,                          rate: clamp(60 - loopLagMs) },
-          { id: "dom",    ring: 2, label: "DOM",    value: domLoad,               load: 0.3 + 0.5*(domLoad/100),      rate: clamp(domLoad) },
-          { id: "heap",   ring: 3, label: "HEAP",   value: memSupported ? heap : 0, load: 0.4,                        rate: memSupported ? heap : 5 },
-          { id: "net",    ring: 3, label: "NET",    value: clamp(rtt / 3),        load: 0.3,                          rate: clamp((conn.downlink ?? 10) * 6) },
-          { id: "time",   ring: 3, label: "UPTIME", value: clamp(performance.now()/600000*100), load: 0.25,           rate: 20 },
-        ];
+        // ---- Scene 04: the orbital IS the reactor's subsystem mesh ----
+        // Each node is a real reactor subsystem (pumps/rods/exchanger/…) whose
+        // pressure + activity derive from the sim — so the mesh and the legend
+        // move with the core, and stay coherent with the reactor framing.
+        const meshNodes = SUB.map((s) => {
+          const v = clamp(s.base * 100 * (0.5 + reactor.load / 100) + (reactor.pressure - 40) * 0.3);
+          const act = clamp(40 + reactor.flux / 12 + s.base * 30);
+          return { id: s.id, ring: s.ring, label: s.label, value: r2(v),
+                   load: 0.3 + 0.5 * (v / 100), rate: r2(act) };
+        });
         if (orb) orb.nodes = meshNodes;
-        // Scene 04 legend table — same node data, rows with bar + band + activity
+        // Scene 04 legend table — same node data as the mesh, one row each.
+        // NOTE: rows are injected via innerHTML, so their layout styles must be
+        // GLOBAL (Astro scopes <style> by a class hash that injected nodes don't
+        // carry — that's why the columns previously collapsed into run-on text).
         const meshEl = $("mesh-rows");
         if (meshEl) {
           meshEl.innerHTML = meshNodes.map((n) => {
             const v = r2(n.value), bnd = v >= 80 ? "crit" : v >= 50 ? "warn" : "";
             const col = bnd === "crit" ? "var(--talos-danger)" : bnd === "warn" ? "var(--talos-warning)" : "var(--talos-accent)";
             return `<div class="mesh-row"><span class="mn">${n.label}</span><span class="mt">R${n.ring}</span>`
-              + `<span class="mp"><span class="mbar" style="position:relative;overflow:hidden;height:3px;background:var(--talos-surface-2)"><i style="position:absolute;inset:0 auto 0 0;width:${v}%;background:${col}"></i></span><span style="color:${col};min-width:2.2rem;text-align:right">${v}%</span></span>`
+              + `<span class="mp"><span class="mbar" style="position:relative;overflow:hidden;height:3px;background:var(--talos-surface-2)"><i style="position:absolute;inset:0 auto 0 0;width:${v}%;background:${col}"></i></span><span style="color:${col};min-width:2.6rem;text-align:right">${v}%</span></span>`
               + `<span class="ma">${r2(n.rate)}</span></div>`;
           }).join("");
         }
