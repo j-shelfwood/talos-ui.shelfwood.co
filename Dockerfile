@@ -20,7 +20,9 @@ RUN bun run build
 
 # ---- serve stage ----------------------------------------------------------
 FROM nginx:1.27-alpine AS serve
-COPY apps/showcase/dist /usr/share/nginx/html
+# Copy the built site FROM the build stage (not the host context — dist is
+# gitignored/dockerignored and only exists inside the build stage after `bun run build`).
+COPY --from=build /app/apps/showcase/dist /usr/share/nginx/html
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 # NOTE: deliberately NO Dockerfile HEALTHCHECK — Coolify caches
