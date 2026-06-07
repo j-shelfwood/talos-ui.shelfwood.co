@@ -481,38 +481,38 @@ import "@shelfwood/talos-ui/all.css";
         <!-- 3 — COMPOSED CONSOLE (zoned shell: rail · cells · aside · status) -->
         <section class="scene" data-scene>
           <span class="scene-title">03 — Composed into a console</span>
-          <p class="lede" style="margin:.5rem 0 0;max-width:58ch">Instruments compose into a real cockpit — a non-document, zoned, fixed-viewport shell. Rail, instrument cells, telemetry aside, status bar.</p>
+          <p class="lede" style="margin:.5rem 0 0;max-width:58ch">The same instruments compose into a real cockpit — a non-document, zoned, fixed-viewport shell. Rail, instrument cells, telemetry aside, status bar. One reactor, one screen.</p>
           <div class="cshell" style="margin-top:1.25rem">
             <div class="cshell-rail">
-              <span class="crail-brand"><span class="dot"></span>ATLAS-01</span>
+              <span class="crail-brand"><span class="dot"></span>CORE://TALOS-1</span>
               <span class="crail-item crail-item--on">OVERVIEW</span>
-              <span class="crail-item">METRICS</span>
-              <span class="crail-item">LOGS</span>
-              <span class="crail-item">CONFIG</span>
+              <span class="crail-item">SUBSYSTEMS</span>
+              <span class="crail-item">LOG</span>
+              <span class="crail-item">CONTROL</span>
               <span class="crail-spacer"></span>
               <span class="crail-meta" id="c-uptime">—</span>
             </div>
             <div class="cshell-scope">
-              <div class="ccell"><span class="ccell-t">FRAME</span><talos-gauge id="cg1" value="0" warn="70" crit="90" unit="%" size="120"></talos-gauge><div class="ccell-sub"><span class="mk">fps</span><svg class="spark" id="sp-cg1"></svg><span class="mv" id="d-cg1">—</span></div></div>
-              <div class="ccell"><span class="ccell-t">HEAP</span><talos-gauge id="cg2" value="0" warn="70" crit="90" unit="%" size="120"></talos-gauge><div class="ccell-sub"><span class="mk">mb</span><span class="mbar" style="flex:1"><i id="b-cg2"></i></span><span class="mv" id="d-cg2">—</span></div></div>
-              <div class="ccell"><span class="ccell-t">SIGNAL</span><talos-gauge id="cg3" value="0" warn="70" crit="90" unit="%" size="120"></talos-gauge><div class="ccell-sub"><span class="mk">fps</span><svg class="spark" id="sp-cg3"></svg><span class="mv" id="d-cg3">—</span></div></div>
+              <div class="ccell"><span class="ccell-t">CORE LOAD</span><talos-gauge id="cg1" value="0" warn="70" crit="90" unit="%" size="120"></talos-gauge><div class="ccell-sub"><span class="mk">load</span><svg class="spark" id="sp-cg1"></svg><span class="mv" id="d-cg1">—</span></div></div>
+              <div class="ccell"><span class="ccell-t">COOLANT</span><talos-meter id="cm2" value="0" warn="70" crit="90" unit="%" width="150"></talos-meter><div class="ccell-sub"><span class="mk">load</span><span class="mbar" style="flex:1"><i id="b-cg2"></i></span><span class="mv" id="d-cg2">—</span></div></div>
+              <div class="ccell"><span class="ccell-t">FLUX</span><talos-trend id="ct3" min="200" max="1100" width="170" height="84" fill></talos-trend><div class="ccell-sub"><span class="mk">u/s</span><span class="mv" id="d-cg3">—</span></div></div>
             </div>
             <div class="cshell-aside">
               <span class="caside-label">// Telemetry</span>
-              <div class="metric"><span class="mk">budget</span><span class="mr"><span class="mbar"><i id="b-cab"></i></span><span class="mv" id="d-cab">—</span></span></div>
-              <div class="metric"><span class="mk">dom</span><span class="mr"><span class="mbar"><i id="b-cad"></i></span><span class="mv" id="d-cad">—</span></span></div>
-              <div class="metric"><span class="mk">rtt</span><span class="mr"><svg class="spark" id="sp-cart"></svg><span class="mv" id="d-cart">—</span></span></div>
-              <div class="metric"><span class="mk">cores</span><span class="mr"><span class="dotmx" id="dm-cac"></span><span class="mv" id="d-cac">—</span></span></div>
+              <div class="metric"><span class="mk">load</span><span class="mr"><span class="mbar"><i id="b-cab"></i></span><span class="mv" id="d-cab">—</span></span></div>
+              <div class="metric"><span class="mk">press</span><span class="mr"><span class="mbar"><i id="b-cad"></i></span><span class="mv" id="d-cad">—</span></span></div>
+              <div class="metric"><span class="mk">link</span><span class="mr"><svg class="spark" id="sp-cart"></svg><span class="mv" id="d-cart">—</span></span></div>
+              <div class="metric"><span class="mk">trips</span><span class="mr"><span class="dotmx" id="dm-cac"></span><span class="mv" id="d-cac">—</span></span></div>
               <talos-meter id="cam" value="0" warn="70" crit="90" label="Pressure" unit="%" width="180"></talos-meter>
             </div>
             <div class="cshell-status">
               <span class="cstat" id="c-st1" style="--_status:var(--talos-success-hsl)">NOMINAL</span>
               <span class="cstat-sep"></span>
-              <span class="cstat-k">heap <b id="c-st-heap">—</b></span>
-              <span class="cstat-k">fps <b id="c-st-fps">—</b></span>
-              <span class="cstat-k">nodes <b id="c-st-nodes">—</b></span>
+              <span class="cstat-k">coolant <b id="c-st-heap">—</b></span>
+              <span class="cstat-k">flux <b id="c-st-fps">—</b></span>
+              <span class="cstat-k">load <b id="c-st-nodes">—</b></span>
               <span class="crail-spacer"></span>
-              <span class="cstat-k">VER 0.0.1</span>
+              <span class="cstat-k">CORE://TALOS-1</span>
             </div>
           </div>
         </section>
@@ -535,34 +535,34 @@ import "@shelfwood/talos-ui/all.css";
 
         <!-- 5 — CONTROLS (forms + live validation/telemetry panel) -->
         <section class="scene" data-scene>
-          <span class="scene-title">05 — Controls</span>
-          <p class="lede" style="margin:.5rem 0 0;max-width:58ch">Talos is not only read-outs — inputs, validation, and toggles carry the same chamfered HUD language, with state shown in colour.</p>
+          <span class="scene-title">05 — Reactor controls</span>
+          <p class="lede" style="margin:.5rem 0 0;max-width:58ch">A console is operated, not just read. Inputs, validation, and toggles carry the same chamfered HUD language — set a value out of safe range and the field shows it in colour, instantly.</p>
           <div class="ctrl-grid" style="margin-top:1.5rem">
             <div class="ctrl-form">
               <div class="talos-field">
-                <label class="talos-label talos-label--required">Node hostname</label>
-                <input class="talos-input" value="atlas-01" />
-                <span class="talos-field__help">Lowercase, no spaces.</span>
+                <label class="talos-label talos-label--required">Rod insertion</label>
+                <input class="talos-input" value="62%" />
+                <span class="talos-field__help">Control-rod depth, 0–100%.</span>
               </div>
               <div class="talos-field talos-field--error">
-                <label class="talos-label">Port</label>
-                <input class="talos-input talos-input--error" value="99999" />
-                <span class="talos-field__error">Out of range (1–65535).</span>
+                <label class="talos-label">Coolant setpoint</label>
+                <input class="talos-input talos-input--error" value="940°C" />
+                <span class="talos-field__error">Above containment limit (≤ 850°C).</span>
               </div>
-              <label style="display:flex;gap:.6rem;align-items:center;color:var(--talos-muted-foreground)"><input type="checkbox" class="talos-checkbox" checked /> Enable auto-scaling</label>
-              <label style="display:flex;gap:.6rem;align-items:center;color:var(--talos-muted-foreground)"><input type="checkbox" class="talos-switch" checked /> Live telemetry</label>
+              <label style="display:flex;gap:.6rem;align-items:center;color:var(--talos-muted-foreground)"><input type="checkbox" class="talos-checkbox" checked /> Auto-governor</label>
+              <label style="display:flex;gap:.6rem;align-items:center;color:var(--talos-muted-foreground)"><input type="checkbox" class="talos-switch" checked /> SCRAM arm</label>
             </div>
             <div class="ctrl-panel">
-              <div class="block-head"><span class="bt">Form telemetry</span><span class="bm">live</span></div>
+              <div class="block-head"><span class="bt">Control telemetry</span><span class="bm">live</span></div>
               <div class="radial-rail">
-                <div class="radial-wrap"><div class="radial" id="rad-valid"><span class="rv" id="rv-valid">—</span></div><span class="rl">valid</span></div>
-                <div class="radial-wrap"><div class="radial" id="rad-heap"><span class="rv" id="rv-heap">—</span></div><span class="rl">heap</span></div>
-                <div class="radial-wrap"><div class="radial" id="rad-frame"><span class="rv" id="rv-frame">—</span></div><span class="rl">frame</span></div>
+                <div class="radial-wrap"><div class="radial" id="rad-valid"><span class="rv" id="rv-valid">—</span></div><span class="rl">rods</span></div>
+                <div class="radial-wrap"><div class="radial" id="rad-heap"><span class="rv" id="rv-heap">—</span></div><span class="rl">coolant</span></div>
+                <div class="radial-wrap"><div class="radial" id="rad-frame"><span class="rv" id="rv-frame">—</span></div><span class="rl">load</span></div>
               </div>
-              <div class="metric"><span class="mk">fields</span><span class="mr"><span class="dotmx" id="dm-fields"></span><span class="mv">2 / 4</span></span></div>
-              <div class="metric"><span class="mk">errors</span><span class="mr"><span class="mv" id="d-errs" data-band="warn">1</span><span class="mx">port</span></span></div>
+              <div class="metric"><span class="mk">setpts</span><span class="mr"><span class="dotmx" id="dm-fields"></span><span class="mv">3 / 4</span></span></div>
+              <div class="metric"><span class="mk">faults</span><span class="mr"><span class="mv" id="d-errs" data-band="warn">1</span><span class="mx">coolant</span></span></div>
               <div style="border-top:1px solid var(--talos-edge-subtle);padding-top:.6rem;margin-top:.3rem">
-                <talos-readout id="hr1" value="0.0" unit="MB" label="This tab — live heap" warn="60" crit="85"></talos-readout>
+                <talos-readout id="hr1" value="0" unit="u/s" label="Neutron flux" warn="900" crit="1000"></talos-readout>
                 <span class="eyebrow" style="display:block;margin-top:.4rem">↞ decoding on every change</span>
               </div>
             </div>
@@ -577,18 +577,18 @@ import "@shelfwood/talos-ui/all.css";
           <!-- derived stat-strip — the headline aggregates -->
           <div class="console-strip">
             <div class="strip-cell"><span class="sk">Pressure</span><span class="sv" id="st-pressure">0<small>%</small></span></div>
-            <div class="strip-cell"><span class="sk">FPS avg</span><span class="sv" id="st-fpsavg">60</span></div>
-            <div class="strip-cell"><span class="sk">Heap</span><span class="sv" id="st-heap">0<small>MB</small></span></div>
-            <div class="strip-cell"><span class="sk">DOM</span><span class="sv" id="st-dom">0</span></div>
-            <div class="strip-cell"><span class="sk">Net</span><span class="sv" id="st-net">—</span></div>
-            <div class="strip-cell"><span class="sk">Uptime</span><span class="sv" id="st-uptime">0<small>s</small></span></div>
+            <div class="strip-cell"><span class="sk">Flux avg</span><span class="sv" id="st-fpsavg">60</span></div>
+            <div class="strip-cell"><span class="sk">Coolant</span><span class="sv" id="st-heap">0<small>%</small></span></div>
+            <div class="strip-cell"><span class="sk">Load</span><span class="sv" id="st-dom">0</span></div>
+            <div class="strip-cell"><span class="sk">Link</span><span class="sv" id="st-net">—</span></div>
+            <div class="strip-cell"><span class="sk">Run</span><span class="sv" id="st-uptime">0<small>s</small></span></div>
           </div>
 
           <!-- dial rail + pressure core — glanceable primaries over the data -->
           <div class="console-dials">
-            <div class="dwrap"><talos-gauge id="s6-frame" value="0" warn="70" crit="90" unit="%" size="96"></talos-gauge><span class="dtag">Frame</span></div>
-            <div class="dwrap"><talos-gauge id="s6-dom" value="0" warn="70" crit="90" unit="%" size="96"></talos-gauge><span class="dtag">DOM load</span></div>
-            <div class="dwrap"><talos-gauge id="s6-heap" value="0" warn="70" crit="90" unit="%" size="96"></talos-gauge><span class="dtag">Heap</span></div>
+            <div class="dwrap"><talos-gauge id="s6-frame" value="0" warn="70" crit="90" unit="%" size="96"></talos-gauge><span class="dtag">Core load</span></div>
+            <div class="dwrap"><talos-gauge id="s6-dom" value="0" warn="70" crit="90" unit="%" size="96"></talos-gauge><span class="dtag">Pressure</span></div>
+            <div class="dwrap"><talos-gauge id="s6-heap" value="0" warn="70" crit="90" unit="%" size="96"></talos-gauge><span class="dtag">Coolant</span></div>
             <div class="glass-panel activity-edge core-panel" id="s6-pressure" style="--talos-rate:0">
               <div class="glass-panel-content" style="padding:.7rem 1rem;display:flex;flex-direction:column;gap:.25rem;align-items:center">
                 <span class="dtag">System pressure</span>
@@ -1195,45 +1195,55 @@ import "@shelfwood/talos-ui/all.css";
         $("f1")?.setAttribute("rate", String(r2(clamp(reactor.load))));
         $("f2")?.setAttribute("rate", String(r2(clamp(reactor.coolant + 25))));
 
-        // ---- Scene 03: composed console (zoned shell, live cells + aside) ----
+        // ---- Scene 03: composed console — the zoned reactor cockpit shell.
+        // Three cells of DIFFERENT instruments (load gauge · coolant meter ·
+        // flux trend), an aside, and a status bar — all on the sim. The point of
+        // this scene is COMPOSITION (non-document zoned shell), so it reuses the
+        // core readings rather than introducing new ones. ----
         {
           const setT = (id: string, txt: string) => { const e = $(id); if (e) e.textContent = txt; };
           const setB = (id: string, fill: number) => { const e = $(id); if (e) (e as HTMLElement).style.width = clamp(fill) + "%"; };
-          $("cg1")?.setAttribute("value", String(frameBudget));
-          $("cg2")?.setAttribute("value", String(memSupported ? heap : 0));
-          $("cg3")?.setAttribute("value", String(fpsPct));
-          setT("d-cg1", String(Math.round(fps))); spark("sp-cg1", "fps", band(60-fps,20,30), 80);
-          setT("d-cg2", memSupported ? heapMB().toFixed(0) : "n/a"); setB("b-cg2", memSupported ? heap : 0);
-          setT("d-cg3", String(fpsPct)); spark("sp-cg3", "s2", band(60-fps,20,30), 100);
+          $("cg1")?.setAttribute("value", String(frameBudget));            // CORE LOAD gauge
+          $("cm2")?.setAttribute("value", String(heap));                  // COOLANT meter
+          ($("ct3") as any)?.push(fluxV);                                 // FLUX trend
+          setT("d-cg1", Math.round(frameBudget) + "%"); spark("sp-cg1", "s2", undefined, 100);
+          setT("d-cg2", Math.round(heap) + "%"); setB("b-cg2", heap);
+          setT("d-cg3", fluxV.toLocaleString());
           // aside telemetry
-          setT("d-cab", frameBudget + "%"); setB("b-cab", frameBudget);
-          setT("d-cad", domLoad + "%"); setB("b-cad", domLoad);
+          setT("d-cab", Math.round(frameBudget) + "%"); setB("b-cab", frameBudget);
+          setT("d-cad", Math.round(reactor.pressure) + "%"); setB("b-cad", reactor.pressure);
           setT("d-cart", String(rtt)); spark("sp-cart", "rtt", band(rtt,150,300), 300);
-          setT("d-cac", String(navigator.hardwareConcurrency || "—")); dotmx("dm-cac", navigator.hardwareConcurrency || 0, 16);
+          const subTrips = reactor.pressure > 70 ? 3 : reactor.pressure > 50 ? 2 : 1;
+          setT("d-cac", String(subTrips) + "/8"); dotmx("dm-cac", subTrips, 8, subTrips>5?"warn":undefined);
           $("cam")?.setAttribute("value", String(pressure));
-          // status bar
+          // status bar — reactor figures
           setT("c-uptime", `↑ ${Math.floor(performance.now()/1000)}s`);
-          setT("c-st-heap", (memSupported ? heap + "%" : "n/a"));
-          setT("c-st-fps", String(Math.round(fps)));
-          setT("c-st-nodes", String(domCount));
+          setT("c-st-heap", Math.round(heap) + "%");
+          setT("c-st-fps", fluxV.toLocaleString());
+          setT("c-st-nodes", Math.round(frameBudget) + "%");
           const st1 = $("c-st1");
-          if (st1) { const sev = pressure >= 90 ? ["CRITICAL","--talos-danger-hsl"] : pressure >= 70 ? ["DEGRADED","--talos-warning-hsl"] : ["NOMINAL","--talos-success-hsl"];
+          if (st1) { const sev = pressure >= 90 ? ["SCRAM","--talos-danger-hsl"] : pressure >= 70 ? ["ELEVATED","--talos-warning-hsl"] : ["NOMINAL","--talos-success-hsl"];
             st1.textContent = sev[0]; (st1 as HTMLElement).style.setProperty("--_status", `var(${sev[1]})`); }
         }
 
-        // ---- Scene 05: controls — readout + validation/telemetry radials ----
-        $("hr1")?.setAttribute("value", memSupported ? heapMB().toFixed(1) : "—");
-        radial("rad-valid", 50, "warn", "50%");                      // 2 of 4 fields valid (1 error)
-        radial("rad-heap", memSupported ? heap : 0, band(heap,70,90), (memSupported?heap:0) + "%");
-        radial("rad-frame", frameBudget, band(frameBudget,70,90), frameBudget + "%");
-        dotmx("dm-fields", 2, 4, "warn");
+        // ---- Scene 05: reactor controls — readout + control-telemetry radials ----
+        // Flux readout (scramble-decodes on change); radials = rods/coolant/load
+        // from the sim. The one form error (coolant setpoint over limit) is static.
+        $("hr1")?.setAttribute("value", fluxV.toLocaleString());
+        const rods = r2(clamp(62 + (reactor.load - 50) * 0.4));     // governor trims rods to load
+        radial("rad-valid", rods, undefined, rods + "%");
+        radial("rad-heap", heap, band(heap,70,90), Math.round(heap) + "%");
+        radial("rad-frame", frameBudget, band(frameBudget,70,90), Math.round(frameBudget) + "%");
+        dotmx("dm-fields", 3, 4, "warn");
 
         // ============ Scene 06: MISSION CONSOLE — ~50 live vitals ============
-        // dials + core
-        $("s6-frame")?.setAttribute("value", String(frameBudget));
-        $("s6-dom")?.setAttribute("value", String(domLoad));
-        $("s6-heap")?.setAttribute("value", String(memSupported ? heap : 0));
-        ($("s6-fps") as any)?.push(r2(clamp((fps / 60) * 100)));
+        // Primary dials = the reactor's three headline vitals (load/pressure/
+        // coolant) from the sim; the dense rows below mix sim figures with a few
+        // honest live-tab garnish signals — "every signal at once" is the point.
+        $("s6-frame")?.setAttribute("value", String(frameBudget));      // core load
+        $("s6-dom")?.setAttribute("value", String(pressure));           // pressure
+        $("s6-heap")?.setAttribute("value", String(heap));              // coolant
+        ($("s6-fps") as any)?.push(clamp(((fluxV - 200) / 900) * 100)); // flux trend
         $("s6-read")?.setAttribute("value", String(pressure));
         $("s6-pressure")?.style.setProperty("--talos-rate", (pressure / 100).toFixed(2));
 
@@ -1287,11 +1297,11 @@ import "@shelfwood/talos-ui/all.css";
 
         // stat-strip aggregates
         const setS = (id: string, html: string) => { const e = $(id); if (e) e.innerHTML = html; };
-        setS("st-pressure", `${pressure}<small>%</small>`);
-        setS("st-fpsavg", String(fpsAvg));
-        setS("st-heap", memSupported ? `${mb(perfMem.usedJSHeapSize)}<small>MB</small>` : "n/a");
-        setS("st-dom", String(domCount));
-        setS("st-net", conn.effectiveType ? `${conn.effectiveType} · ${rtt}<small>ms</small>` : "—");
+        setS("st-pressure", `${Math.round(pressure)}<small>%</small>`);
+        setS("st-fpsavg", `${fluxV.toLocaleString()}`);
+        setS("st-heap", `${Math.round(heap)}<small>%</small>`);
+        setS("st-dom", `${Math.round(frameBudget)}<small>%</small>`);
+        setS("st-net", conn.effectiveType ? `${conn.effectiveType} · ${rtt}<small>ms</small>` : `${rtt}<small>ms</small>`);
         setS("st-uptime", `${Math.floor(performance.now() / 1000)}<small>s</small>`);
         // POWER · STORE live row
         setM("uptime", `${Math.floor(performance.now() / 1000)}`);
