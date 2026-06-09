@@ -7,7 +7,7 @@ import Demo from "../../../components/Demo.astro";
 
 {/* Register the web components so the demos render. A single-line import is
     safe in MDX; the live sim-driven version of all of these is the home page. */}
-<script>import "@shelfwood/talos-ui/wc";</script>
+<script>import "@j_shelfwood/talos-ui/wc";</script>
 
 The instruments below are [web components](/docs/web-components/) — import the
 `wc` entry once to register them, then use the tags. Each demo shows
@@ -16,7 +16,7 @@ from one sim loop. All bind colour to `warn` / `crit` bands and degrade honestly
 under reduced motion (see [form encodes function](/docs/form-encodes-function/)).
 
 ```html
-<script type="module">import "@shelfwood/talos-ui/wc";</script>
+<script type="module">import "@j_shelfwood/talos-ui/wc";</script>
 ```
 
 ## Gauge — `<talos-gauge>`

@@ -35,6 +35,6 @@
     <path d="M0 0 H470 V44 L452 62 H0 Z" fill="#ffffff" fill-opacity="0.05"
           stroke="#ffffff" stroke-opacity="0.16"/>
     <text x="24" y="40" fill="hsl(140 90% 60%)" font-size="26"
-          font-family="ui-monospace, monospace">bun add @shelfwood/talos-ui</text>
+          font-family="ui-monospace, monospace">bun add @j_shelfwood/talos-ui</text>
   </g>
 </svg>

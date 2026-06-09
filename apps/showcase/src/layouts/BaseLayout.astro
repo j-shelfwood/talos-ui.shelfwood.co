@@ -13,7 +13,7 @@
 //                          and reads var(--site-nav-h) to clear the pill.
 //   • `main`             — wraps the slot in a centered <main> already offset
 //                          below the nav. Reach for this for simple pages.
-import "@shelfwood/talos-ui/all.css";
+import "@j_shelfwood/talos-ui/all.css";
 import Meta from "../components/Meta.astro";
 import SiteNav from "../components/SiteNav.astro";
 
@@ -60,8 +60,8 @@ const pageTitle = title === "Talos UI" ? title : `${title} — Talos UI`;
       // components, track the cursor for the ambient grid (the pack's shipped
       // lerped tracker — dogfooding our own export), and feed the per-panel
       // sheen coordinates.
-      import "@shelfwood/talos-ui/wc";
-      import { initAmbientCursor } from "@shelfwood/talos-ui/ambient";
+      import "@j_shelfwood/talos-ui/wc";
+      import { initAmbientCursor } from "@j_shelfwood/talos-ui/ambient";
       initAmbientCursor();
       document.querySelectorAll<HTMLElement>(".interactive-panel").forEach((p) => {
         p.addEventListener("pointermove", (e) => {

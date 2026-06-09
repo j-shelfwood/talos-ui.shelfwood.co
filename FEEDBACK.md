@@ -46,10 +46,36 @@ migration (~70% of the surface area):
 - `AnimatedFileTree`, `TerminalDemo`, `ContextAssembler`, `Toc`, `Mermaid`
 - `Tag`, `BackButton`, `Logo`
 
-**Decision needed:** which of these are *design-system* concerns (promote into the
-pack: `Tag`, `BackButton`, `Footer`, `Navbar`, contact panels) vs *site-specific*
-(keep local: `Mermaid`, `SEO`, `PersonalHeroPanel`, `MiniProfileCard`). Until that
-line is drawn, "migrate to the pack" has no defined endpoint.
+### ✅ Scope line drawn (2026-06-07)
+
+Each of the 22 was classified by **coupling evidence** (does it import site content
+collections, read `site-config.json`, hardcode Shelfwood brand/copy/endpoints, or is
+it generic prop/slot-driven chrome?). Three buckets:
+
+**PROMOTE — generic primitives, no site coupling (13)** → move into the pack as-is
+`BentoGrid`, `ContactMethod`, `EthosPanel`, `PersonalHeroPanel`, `BlogPostPanel`,
+`NavigationCard`, `PreviewCard`, `AnimatedFileTree`, `TerminalDemo`, `Mermaid`,
+`Tag`, `BackButton`, `Logo`
+*(Note: `AnimatedFileTree`/`TerminalDemo` pull `gsap`; `Mermaid` pulls `mermaid` —
+declare these as optional peerDeps, not hard deps, to keep the core install lean.)*
+
+**REFACTOR-THEN-PROMOTE — generic in shape, one coupling to parameterize out (4)**
+| Component | Coupling to lift into a prop |
+|---|---|
+| `ContactInfoPanel` | hardcoded heading + "Shelfwood can help" copy + method labels |
+| `MiniProfileCard` | hardcoded `"Meet the expert"` CTA |
+| `ContextAssembler` | hardcoded `yeet .` command, terminal path, `.gitignore` label |
+| `Toc` | `"On this page"` text + **DOM-selector coupling** to navbar/glass-panel (decouple via props/refs, not querySelector) |
+
+**SITE-LOCAL — bound to Shelfwood brand/content/endpoint, keep in the site (5)**
+`Navbar` (scroll/TOC integration), `NavLogo` (`"Shelfwood"` aria + `/` route),
+`Footer` (copyright, tagline, contact copy), `SEO` (site name, `@shelfwood`,
+description defaults), `ContactFormPanel` (`/api/contact` endpoint + form copy)
+
+**Endpoint defined:** the pack's component surface = current 9 wrappers **+ 13
+PROMOTE + 4 REFACTOR-THEN-PROMOTE = 26**. The 5 SITE-LOCAL stay in shelfwood.co
+permanently. "Migrate to the pack" now has a finish line. This is the surface to
+freeze before the first `npm publish` (so promotions don't become breaking bumps).
 
 ---
 
@@ -78,11 +104,12 @@ Verified absent (no `--talos-*` equivalent exists):
 | `--color-glass-border` | `AnimatedFileTree` | no `--talos-glass-border` |
 | `--glass-blur-sm` / `--glass-blur-md` | — | defined but unused; safe to drop, but undocumented as dropped |
 | `--glass-reflection` | — | unused; same |
-| `--prose-*` (×11) | blog prose | not tokenized in pack — colors are **inlined** into `.talos-prose` rules, so they can't be re-themed via `:root` overrides like every other token |
+| `--prose-*` (×11) | blog prose | ✅ **RESOLVED** — now exposed as public overridable `--talos-prose-*` tokens (38 refs in `talos-blog.css`), defaulting to the palette. Retheme from `:root` like any other token. |
 
-The `--prose-*` inlining breaks the pack's own stated promise ("override any
-`--talos-*` on `:root` to retheme"). Prose color is the one area you *can't*
-retheme without editing `talos-blog.css`.
+~~The `--prose-*` inlining breaks the pack's own stated promise.~~ Resolved: prose
+colours read public `--talos-prose-*` tokens; the original "hard-inlined" claim was
+already partly stale (values referenced palette via private `--_*` vars — the fix
+promotes them to overridable public tokens).
 
 ---
 
@@ -100,7 +127,7 @@ retheme without editing `talos-blog.css`.
 ### 4b. Ambient grid — pack ships CSS but no JS ✅ RESOLVED
 - ~~Pack ships `.ambient-overlay` (the visual) and reads `--talos-cursor-x/y`, but
   ships **no script** to write them.~~
-- **Resolved:** the lerped tracker now ships as `@shelfwood/talos-ui/ambient`
+- **Resolved:** the lerped tracker now ships as `@j_shelfwood/talos-ui/ambient`
   (`initAmbientCursor()`) — smooth-lerp, idempotent across view-transition swaps,
   capability-honest (parked centre under reduced-motion / touch), writing
   `--talos-cursor-x/y`. Built to `dist/ambient.{js,d.ts}`; documented in
@@ -161,7 +188,7 @@ genuine missing prop, not just a rename.
 
 Verified state of the pack as a *distributable*:
 
-- 🔴 **Not published** — `npm view @shelfwood/talos-ui` → `404`. `bun add` from the
+- 🔴 **Not published** — `npm view @j_shelfwood/talos-ui` → `404`. `bun add` from the
   README does not work today. Only the in-repo `workspace:*` link resolves.
 - 🟡 **No `astro` peerDependency** — the `./astro/*` wrappers are `.astro` files;
   consumers need Astro, but `package.json` declares no peer. Version skew is real:
@@ -178,7 +205,7 @@ Verified state of the pack as a *distributable*:
   subpaths at `./src/*.css`. Fine, but it means the published tarball ships raw
   source CSS with no minification/bundling step, while the WC layer *is* built to
   `dist/`. Inconsistent. Also the README's plain-HTML example hard-codes
-  `/node_modules/@shelfwood/talos-ui/src/talos.css` — a fragile path for non-bundler
+  `/node_modules/@j_shelfwood/talos-ui/src/talos.css` — a fragile path for non-bundler
   consumers.
 
 ---
@@ -226,7 +253,7 @@ Verified state of the pack as a *distributable*:
    prose was hard-inlined was already partly stale — the values referenced palette
    tokens via private `--_*` vars; the fix exposes them as overridable public tokens.)*
 4. ✅ **DONE** — lerped, idempotent, capability-honest ambient script shipped as
-   `@shelfwood/talos-ui/ambient` (`initAmbientCursor()`), built to `dist/ambient.js`.
+   `@j_shelfwood/talos-ui/ambient` (`initAmbientCursor()`), built to `dist/ambient.js`.
 5. 🟡 **PARTIAL** — `astro` declared as an *optional* peerDependency (`>=5`); the
    CSS/WC layers don't need Astro, only the `./astro/*` wrappers do. ⬜ Still TODO:
    Astro-6 smoke test and the actual `npm publish` of `0.0.x`.

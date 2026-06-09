@@ -1,5 +1,5 @@
 # Talos UI showcase — static Astro site, served by nginx. Consumes the published
-# @shelfwood/talos-ui package from npm (the design system lives in its own repo,
+# @j_shelfwood/talos-ui package from npm (the design system lives in its own repo,
 # github.com/j-shelfwood/talos-ui). Coolify builds this Dockerfile from the repo
 # root; Traefik fronts it with TLS for talos-ui.shelfwood.co.
 

@@ -7,7 +7,7 @@ import Demo from "../../../components/Demo.astro";
 
 {/* Astro bundles this module script and runs it on the page, registering the
     custom elements client-side so the <talos-panel> demo below renders. */}
-<script>import "@shelfwood/talos-ui/wc";</script>
+<script>import "@j_shelfwood/talos-ui/wc";</script>
 
 Importing the `wc` entry registers `<talos-panel>`, `<talos-corner>`,
 `<talos-notch>`.
@@ -28,7 +28,7 @@ Importing the `wc` entry registers `<talos-panel>`, `<talos-corner>`,
 </Demo>
 
 ```html
-<script type="module">import "@shelfwood/talos-ui/wc";</script>
+<script type="module">import "@j_shelfwood/talos-ui/wc";</script>
 
 <talos-panel panel-width="400" panel-height="220" animate>
   <talos-corner edge="top-right" radius="22"></talos-corner>
