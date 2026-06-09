@@ -1,7 +1,7 @@
-# Talos UI showcase — static Astro site, built in the monorepo and served by nginx.
-# Coolify builds this Dockerfile from the repo root; Traefik fronts it with TLS for
-# talos-ui.shelfwood.co. The package is built before the site (the site imports the
-# workspace package), which `bun run build` already orders correctly.
+# Talos UI showcase — static Astro site, served by nginx. Consumes the published
+# @shelfwood/talos-ui package from npm (the design system lives in its own repo,
+# github.com/j-shelfwood/talos-ui). Coolify builds this Dockerfile from the repo
+# root; Traefik fronts it with TLS for talos-ui.shelfwood.co.
 
 # ---- build stage ----------------------------------------------------------
 FROM oven/bun:1.2 AS build
@@ -9,12 +9,11 @@ WORKDIR /app
 
 # Install deps with the lockfile for reproducible builds. Copy manifests first so
 # the dependency layer caches independently of source changes.
-COPY package.json bun.lock tsconfig.base.json ./
-COPY packages/talos-ui/package.json packages/talos-ui/
+COPY package.json bun.lock ./
 COPY apps/showcase/package.json apps/showcase/
 RUN bun install --frozen-lockfile
 
-# Copy the rest and build (build:pkg → build:site).
+# Copy the rest and build the static site.
 COPY . .
 RUN bun run build
 
