@@ -748,6 +748,7 @@ import "@j_shelfwood/talos-ui/all.css";
 
       const scenes = Array.from(document.querySelectorAll<HTMLElement>("[data-scene]"));
       const N = scenes.length;
+      const viewport = document.querySelector<HTMLElement>(".viewport")!;
       const proxy = document.getElementById("proxy")!;
       const world = document.getElementById("world")!;
       const starfield = document.getElementById("starfield")!;
