@@ -18,7 +18,7 @@ are pure developer-experience sugar on top.
 ## Install
 
 ```sh
-bun add @shelfwood/talos-ui
+bun add @j_shelfwood/talos-ui
 ```
 
 ## Astro
@@ -27,7 +27,7 @@ CSS layer only:
 
 ```astro
 ---
-import "@shelfwood/talos-ui/talos.css";
+import "@j_shelfwood/talos-ui/talos.css";
 ---
 <div class="glass-panel interactive-panel">
   <div class="glass-panel-content talos-pad"><h2>Hello</h2></div>
@@ -38,9 +38,9 @@ With the Astro wrappers (recommended on Astro):
 
 ```astro
 ---
-import "@shelfwood/talos-ui/talos.css";
-import GlassPanel from "@shelfwood/talos-ui/astro/GlassPanel.astro";
-import Button from "@shelfwood/talos-ui/astro/Button.astro";
+import "@j_shelfwood/talos-ui/talos.css";
+import GlassPanel from "@j_shelfwood/talos-ui/astro/GlassPanel.astro";
+import Button from "@j_shelfwood/talos-ui/astro/Button.astro";
 ---
 <GlassPanel as="a" href="/work"><h2>Projects</h2></GlassPanel>
 <Button href="/contact">Get in touch</Button>
@@ -50,9 +50,9 @@ With web components (notched panels + instruments):
 
 ```astro
 ---
-import "@shelfwood/talos-ui/talos.css";
+import "@j_shelfwood/talos-ui/talos.css";
 ---
-<script>import "@shelfwood/talos-ui/wc";</script>
+<script>import "@j_shelfwood/talos-ui/wc";</script>
 
 <talos-panel panel-width="400" panel-height="220">
   <talos-corner edge="top-right" radius="22"></talos-corner>
@@ -67,7 +67,7 @@ Point the stylesheet at the package under `node_modules` (dev) or a copy you
 vendor into your public assets (prod — see Laravel below):
 
 ```html
-<link rel="stylesheet" href="/node_modules/@shelfwood/talos-ui/src/talos.css" />
+<link rel="stylesheet" href="/node_modules/@j_shelfwood/talos-ui/src/talos.css" />
 
 <div class="glass-panel interactive-panel">
   <div class="glass-panel-content talos-pad">…</div>
@@ -84,7 +84,7 @@ capability-honest (parked at center under `prefers-reduced-motion` or on touch):
 ```html
 <div class="ambient-overlay"></div>
 <script type="module">
-  import { initAmbientCursor } from "@shelfwood/talos-ui/ambient";
+  import { initAmbientCursor } from "@j_shelfwood/talos-ui/ambient";
   initAmbientCursor(); // optionally: initAmbientCursor({ lerp: 0.12 })
 </script>
 ```
@@ -107,15 +107,15 @@ Import the whole surface with `all.css`, or pull only the modules you use:
 
 | Import | Covers |
 | --- | --- |
-| `@shelfwood/talos-ui/all.css` | everything below, in dependency order |
-| `@shelfwood/talos-ui/talos.css` | tokens + core: panels, button, chamfer, ambient |
-| `@shelfwood/talos-ui/talos-layout.css` | grid + spans, padding, flex, eyebrow, dot |
-| `@shelfwood/talos-ui/talos-forms.css` | inputs, select, checkbox/radio/switch, range |
-| `@shelfwood/talos-ui/talos-feedback.css` | badges, alerts, toasts, progress, spinner |
-| `@shelfwood/talos-ui/talos-data.css` | tables, stats, code, log, avatar, meter |
-| `@shelfwood/talos-ui/talos-nav.css` | tabs, breadcrumbs, menu, sidebar, stepper |
-| `@shelfwood/talos-ui/talos-console.css` | zoned fixed-viewport shell |
-| `@shelfwood/talos-ui/talos-blog.css` | prose, marketing navbar/footer, tags |
+| `@j_shelfwood/talos-ui/all.css` | everything below, in dependency order |
+| `@j_shelfwood/talos-ui/talos.css` | tokens + core: panels, button, chamfer, ambient |
+| `@j_shelfwood/talos-ui/talos-layout.css` | grid + spans, padding, flex, eyebrow, dot |
+| `@j_shelfwood/talos-ui/talos-forms.css` | inputs, select, checkbox/radio/switch, range |
+| `@j_shelfwood/talos-ui/talos-feedback.css` | badges, alerts, toasts, progress, spinner |
+| `@j_shelfwood/talos-ui/talos-data.css` | tables, stats, code, log, avatar, meter |
+| `@j_shelfwood/talos-ui/talos-nav.css` | tabs, breadcrumbs, menu, sidebar, stepper |
+| `@j_shelfwood/talos-ui/talos-console.css` | zoned fixed-viewport shell |
+| `@j_shelfwood/talos-ui/talos-blog.css` | prose, marketing navbar/footer, tags |
 
 `tokens.css` is pulled in by `talos.css`, so you never import it directly.
 
@@ -129,7 +129,7 @@ the copy fresh:
 ```jsonc
 // package.json
 "scripts": {
-  "postinstall": "cp -R node_modules/@shelfwood/talos-ui/src/{talos.css,tokens.css,fonts} public/vendor/talos-ui/ && cp node_modules/@shelfwood/talos-ui/dist/wc/index.js public/vendor/talos-ui/wc.js"
+  "postinstall": "cp -R node_modules/@j_shelfwood/talos-ui/src/{talos.css,tokens.css,fonts} public/vendor/talos-ui/ && cp node_modules/@j_shelfwood/talos-ui/dist/wc/index.js public/vendor/talos-ui/wc.js"
 }
 ```
 
@@ -148,7 +148,7 @@ the copy fresh:
 | Symptom | Cause | Fix |
 | --- | --- | --- |
 | No cursor sheen on panels | the ambient `pointermove` listener isn't running | add the snippet under **Plain HTML** (Astro layouts wire it for you) |
-| `<talos-*>` elements render unstyled / inert | `@shelfwood/talos-ui/wc` not imported | import the `wc` entry once, before the elements are used |
+| `<talos-*>` elements render unstyled / inert | `@j_shelfwood/talos-ui/wc` not imported | import the `wc` entry once, before the elements are used |
 | Fonts 404 | the `@font-face` URLs can't resolve relative to your CSS | use the vendor copy so `fonts/` sits beside `talos.css` |
 
 See **Web components** for the full instrument set and **Tokens** to retheme.
