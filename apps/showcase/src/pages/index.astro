@@ -20,20 +20,35 @@ import "@j_shelfwood/talos-ui/all.css";
       html, body { margin: 0; background: var(--talos-background); color: var(--talos-foreground); font-family: var(--talos-font-display); }
       .lenis.lenis-smooth { scroll-behavior: auto !important; }
 
-      /* Fixed window with real perspective — we fly through it. */
-      .viewport { position: fixed; inset: 0; overflow: hidden; z-index: 1; perspective: 1100px; perspective-origin: 50% 50%; }
-      .world { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
+      /* Fixed window with real perspective — we fly through it. The perspective
+         is a CSS var so the camera loop can WARP it with scroll velocity
+         (fast scroll → tighter FOV → "hyperspace" pull). Default = at-rest. */
+      .viewport { position: fixed; inset: 0; overflow: hidden; z-index: 1;
+        perspective: var(--cam-fov, 1100px); perspective-origin: 50% 50%; }
+      /* The world carries the velocity dive-tilt + mouse parallax lean. It sits
+         at 50%/50% so its rotations pivot about the viewport centre. */
+      .world { position: absolute; left: 50%; top: 50%; width: 0; height: 0;
+        transform-style: preserve-3d; will-change: transform; }
 
-      /* Parallax depth field behind everything (moves slower → depth cue). */
-      .starfield { position: absolute; inset: -20%; transform-style: preserve-3d;
-        background-image: radial-gradient(circle at 1px 1px, hsl(0 0% 100% / 0.06) 1px, transparent 1.6px);
-        background-size: 44px 44px; will-change: transform; }
+      /* Real particle starfield: each .star is a div placed in Z-space and
+         stretched along Z under velocity → warp-streaks. (Replaces the old flat
+         CSS-texture div, which couldn't elongate.) */
+      .starfield { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+      .star { position: absolute; left: 0; top: 0; width: 2px; height: 2px;
+        background: hsl(0 0% 100% / 0.55); border-radius: 50%;
+        will-change: transform, opacity; backface-visibility: hidden; }
 
       /* Scenes live at increasing -Z; perspective scales them as they approach. */
       .scene { position: absolute; left: 50%; top: 50%; width: min(1100px, 92vw);
         transform: translate(-50%, -50%); transform-style: preserve-3d;
         will-change: transform, opacity; }
       .scene[data-hidden="1"] { visibility: hidden; }
+      /* Accent ghost on fast scroll — a faint accent-tinted drop-shadow offset,
+         our monochrome restyle of the reference's red/cyan RGB-split. Magnitude
+         is driven by --ghost (px, set by the camera loop from velocity); at rest
+         --ghost is 0 and the filter is a no-op. drop-shadow (not box-shadow) so
+         it traces the scene's actual instrument silhouettes, not a bounding box. */
+      .scene { filter: drop-shadow(var(--ghost, 0px) 0 0 hsl(var(--talos-accent-hsl) / .4)); }
 
       /* scroll proxy gives the page height — one viewport per scene */
       .scroll-proxy { position: relative; z-index: 0; }
@@ -360,7 +375,7 @@ import "@j_shelfwood/talos-ui/all.css";
   <body>
     <div class="viewport">
       <div class="world" id="world">
-        <div class="starfield" id="starfield"></div>
+        <div class="starfield" id="starfield"><!-- particles injected by the camera script --></div>
 
         <!-- 0 — THESIS. The hero is framed as a reactor console: every instrument
              below binds to a REAL signal of this tab, reframed as a core reading
@@ -749,6 +764,49 @@ import "@j_shelfwood/talos-ui/all.css";
       const GAP = 900; // px of Z between scenes
       proxy.style.height = `${N * 100}vh`;
 
+      // ---- MOTION FEEL (ref: Hyper Scroll) -------------------------------------
+      // Every magnitude the velocity-coupled effects use, in one tunable block.
+      // Tuned RESTRAINED / instrument-grade: you feel these more than you see
+      // them. Raise them toward the commented "brutal" values for arcade feel.
+      const FEEL = {
+        fovRest: 1100,   // perspective at rest (px) — matches the CSS default
+        fovWarp: 320,    // max px the FOV tightens at full velocity (brutal: 600)
+        fovVelK: 9,      // velocity→FOV gain
+        tiltVelMax: 2.2, // deg the world dives forward under accel (brutal: 6)
+        tiltMouseMax: 2, // deg the world leans toward the cursor (brutal: 5)
+        starStretch: 6,  // max Z-scale on stars at speed (brutal: 10)
+        starVelK: 1.3,   // velocity→star-stretch gain
+        ghostMax: 1.6,   // max px of accent-ghost offset on scenes (brutal: 4)
+        ghostVelK: 1.1,  // velocity→ghost gain
+        velGate: 0.18,   // below this smoothed velocity, effects are suppressed
+        velSmooth: 0.1,  // how fast the effect-velocity eases toward the camera's
+      };
+      const STAR_COUNT = 120;
+      const STAR_SPREAD = 2600; // px box the stars fill in X/Y around the axis
+
+      // mouse parallax target (-1..1), eased in the loop so the lean is buttery
+      const mouse = { x: 0, y: 0, ex: 0, ey: 0 };
+      addEventListener("pointermove", (e) => {
+        mouse.x = (e.clientX / innerWidth - 0.5) * 2;
+        mouse.y = (e.clientY / innerHeight - 0.5) * 2;
+      }, { passive: true });
+
+      // Real particle starfield — divs at random Z across the scene stack, each
+      // Z-stretched under velocity for warp-streaks. Depth alpha keeps far stars
+      // faint so they read as a field, not confetti.
+      const stars = Array.from({ length: STAR_COUNT }, () => {
+        const el = document.createElement("div");
+        el.className = "star";
+        starfield.appendChild(el);
+        return {
+          el,
+          x: (Math.random() - 0.5) * STAR_SPREAD,
+          y: (Math.random() - 0.5) * STAR_SPREAD,
+          baseZ: -Math.random() * (N * GAP + GAP), // span the whole journey + 1
+        };
+      });
+      const STAR_LOOP = N * GAP + GAP; // wrap span so stars recycle as you fly
+
       // build ruler ticks (every 5%, major every 25%)
       const rulerTrack = $id("ruler-track");
       let rt = "";
@@ -767,7 +825,9 @@ import "@j_shelfwood/talos-ui/all.css";
 
       const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
       const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+      const clampN = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
       let target = 0, current = 0;
+      let effVel = 0; // smoothed, decoupled velocity that drives the feel effects
 
       const lenis = new Lenis({ duration: 1.15, smoothWheel: true });
       // Read progress from the instance in the rAF loop (the scroll-event payload
@@ -787,6 +847,29 @@ import "@j_shelfwood/talos-ui/all.css";
         current = reduce ? target : lerp(current, target, 0.085);
         const camZ = current * GAP; // move camera into the scene stack
 
+        // ---- velocity-coupled FEEL (ref: Hyper Scroll) -----------------------
+        // One eased, gated velocity drives FOV warp, world tilt, star-stretch and
+        // the accent ghost. Decoupled from the position lerp so the FEEL has its
+        // own (softer) inertia — the camera can settle while the warp lingers a
+        // frame, which is exactly what reads as "weight". reduce → all zero.
+        const rawVel = Math.abs(target - current);            // scenes/frame-ish
+        effVel = reduce ? 0 : effVel + (rawVel - effVel) * FEEL.velSmooth;
+        // gate: ignore micro-jitter at rest so the frame is dead-still when idle
+        const fv = Math.max(0, effVel - FEEL.velGate);
+        // FOV warp — perspective tightens toward the axis under speed → pull.
+        const fov = FEEL.fovRest - Math.min(fv * FEEL.fovVelK * 100, FEEL.fovWarp);
+        viewport.style.setProperty("--cam-fov", fov.toFixed(0) + "px");
+        // World tilt — velocity dive (pitch forward) + eased mouse lean. The
+        // mouse ease keeps the parallax buttery instead of snapping per-event.
+        mouse.ex = reduce ? 0 : lerp(mouse.ex, mouse.x, 0.06);
+        mouse.ey = reduce ? 0 : lerp(mouse.ey, mouse.y, 0.06);
+        const dive   = -clampN(fv * 4, 0, FEEL.tiltVelMax);          // pitch into motion
+        const leanX  =  mouse.ey * FEEL.tiltMouseMax + dive;         // rotateX
+        const leanY  =  mouse.ex * FEEL.tiltMouseMax;                // rotateY
+        world.style.transform = `rotateX(${leanX.toFixed(2)}deg) rotateY(${leanY.toFixed(2)}deg)`;
+        // Accent ghost px for the scenes (consumed via --ghost in CSS filter).
+        const ghost = Math.min(fv * FEEL.ghostVelK, FEEL.ghostMax);
+
         scenes.forEach((s, i) => {
           const z = -i * GAP + camZ;        // this scene's Z relative to camera
           const dist = Math.abs(z) / GAP;    // 0 = at camera plane
@@ -805,10 +888,30 @@ import "@j_shelfwood/talos-ui/all.css";
           s.style.transform = `translate(-50%, -50%) translateZ(${z.toFixed(0)}px)`;
           s.style.opacity = String(Math.max(0, opacity).toFixed(3));
           s.style.pointerEvents = dist < 0.4 ? "auto" : "none";
+          // Accent ghost: strongest on the scene at the camera plane, fading with
+          // distance so background scenes don't smear. Off entirely at rest.
+          (s as HTMLElement).style.setProperty("--ghost", (ghost * (1 - t)).toFixed(2) + "px");
         });
 
-        // parallax: starfield drifts at a fraction of camera depth
-        starfield.style.transform = `translateZ(${(camZ * 0.5).toFixed(0)}px) translateY(${(current * -2).toFixed(1)}vh)`;
+        // Real starfield: fly each star toward the camera in Z, wrap it when it
+        // passes, fade by depth, and stretch it along Z under velocity → the
+        // warp-streak. translate3d(x,y,z) scale(1,1,stretch) — the scale only
+        // elongates the dot along its travel axis, so stillness = points, speed
+        // = streaks (motion is the signal, exactly the page's thesis).
+        const stretch = 1 + Math.min(fv * FEEL.starVelK, FEEL.starStretch - 1);
+        for (const st of stars) {
+          // z relative to camera; wrap into a band ahead of the lens so the
+          // field is infinite as you fly. Stars live behind the camera plane.
+          let z = st.baseZ + camZ;
+          z = ((z % STAR_LOOP) + STAR_LOOP) % STAR_LOOP; // 0..LOOP
+          if (z > GAP) z -= STAR_LOOP;                    // pull the near band behind the lens
+          // depth alpha — faint far, brighter as it approaches, gone past the lens
+          const a = z > 0 ? 0 : clampN(1 + z / (STAR_LOOP * 0.6), 0, 1) * 0.7;
+          st.el.style.opacity = a.toFixed(2);
+          if (a <= 0) continue;
+          st.el.style.transform =
+            `translate3d(${st.x}px, ${st.y}px, ${z.toFixed(0)}px) scale3d(1, 1, ${stretch.toFixed(2)})`;
+        }
 
         const active = Math.max(0, Math.min(N - 1, Math.round(current)));
         ticks.forEach((t, i) => t.classList.toggle("active", i === active));

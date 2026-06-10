@@ -12,5 +12,8 @@
   },
   "engines": {
     "bun": ">=1.2.0"
-  }
+  },
+  "trustedDependencies": [
+    "@j_shelfwood/talos-ui"
+  ]
 }
