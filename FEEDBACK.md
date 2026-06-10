@@ -1,3 +1,9 @@
+> **⚠️ SUPERSEDED (2026-06-09).** This document audits the *pre-split monorepo*
+> (package version `0.0.1`, `workspace:*` linking, co-located `packages/talos-ui`).
+> That structure no longer exists. The design system was extracted to its own repo
+> (`j-shelfwood/talos-ui`, npm `@j_shelfwood/talos-ui`) and this repo is now the
+> site only. Read `CLAUDE.md` for current reality; keep this file for provenance.
+
 # Talos UI — Migration-Readiness Feedback
 
 **Audited against:** `shelfwood.co` (the reference consumer the pack was extracted from)
