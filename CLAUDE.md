@@ -38,11 +38,17 @@ The site consumes the package from npm. To pull a new release, bump the version
 in `apps/showcase/package.json` and `bun install`. The package is published from
 its own repo via a tag-driven OIDC workflow — you don't publish from here.
 
-## Deployment — Coolify (this is the source of truth; the infra repo may lag)
+## Deployment — Coolify (live Coolify state is the source of truth)
 
-The live site is a **Coolify application** on the `infrastructure.shelfwood.co`
-host. Coolify builds this repo's `Dockerfile` from the repo root on push to the
-deploy branch; Traefik fronts it with Let's Encrypt TLS.
+The live site is a **standalone Coolify application** on the
+`infrastructure.shelfwood.co` host. Coolify builds this repo's `Dockerfile` from
+the repo root on push to the deploy branch; Traefik fronts it with Let's Encrypt
+TLS.
+
+It is **intentionally not in** the infra repo's `state/wiring.yaml` — that file
+tracks the agent platform's non-derivable plumbing (Mattermost, n8n, MCP,
+Bugsink), not plain hosted sites whose state Coolify already exposes. Don't add
+it there. Resolve live state from Coolify instead (commands below).
 
 | Field | Value |
 |---|---|
