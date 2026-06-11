@@ -2,8 +2,12 @@
 // Shared persistent top nav — fixed pill that collapses on scroll. Consumed by
 // Landing.astro (showcase, gallery) and DocsShell.astro so every non-hero page
 // has a Home affordance and a consistent route set. The 3D hero (index.astro)
-// keeps its own bespoke HUD nav by design. Uses the design system's own
-// .talos-navbar primitives (talos-blog.css) wrapped around a GlassPanel.
+// keeps its own bespoke HUD nav by design.
+//
+// The .talos-navbar / .talos-nav-link primitives live HERE (is:global below),
+// not in the design system: this is site-specific marketing chrome, not
+// reusable instrument-library surface. The pack dropped its prose/marketing
+// module (talos-blog) to match the manifesto — see talos-ui PHILOSOPHY.md.
 import GlassPanel from "@j_shelfwood/talos-ui/astro/GlassPanel.astro";
 
 interface Props {
@@ -72,4 +76,67 @@ const isActive = (l: (typeof links)[number]) =>
   .talos-nav-link[data-active="true"] {
     color: var(--talos-foreground);
   }
+</style>
+
+<!-- Marketing navbar primitives — site-owned (see header comment). Global
+     because they target the .talos-navbar markup above, not scoped classes. -->
+<style is:global>
+  .talos-navbar {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    z-index: 50;
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+  }
+  .talos-navbar-pill {
+    width: 100%;
+    max-width: 600px;
+    padding: 0.75rem 2rem;
+    max-height: 72px;
+    transition: max-width 0.5s var(--talos-ease-out),
+      padding 0.35s ease, max-height 0.35s ease;
+  }
+  .talos-navbar-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 3rem;
+  }
+  .talos-navbar-inner > * { flex: 1; display: flex; align-items: center; }
+  .talos-navbar-inner > :nth-child(1) { justify-content: flex-start; }
+  .talos-navbar-inner > :nth-child(2) { justify-content: center; flex: 0 0 auto; }
+  .talos-navbar-inner > :nth-child(3) { justify-content: flex-end; }
+
+  /* Compact state — collapse to a small pill, hide link text. */
+  .talos-navbar[data-compact="true"]:not(.toc-expanded) .talos-navbar-pill {
+    max-width: 220px;
+    padding: 0.75rem 1rem;
+  }
+  .talos-nav-text {
+    white-space: nowrap;
+    transition: opacity 0.4s var(--talos-ease-out), max-width 0.4s var(--talos-ease-out);
+  }
+  .talos-navbar[data-compact="true"]:not(.toc-expanded) .talos-nav-text {
+    opacity: 0;
+    max-width: 0;
+    overflow: hidden;
+  }
+  .talos-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--talos-font-display);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: var(--talos-tracking-hud-tight);
+    color: var(--talos-muted-foreground);
+    text-decoration: none;
+    transition: color 200ms ease;
+  }
+  .talos-nav-link:hover { color: var(--talos-foreground); }
 </style>

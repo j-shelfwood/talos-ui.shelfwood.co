@@ -1,0 +1,51 @@
+---
+title: Range
+description: A hairline-track slider with a square HUD thumb, styled identically across the WebKit and Mozilla pseudo-elements.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-range` is a native `<input type="range">` stripped to a 2px hairline
+track and a square thumb — no round handle, no iOS chrome. The styling is
+declared twice, once for `::-webkit-slider-*` and once for `::-moz-range-*`, so
+the same mechanical shape reads in every engine.
+
+## Default
+
+<Demo>
+  <input class="talos-range" type="range" min="0" max="100" value="60" style="width:240px" />
+</Demo>
+
+```html
+<input class="talos-range" type="range" min="0" max="100" value="60" />
+```
+
+`appearance: none` zeroes the UA control. The track is `--talos-edge-default` at
+2px; the thumb is a 0.7×0.9rem `--talos-foreground` block, negative-margined to
+straddle the line.
+
+## Focus
+
+<Demo>
+  <input class="talos-range" type="range" min="0" max="100" value="35" style="width:240px" autofocus />
+</Demo>
+
+```html
+<input class="talos-range" type="range" min="0" max="100" value="35" />
+```
+
+`:focus-visible` draws the standard `--talos-focus-ring` outline around the
+whole control — keyboard arrow-stepping stays visible.
+
+## Attributes
+
+| Attribute | Effect |
+| --- | --- |
+| `type="range"` | required — the class only styles native range inputs |
+| `min` / `max` / `step` | native range bounds; honoured as-is |
+| `value` | initial thumb position |
+| `:focus-visible` | renders the `--talos-focus-ring` outline |
+
+Pseudo-elements styled: `::-webkit-slider-runnable-track`, `::-webkit-slider-thumb`,
+`::-moz-range-track`, `::-moz-range-thumb`. Wrap in a
+[`.talos-field`](/docs/forms/field/) to pair with a label.

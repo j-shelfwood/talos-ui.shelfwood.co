@@ -1,0 +1,71 @@
+---
+title: Definition list
+description: Key/value spec sheet — uppercase HUD terms against right-aligned tabular values.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-dl` lays a `<dl>` out as a two-column spec sheet: the `<dt>` terms read
+as uppercase HUD labels on the left, the `<dd>` values right-align with tabular
+figures so a stacked column of numbers lines up to the decimal. Each row carries
+a hairline rule underneath — the grid *is* the read order.
+
+## Default
+
+<Demo>
+  <dl class="talos-dl" style="min-width:280px">
+    <dt>Node</dt>
+    <dd>atlas-01</dd>
+    <dt>Region</dt>
+    <dd>eu-west-1</dd>
+    <dt>Uptime</dt>
+    <dd>99.982%</dd>
+    <dt>Load</dt>
+    <dd>62.4</dd>
+  </dl>
+</Demo>
+
+```html
+<dl class="talos-dl">
+  <dt>Node</dt>
+  <dd>atlas-01</dd>
+  <dt>Region</dt>
+  <dd>eu-west-1</dd>
+  <dt>Uptime</dt>
+  <dd>99.982%</dd>
+</dl>
+```
+
+A `max-content 1fr` grid: terms size to their content, values take the rest and
+right-align. Values lock to `tabular-nums`, so numeric columns stay aligned.
+
+## Inline
+
+<Demo>
+  <dl class="talos-dl talos-dl--inline" style="min-width:280px">
+    <div><dt>cpu</dt><dd>42%</dd></div>
+    <div><dt>mem</dt><dd>6.1/16 GB</dd></div>
+    <div><dt>net</dt><dd>118 Mb/s</dd></div>
+  </dl>
+</Demo>
+
+```html
+<dl class="talos-dl talos-dl--inline">
+  <div><dt>cpu</dt><dd>42%</dd></div>
+  <div><dt>mem</dt><dd>6.1/16 GB</dd></div>
+  <div><dt>net</dt><dd>118 Mb/s</dd></div>
+</dl>
+```
+
+`--inline` drops the grid and wraps each pair in a flex `<div>` row: term left,
+value pushed to the right edge. Use it when you need self-contained rows rather
+than one aligned column.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-dl` | two-column `max-content 1fr` grid; hairline rule per row |
+| `.talos-dl--inline` | flat key/value rows — each pair wrapped in a `<div>`, value pushed right |
+| `dt` | uppercase HUD term, tracked, tertiary colour |
+| `dd` | right-aligned value, tabular figures, primary colour |

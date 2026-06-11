@@ -1,0 +1,60 @@
+---
+title: Empty state
+description: A dashed-border placeholder block — icon, uppercase title, body line — for when there's nothing to show.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-empty` is the "nothing here yet" placeholder: a centred stack of an
+icon, an uppercase display title, and a body line, framed by a 1px *dashed*
+edge. The dashed border is the tell — a solid frame would read as a real panel
+with content; the dashes say the container is provisioned but empty.
+
+## Default
+
+<Demo>
+  <div class="talos-empty" style="max-width:420px">
+    <span class="talos-empty__icon">◇</span>
+    <div class="talos-empty__title">No deployments</div>
+    <div class="talos-empty__body">Nothing has shipped to this environment yet. Trigger a build to populate the feed.</div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-empty">
+  <span class="talos-empty__icon">◇</span>
+  <div class="talos-empty__title">No deployments</div>
+  <div class="talos-empty__body">Nothing has shipped to this environment yet. Trigger a build to populate the feed.</div>
+</div>
+```
+
+A flex column, centre-aligned, with `space-3` gaps and generous vertical
+padding. All three parts are optional — the slots just stack in source order.
+
+## Icon + title only
+
+<Demo>
+  <div class="talos-empty" style="max-width:420px">
+    <span class="talos-empty__icon">◇</span>
+    <div class="talos-empty__title">No results</div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-empty">
+  <span class="talos-empty__icon">◇</span>
+  <div class="talos-empty__title">No results</div>
+</div>
+```
+
+Drop `__body` for a terse variant. The icon dims to `--talos-text-disabled`; the
+title sits at `--talos-text-secondary` so it still reads as the loudest element.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-empty` | dashed-edge centred container (flex column, padded) |
+| `.talos-empty__icon` | large glyph, dimmed to `--talos-text-disabled` |
+| `.talos-empty__title` | uppercase display heading at `--talos-text-secondary` |
+| `.talos-empty__body` | body-font supporting line, capped at 42ch, `--talos-text-tertiary` |

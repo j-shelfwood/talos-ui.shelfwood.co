@@ -1,0 +1,137 @@
+---
+title: Notched panel
+description: Composable SVG-outline panel whose chamfers and edge cut-outs are declared as child decorators, not baked classes.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+
+`<talos-panel>` draws a monochrome hairline-on-dark panel as a single SVG
+outline, then slots your content on top. The Talos idea: the *shape is
+composed* — each cut corner or notched edge is a declarative child
+(`<talos-corner>`, `<talos-notch>`) the panel reads to build its path, so the
+silhouette is data, not a fixed `clip-path`. Add or remove a decorator and the
+outline re-renders.
+
+## Default — plain rectangle
+
+<Demo>
+  <talos-panel panel-width="400" panel-height="200" style="width:340px"></talos-panel>
+</Demo>
+
+```astro
+<talos-panel panel-width="400" panel-height="200"></talos-panel>
+```
+
+With no decorators the panel is a plain rectangle at `--talos-hud-fill` with a
+1px `--talos-hud-edge` hairline — the same geometry intent as `.glass-panel`.
+
+## Chamfered corners
+
+<Demo>
+  <talos-panel panel-width="400" panel-height="200" style="width:340px">
+    <talos-corner edge="top-right" radius="24"></talos-corner>
+    <talos-corner edge="bottom-left" radius="24"></talos-corner>
+  </talos-panel>
+</Demo>
+
+```astro
+<talos-panel panel-width="400" panel-height="200">
+  <talos-corner edge="top-right" radius="24"></talos-corner>
+  <talos-corner edge="bottom-left" radius="24"></talos-corner>
+</talos-panel>
+```
+
+Each `<talos-corner>` cuts one of the four corners. `edge` takes `top-left`,
+`top-right`, `bottom-right`, `bottom-left`; `radius` is the chamfer depth in px
+(default 16). An invalid edge or non-positive radius is ignored.
+
+## Notched edges
+
+<Demo>
+  <talos-panel panel-width="400" panel-height="200" style="width:340px">
+    <talos-notch edge="top" width="80" depth="14"></talos-notch>
+    <talos-notch edge="bottom" width="120" depth="10"></talos-notch>
+  </talos-panel>
+</Demo>
+
+```astro
+<talos-panel panel-width="400" panel-height="200">
+  <talos-notch edge="top" width="80" depth="14"></talos-notch>
+  <talos-notch edge="bottom" width="120" depth="10"></talos-notch>
+</talos-panel>
+```
+
+`<talos-notch>` cuts a centered trapezoidal slot into one edge — the one motif
+the CSS layer doesn't provide. `edge` is `top`, `right`, `bottom`, or `left`;
+`width` and `depth` are px (defaults 60 / 20).
+
+## Composed — corners + notch + content
+
+<Demo>
+  <talos-panel panel-width="400" panel-height="220" edge="hsl(0 0% 100% / 0.5)" stroke-width="1.5" style="width:340px">
+    <talos-corner edge="top-right" radius="22"></talos-corner>
+    <talos-corner edge="bottom-left" radius="22"></talos-corner>
+    <talos-notch edge="top" width="80" depth="14"></talos-notch>
+    <h3 style="margin:0;font-weight:300;letter-spacing:var(--talos-tracking-hud);text-transform:uppercase;font-size:1rem">Composable geometry</h3>
+  </talos-panel>
+</Demo>
+
+```astro
+<talos-panel panel-width="400" panel-height="220" edge="hsl(0 0% 100% / 0.5)" stroke-width="1.5">
+  <talos-corner edge="top-right" radius="22"></talos-corner>
+  <talos-corner edge="bottom-left" radius="22"></talos-corner>
+  <talos-notch edge="top" width="80" depth="14"></talos-notch>
+  <h3>Composable geometry</h3>
+</talos-panel>
+```
+
+Decorators stack freely. Non-decorator children (the `<h3>`) are slotted as
+content on top of the outline; `fill`, `edge`, and `stroke-width` override the
+panel chrome.
+
+## Animated entrance
+
+<Demo>
+  <talos-panel panel-width="400" panel-height="200" animate animation-duration="1200" style="width:340px">
+    <talos-corner edge="top-right" radius="22"></talos-corner>
+    <talos-notch edge="bottom" width="90" depth="12"></talos-notch>
+  </talos-panel>
+</Demo>
+
+```astro
+<talos-panel panel-width="400" panel-height="200" animate animation-duration="1200">
+  <talos-corner edge="top-right" radius="22"></talos-corner>
+  <talos-notch edge="bottom" width="90" depth="12"></talos-notch>
+</talos-panel>
+```
+
+`animate` stroke-draws the outline once on first render; `animation-duration`
+sets the sweep in ms (default 800). Under `prefers-reduced-motion` the draw is
+skipped and the final outline shows immediately.
+
+## `<talos-panel>` attributes
+
+| Attribute | Default | Effect |
+| --- | --- | --- |
+| `panel-width` / `panel-height` | 400 / 200 | viewBox dimensions; also set `aspect-ratio` |
+| `fill` | `--talos-hud-fill` | panel fill colour |
+| `edge` | `--talos-hud-edge` | hairline border colour |
+| `stroke-width` | 1 | border width in px |
+| `animate` | — | stroke-draws the outline on first render |
+| `animation-duration` | 800 | draw duration in ms |
+
+## `<talos-corner>` attributes
+
+| Attribute | Default | Effect |
+| --- | --- | --- |
+| `edge` | — | `top-left` / `top-right` / `bottom-right` / `bottom-left` |
+| `radius` | 16 | chamfer depth in px (ignored if ≤ 0) |
+
+## `<talos-notch>` attributes
+
+| Attribute | Default | Effect |
+| --- | --- | --- |
+| `edge` | — | `top` / `right` / `bottom` / `left` |
+| `width` | 60 | slot width in px (ignored if ≤ 0) |
+| `depth` | 20 | slot depth in px (ignored if ≤ 0) |

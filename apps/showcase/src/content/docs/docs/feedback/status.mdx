@@ -1,0 +1,108 @@
+---
+title: Status legend
+description: A row of pulsing status dots whose colour and cadence encode online / degraded / offline / idle.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-status` is a compact legend of state dots — one `.talos-status__item`
+per state, each prefixed by a 7px dot drawn in the state colour. Live states
+pulse on a 2.4s cadence; idle alone goes steady and unglowing — so motion
+itself encodes "something is happening" before you read the label.
+
+## Online
+
+<Demo>
+  <span class="talos-status">
+    <span class="talos-status__item talos-status__item--online">Online</span>
+  </span>
+</Demo>
+
+```html
+<span class="talos-status">
+  <span class="talos-status__item talos-status__item--online">Online</span>
+</span>
+```
+
+`--online` binds the dot to `--talos-success`. The dot pulses and carries a
+glow halo.
+
+## Degraded
+
+<Demo>
+  <span class="talos-status">
+    <span class="talos-status__item talos-status__item--degraded">Degraded</span>
+  </span>
+</Demo>
+
+```html
+<span class="talos-status__item talos-status__item--degraded">Degraded</span>
+```
+
+`--degraded` paints the dot in `--talos-warning` — same pulse, the colour is
+the only difference.
+
+## Offline
+
+<Demo>
+  <span class="talos-status">
+    <span class="talos-status__item talos-status__item--offline">Offline</span>
+  </span>
+</Demo>
+
+```html
+<span class="talos-status__item talos-status__item--offline">Offline</span>
+```
+
+`--offline` uses `--talos-danger`. Still pulsing — the system knows it's down
+and is reporting it.
+
+## Idle
+
+<Demo>
+  <span class="talos-status">
+    <span class="talos-status__item talos-status__item--idle">Idle</span>
+  </span>
+</Demo>
+
+```html
+<span class="talos-status__item talos-status__item--idle">Idle</span>
+```
+
+`--idle` is the neutral state: `--talos-muted-foreground`, and its dot is
+deliberately **steady** — no pulse, no glow. Nothing is happening, and the lack
+of motion says so.
+
+## Full legend
+
+<Demo>
+  <span class="talos-status">
+    <span class="talos-status__item talos-status__item--online">Online</span>
+    <span class="talos-status__item talos-status__item--degraded">Degraded</span>
+    <span class="talos-status__item talos-status__item--offline">Offline</span>
+    <span class="talos-status__item talos-status__item--idle">Idle</span>
+  </span>
+</Demo>
+
+```html
+<span class="talos-status">
+  <span class="talos-status__item talos-status__item--online">Online</span>
+  <span class="talos-status__item talos-status__item--degraded">Degraded</span>
+  <span class="talos-status__item talos-status__item--offline">Offline</span>
+  <span class="talos-status__item talos-status__item--idle">Idle</span>
+</span>
+```
+
+The container is an `inline-flex` row that wraps; items sit on a uniform gap.
+All pulses stop under `prefers-reduced-motion`.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-status` | wrapping inline-flex row of state items |
+| `.talos-status__item` | one labelled dot; defaults to neutral foreground |
+| `.talos-status__item--online` | dot = `--talos-success`, pulsing |
+| `.talos-status__item--degraded` | dot = `--talos-warning`, pulsing |
+| `.talos-status__item--offline` | dot = `--talos-danger`, pulsing |
+| `.talos-status__item--idle` | dot = `--talos-muted-foreground`, steady (no pulse, no glow) |

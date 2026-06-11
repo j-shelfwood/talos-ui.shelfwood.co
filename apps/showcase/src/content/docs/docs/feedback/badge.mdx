@@ -1,0 +1,83 @@
+---
+title: Badge
+description: Square HUD status chips whose single chroma — the status colour — rides the text, the tint, and the border at once.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-badge` is the inline status chip — uppercase display font, a square (zero-radius) HUD outline, and one status colour that drives all three of its surfaces: the text, a 10%-opacity tint fill, and a 45%-opacity border. Pick a status and the whole chip recolours from a single channel.
+
+## Status variants
+
+<Demo>
+  <span class="talos-badge talos-badge--neutral">MIT</span>
+  <span class="talos-badge talos-badge--success">Online</span>
+  <span class="talos-badge talos-badge--warning">Beta</span>
+  <span class="talos-badge talos-badge--danger">Failed</span>
+  <span class="talos-badge talos-badge--info">Build 0.0.1</span>
+</Demo>
+
+```html
+<span class="talos-badge talos-badge--neutral">MIT</span>
+<span class="talos-badge talos-badge--success">Online</span>
+<span class="talos-badge talos-badge--warning">Beta</span>
+<span class="talos-badge talos-badge--danger">Failed</span>
+<span class="talos-badge talos-badge--info">Build 0.0.1</span>
+```
+
+The bare `.talos-badge` defaults to `--neutral` (the foreground colour). Each modifier rebinds one channel triplet, so tint, border, and text all shift together — same vocabulary as alert and toast.
+
+## Dot
+
+<Demo>
+  <span class="talos-badge talos-badge--success talos-badge--dot">Online</span>
+  <span class="talos-badge talos-badge--danger talos-badge--dot">Offline</span>
+</Demo>
+
+```html
+<span class="talos-badge talos-badge--success talos-badge--dot">Online</span>
+```
+
+`--dot` adds a leading 6px point of the status colour with a soft glow — the colour distilled to a single lit pixel cluster before the label.
+
+## Solid
+
+<Demo>
+  <span class="talos-badge talos-badge--success talos-badge--solid">Live</span>
+  <span class="talos-badge talos-badge--warning talos-badge--solid">Degraded</span>
+  <span class="talos-badge talos-badge--danger talos-badge--solid">Down</span>
+  <span class="talos-badge talos-badge--neutral talos-badge--solid">v1</span>
+</Demo>
+
+```html
+<span class="talos-badge talos-badge--danger talos-badge--solid">Down</span>
+```
+
+`--solid` is the loud variant: the status colour becomes a filled background with contrast (background-colour) text. Neutral solid stays monochrome; the status solids keep their hue.
+
+## Small
+
+<Demo>
+  <span class="talos-badge talos-badge--info talos-badge--sm">eu-west-3</span>
+  <span class="talos-badge talos-badge--success talos-badge--sm talos-badge--dot">OK</span>
+</Demo>
+
+```html
+<span class="talos-badge talos-badge--info talos-badge--sm">eu-west-3</span>
+```
+
+`--sm` tightens the padding, drops the font a pixel, and uses the tighter HUD tracking. Composes with any status and with `--dot` / `--solid`.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-badge` | base chip; defaults to neutral (foreground) colour |
+| `.talos-badge--neutral` | foreground / monochrome status |
+| `.talos-badge--success` | recolours to `--talos-success` |
+| `.talos-badge--warning` | recolours to `--talos-warning` |
+| `.talos-badge--danger` | recolours to `--talos-danger` |
+| `.talos-badge--info` | recolours to `--talos-info` |
+| `.talos-badge--dot` | leading 6px glow dot in the status colour |
+| `.talos-badge--solid` | filled status background, contrast text |
+| `.talos-badge--sm` | tighter padding, smaller font + tracking |

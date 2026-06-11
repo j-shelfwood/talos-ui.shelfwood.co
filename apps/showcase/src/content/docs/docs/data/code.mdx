@@ -1,0 +1,100 @@
+---
+title: Code block
+description: A bordered code panel with an uppercase title bar, copy affordance, and a horizontally-scrolling body.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-code` is a framed code panel: a `__bar` carries the filename in the HUD
+display face, a `__copy` button sits at its right edge, and the `__body` is the
+monospaced `<pre>` below. The chrome is structural, not chromatic — the bar is
+the only thing that distinguishes it from a bare `<pre>`, so the panel reads as
+"this is a copyable artifact" before you read a single line.
+
+## Default
+
+<Demo>
+  <div class="talos-code" style="max-width:420px">
+    <div class="talos-code__bar"><span>button.astro</span><button class="talos-code__copy">copy</button></div>
+    <pre class="talos-code__body">&lt;Button variant="ghost"&gt;Engage&lt;/Button&gt;</pre>
+  </div>
+</Demo>
+
+```html
+<div class="talos-code">
+  <div class="talos-code__bar">
+    <span>button.astro</span>
+    <button class="talos-code__copy">copy</button>
+  </div>
+  <pre class="talos-code__body">&lt;Button variant="ghost"&gt;Engage&lt;/Button&gt;</pre>
+</div>
+```
+
+`__bar` is uppercase display text on `--talos-surface-2`; `__body` is
+ui-monospace on `--talos-surface-1` and scrolls horizontally on overflow rather
+than wrapping. The copy button is a static affordance — wire `click` to
+`navigator.clipboard.writeText` yourself.
+
+## Bar without copy
+
+<Demo>
+  <div class="talos-code" style="max-width:420px">
+    <div class="talos-code__bar"><span>nginx.conf</span></div>
+    <pre class="talos-code__body">try_files $uri $uri/ =404;</pre>
+  </div>
+</Demo>
+
+```html
+<div class="talos-code">
+  <div class="talos-code__bar"><span>nginx.conf</span></div>
+  <pre class="talos-code__body">try_files $uri $uri/ =404;</pre>
+</div>
+```
+
+The bar uses `justify-content: space-between`, so a lone label sits left and the
+copy button is purely optional. Drop `__copy` for read-only snippets.
+
+## Long line — horizontal scroll
+
+<Demo>
+  <div class="talos-code" style="max-width:420px">
+    <div class="talos-code__bar"><span>deploy.sh</span><button class="talos-code__copy">copy</button></div>
+    <pre class="talos-code__body">ssh infrastructure.shelfwood.co "docker ps --format '&#123;&#123;.Names&#125;&#125;' | grep g53eqpbkjzqlilcfjx0jkw1z"</pre>
+  </div>
+</Demo>
+
+```html
+<pre class="talos-code__body">ssh host "docker ps --format '{{.Names}}' | grep …"</pre>
+```
+
+`__body` sets `overflow-x: auto` — long lines scroll within the panel instead of
+breaking the layout.
+
+## Inline code & kbd
+
+The two inline siblings from the same CSS section. `.talos-inline-code` is a
+chip for code spans inside prose; `.talos-kbd` is a key cap with a 2px bottom
+edge.
+
+<Demo>
+  <span style="font-family:var(--talos-font-display);font-size:var(--talos-text-sm)">
+    run <span class="talos-inline-code">bun run build</span> then press
+    <span class="talos-kbd">⌘</span><span class="talos-kbd">R</span>
+  </span>
+</Demo>
+
+```html
+<span class="talos-inline-code">bun run build</span>
+<span class="talos-kbd">⌘</span><span class="talos-kbd">R</span>
+```
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-code` | bordered panel, rounded `--talos-radius-sm`, clips children |
+| `.talos-code__bar` | uppercase display title bar on `--talos-surface-2`; `space-between` |
+| `.talos-code__copy` | bordered copy button — hover brightens, `:focus-visible` shows the ring |
+| `.talos-code__body` | monospaced `<pre>` on `--talos-surface-1`; `overflow-x: auto` |
+| `.talos-inline-code` | inline monospace chip for code spans in prose |
+| `.talos-kbd` | key-cap chip — display face, 2px bottom border |

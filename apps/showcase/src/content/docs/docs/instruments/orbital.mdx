@@ -1,0 +1,107 @@
+---
+title: Orbital
+description: A radial system map where orbit speed, node size, and band colour ARE the telemetry — an instrument, not an animation.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+
+`<talos-orbital>` is the showpiece instrument: a central core with nodes orbiting
+on concentric rings. Every visual property is bound to live state — ring =
+subsystem, node size = `load`, colour = health band, orbit speed ∝ `rate`. Form
+encodes function, so the picture reads even frozen: under
+`prefers-reduced-motion` the nodes park and size/colour/ring still carry the
+whole state, the orbit is only the enhancement.
+
+Nodes are pushed as a **property** (`el.nodes = [...]`), not an attribute — it's a
+live instrument, so the demos below render the static frame (rings, axes, core)
+and the code blocks show the node set that drives the system.
+
+## Default
+
+<Demo>
+  <talos-orbital rings="3" warn="70" crit="90" size="260" core-label="CORE"></talos-orbital>
+</Demo>
+
+```astro
+<talos-orbital rings="3" warn="70" crit="90" size="260" core-label="CORE"></talos-orbital>
+<script type="module">
+  const el = document.querySelector("talos-orbital");
+  el.nodes = [
+    { id: "api",   ring: 1, value: 40, load: 0.6, rate: 50, label: "API" },
+    { id: "db",    ring: 2, value: 82, load: 0.9, rate: 20, label: "DB" },
+    { id: "cache", ring: 3, value: 12, load: 0.3, rate: 80, label: "CACHE" },
+  ];
+</script>
+```
+
+Three rings, a faint crosshair through the core, and the `core-label` text. Each
+node sits on the ring named by `ring` (1 = innermost / most critical), sized by
+`load` (0..1) and coloured by its `value` band.
+
+## Rings — subsystem count
+
+<Demo>
+  <talos-orbital rings="5" warn="70" crit="90" size="260" core-label="MESH"></talos-orbital>
+</Demo>
+
+```astro
+<talos-orbital rings="5" core-label="MESH"></talos-orbital>
+```
+
+`rings` sets the number of concentric orbits (default `3`, min `1`). A node's
+`ring` field selects which one it rides; inner rings sweep slightly faster.
+
+## Core label & sub
+
+<Demo>
+  <talos-orbital rings="3" size="260" core-label="ATLAS" core-sub="SYS://PRIMARY"></talos-orbital>
+</Demo>
+
+```astro
+<talos-orbital core-label="ATLAS" core-sub="SYS://PRIMARY"></talos-orbital>
+```
+
+`core-label` is the headline glyph in the core; `core-sub` is the smaller line
+beneath it. Both default to `CORE` / `SYS://ATLAS` when omitted.
+
+## Band thresholds
+
+<Demo>
+  <talos-orbital rings="3" warn="50" crit="80" size="260" core-label="CORE"></talos-orbital>
+</Demo>
+
+```astro
+<talos-orbital warn="50" crit="80" core-label="CORE"></talos-orbital>
+```
+
+`warn` / `crit` are the inclusive-from thresholds on each node's `value`:
+`value ≥ crit` paints `--talos-danger`, `≥ warn` paints `--talos-warning`,
+otherwise `--talos-success`. The colour is the health band — same as the gauge
+and meter — so a glance reads the whole mesh's state.
+
+## Attributes
+
+| Attribute | Default | Effect |
+| --- | --- | --- |
+| `rings` | `3` | number of concentric orbits (min 1); `node.ring` selects one |
+| `warn` | `70` | inclusive-from threshold → `--talos-warning` band |
+| `crit` | `90` | inclusive-from threshold → `--talos-danger` band |
+| `size` | `520` | px square viewBox |
+| `core-label` | `CORE` | headline text in the core |
+| `core-sub` | `SYS://ATLAS` | smaller line beneath the label |
+
+### `.nodes` property
+
+Set `el.nodes` to an array of `{ id, ring, value, load, rate, label? }`. Re-assign
+(or mutate + call `update()`) to push new state; re-assigning preserves each
+node's orbit angle by `id`, so a data update never snaps the system back.
+
+| Field | Drives |
+| --- | --- |
+| `id` | identity — keeps orbit angle stable across re-assigns |
+| `ring` | which orbit ring (1-based, 1 = innermost) |
+| `value` | colour band via `warn` / `crit` |
+| `load` | node size (`0..1`) |
+| `rate` | orbit speed + flow arc to core (`0` = parked, no arc) |
+| `label` | optional uppercase tag beside the node |

@@ -1,0 +1,68 @@
+---
+title: Spinner
+description: A faint HUD ring with a bright accent arc that sweeps to read as motion.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-spinner` is the loader: a faint full ring with a brighter accent arc
+across the top and right edges, spinning at a steady linear cadence. The arc —
+not a sharp corner — is what reads as motion; the colour is `--talos-accent`,
+the same chroma the rest of the system spends on activity.
+
+## Default
+
+<Demo>
+  <span class="talos-spinner"></span>
+</Demo>
+
+```html
+<span class="talos-spinner"></span>
+```
+
+A 20px ring with a 2px border. The base track is the accent at 0.22 alpha; the
+top + right edges take the full accent. `talos-spin` rotates it 360° on a 0.9s
+linear loop.
+
+## Sizes
+
+<Demo>
+  <span class="talos-spinner talos-spinner--sm"></span>
+  <span class="talos-spinner talos-spinner--md"></span>
+  <span class="talos-spinner talos-spinner--lg"></span>
+</Demo>
+
+```html
+<span class="talos-spinner talos-spinner--sm"></span>
+<span class="talos-spinner talos-spinner--md"></span>
+<span class="talos-spinner talos-spinner--lg"></span>
+```
+
+Sizing rides a single custom prop, `--talos-spinner-size`: `--sm` is 14px,
+`--md` is 20px (the default), `--lg` is 32px. The 2px border stays constant, so
+larger rings read thinner.
+
+## Reduced motion
+
+<Demo>
+  <span class="talos-spinner talos-spinner--lg"></span>
+</Demo>
+
+```html
+<span class="talos-spinner talos-spinner--lg"></span>
+```
+
+Under `prefers-reduced-motion: reduce` the spin animation is dropped — the ring
+holds its arc position statically rather than rotating.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-spinner` | arc-ring loader, 20px, spinning 0.9s linear |
+| `.talos-spinner--sm` | 14px ring (`--talos-spinner-size`) |
+| `.talos-spinner--md` | 20px ring (default size) |
+| `.talos-spinner--lg` | 32px ring |
+
+Override `--talos-spinner-size` directly for an arbitrary diameter. The spin
+stops under `prefers-reduced-motion`.

@@ -1,0 +1,104 @@
+---
+title: Delta
+description: The change in a value — arrow for direction, figure for magnitude, colour for good vs bad — computed each tick against the previous reading.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+
+`<talos-delta>` reports the *change* in a value, not the level: the sign of
+`value − previous` picks the arrow (`▲` up / `▼` down / `▬` flat), `|Δ|` is the
+figure, and colour *is* the verdict — up is good, down is bad by default, and
+`good="down"` flips that for metrics where falling is healthy. The verdict rides
+the glyph itself, so a glance reads "which way, and is that good" before you read
+the number. Δ is computed against the last reading, so a fresh element with one
+`value` has no prior and shows flat `▬ 0` until `value` changes again.
+
+## Default — first reading
+
+<Demo>
+  <talos-delta value="42"></talos-delta>
+</Demo>
+
+```html
+<talos-delta value="42"></talos-delta>
+```
+
+With no prior reading there is no change to report, so the element rests at
+`▬ 0` in the tertiary (flat) colour. Set `value` again — via the attribute or
+`el.update(n)` — and the next render shows the signed Δ vs this reading.
+
+## Direction — up, down, flat
+
+The arrow and colour come from the sign of `value − previous`. Up reads
+`--talos-success`, down reads `--talos-danger` (with the default `good="up"`);
+a step within `eps` reads flat in the tertiary colour.
+
+```html
+<talos-delta value="42"></talos-delta>
+<!-- later, against a prior of 40 → ▲ in success -->
+el.update(45);
+<!-- against a prior of 45 → ▼ in danger -->
+el.update(41);
+```
+
+Direction needs a prior, so it only appears once `value` changes against an
+earlier reading — feed it each tick to turn a static number into a monitorable
+one. Pair it beside a level readout: the number is *where*, the delta is
+*which way and how much*.
+
+## good="down" — falling is healthy
+
+<Demo>
+  <talos-delta value="120" good="down"></talos-delta>
+</Demo>
+
+```html
+<talos-delta value="120" good="down"></talos-delta>
+```
+
+Flips the colour mapping: a *downward* step reads `--talos-success` and an
+upward step reads `--talos-danger`. For latency, error rate, cost, queue depth —
+any metric where down is the win — a falling Δ reads green without inverting
+the data.
+
+## precision — decimal places
+
+<Demo>
+  <talos-delta value="3.14159" precision="2"></talos-delta>
+</Demo>
+
+```html
+<talos-delta value="3.14159" precision="2"></talos-delta>
+```
+
+`precision` sets the decimal places on the magnitude figure (default `0`, floored
+at `0`). The arrow and colour are unaffected — only the rendered `|Δ|` is
+formatted.
+
+## eps — dead-zone
+
+<Demo>
+  <talos-delta value="50" eps="0.5"></talos-delta>
+</Demo>
+
+```html
+<talos-delta value="50" eps="0.5"></talos-delta>
+```
+
+`eps` is a dead-zone: any change with `|Δ| ≤ eps` reads flat (`▬`, tertiary
+colour) instead of tripping an arrow. Use it to keep jittery signals from
+flickering direction on noise (default `0` — every non-zero step shows).
+
+## Attributes
+
+| Attribute | Effect |
+| --- | --- |
+| `value` | current reading; Δ is `value − previous`, recomputed each set (required) |
+| `good` | which direction is healthy: `up` (default) or `down` — flips the good/bad colour |
+| `precision` | decimal places for the magnitude figure (default `0`, min `0`) |
+| `eps` | dead-zone; `|Δ| ≤ eps` reads flat instead of up/down (default `0`) |
+
+`value` is reactive — re-set it (or call `el.update(value)`) and the delta
+recomputes against the prior reading. Exposes `::part(arrow)` and `::part(mag)`
+for styling the glyph and figure; `--talos-delta-size` sets the font size.

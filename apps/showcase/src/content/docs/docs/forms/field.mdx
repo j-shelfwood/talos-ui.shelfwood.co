@@ -1,0 +1,129 @@
+---
+title: Field
+description: The label + control + metadata column that lets a single state class recolour the whole group.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-field` is the layout convention, not a control: a vertical stack of a
+`.talos-label`, the control, and one line of metadata (`__help` / `__error` /
+`__counter`). The validation class lives on the *field*, so `--error` /
+`--success` recolour the nested control's chamfer and the message together — one
+class encodes the whole group's state.
+
+## Default
+
+<Demo>
+  <div class="talos-field" style="width:280px">
+    <label class="talos-label">Hostname</label>
+    <input class="talos-input" placeholder="atlas-01" />
+    <span class="talos-field__help">Lowercase, no spaces.</span>
+  </div>
+</Demo>
+
+```html
+<div class="talos-field">
+  <label class="talos-label">Hostname</label>
+  <input class="talos-input" placeholder="atlas-01" />
+  <span class="talos-field__help">Lowercase, no spaces.</span>
+</div>
+```
+
+`.talos-label` is the tiny uppercase HUD voice (display font, wide tracking).
+`.talos-field__help` is the muted metadata line below the control.
+
+## Required
+
+<Demo>
+  <div class="talos-field" style="width:280px">
+    <label class="talos-label talos-label--required">API key</label>
+    <input class="talos-input" placeholder="sk-…" />
+  </div>
+</Demo>
+
+```html
+<label class="talos-label talos-label--required">API key</label>
+```
+
+`.talos-label--required` appends a `--talos-danger` asterisk via `::after`. No
+extra markup — the asterisk is part of the label.
+
+## State — error
+
+<Demo>
+  <div class="talos-field talos-field--error" style="width:280px">
+    <label class="talos-label talos-label--required">Port</label>
+    <input class="talos-input" value="99999" />
+    <span class="talos-field__error">Out of range (1–65535).</span>
+  </div>
+</Demo>
+
+```html
+<div class="talos-field talos-field--error">
+  <label class="talos-label talos-label--required">Port</label>
+  <input class="talos-input" value="99999" />
+  <span class="talos-field__error">Out of range (1–65535).</span>
+</div>
+```
+
+`.talos-field--error` repaints the nested `.talos-input` / `.talos-textarea`
+chamfer in `--talos-danger` (and recolours a nested `.talos-select` border).
+`.talos-field__error` is the danger-coloured validation line.
+
+## State — success
+
+<Demo>
+  <div class="talos-field talos-field--success" style="width:280px">
+    <label class="talos-label">Hostname</label>
+    <input class="talos-input" value="atlas-01" />
+    <span class="talos-field__help">Resolves.</span>
+  </div>
+</Demo>
+
+```html
+<div class="talos-field talos-field--success">
+  <label class="talos-label">Hostname</label>
+  <input class="talos-input" value="atlas-01" />
+</div>
+```
+
+`.talos-field--success` repaints the nested control's chamfer in
+`--talos-success`. Pair with `__help` rather than `__error` — there's no green
+message class.
+
+## Counter
+
+<Demo>
+  <div class="talos-field" style="width:280px">
+    <label class="talos-label">Bio</label>
+    <textarea class="talos-textarea" style="min-height:5rem">Operator on atlas-01.</textarea>
+    <span class="talos-field__counter">21 / 160</span>
+  </div>
+</Demo>
+
+```html
+<div class="talos-field">
+  <label class="talos-label">Bio</label>
+  <textarea class="talos-textarea"></textarea>
+  <span class="talos-field__counter">21 / 160</span>
+</div>
+```
+
+`.talos-field__counter` is a right-aligned, tabular-nums character count in the
+display font — typically paired with a `<textarea>`.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-field` | vertical label + control + metadata stack (`gap: 0.5rem`) |
+| `.talos-label` | uppercase HUD label, display font, wide tracking |
+| `.talos-label--required` | appends a `--talos-danger` asterisk after the label |
+| `.talos-field__help` | muted metadata line below the control |
+| `.talos-field__error` | `--talos-danger` validation line |
+| `.talos-field__counter` | right-aligned tabular-nums character count |
+| `.talos-field--error` | recolours nested control chamfer / select border to `--talos-danger` |
+| `.talos-field--success` | recolours nested control chamfer / select border to `--talos-success` |
+
+Wraps any of the [text controls](/docs/forms/input/), [`.talos-select`](/docs/forms/select/),
+or toggle rows.

@@ -1,0 +1,69 @@
+---
+title: Toggle
+description: Segmented control where the lit segment IS the current value — a live mutually-exclusive setting that both shows and drives state.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+
+`<talos-toggle>` is a segmented control where the *selection is the state*. A row
+of mutually-exclusive options; the lit segment is the current value of a live
+setting (mode, range, channel) — not a decorative tab. Clicking a segment updates
+`value` and emits `talos:change`; setting `value` moves the lit segment. The
+active segment is fully legible in a static frame (filled background, foreground
+text), so nothing meaningful rides on motion.
+
+## Default
+
+<Demo>
+  <talos-toggle options="day,week,month" label="range"></talos-toggle>
+</Demo>
+
+```html
+<talos-toggle options="day,week,month" label="range"></talos-toggle>
+```
+
+`options` is a comma-separated list; each token is both the value and the label.
+With no `value` set, the first option (`day`) is lit. `label` sets the group's
+`aria-label`.
+
+## Preset value
+
+<Demo>
+  <talos-toggle options="day,week,month" value="week" label="range"></talos-toggle>
+</Demo>
+
+```html
+<talos-toggle options="day,week,month" value="week" label="range"></talos-toggle>
+```
+
+`value` selects which segment is lit. It reflects to the attribute and is also
+exposed as the `el.value` property — get it to read the current setting, set it to
+move the selection.
+
+## Value ≠ label
+
+<Demo>
+  <talos-toggle options="1h:1 Hour,1d:1 Day,1w:1 Week" value="1d" label="window"></talos-toggle>
+</Demo>
+
+```html
+<talos-toggle options="1h:1 Hour,1d:1 Day,1w:1 Week" value="1d" label="window"></talos-toggle>
+```
+
+Use `value:Label` tokens when the displayed text differs from the underlying
+value — the segment shows `1 Day` while `value` stays the terse `1d` that drives
+your code.
+
+## Attributes
+
+| Attribute | Effect |
+| --- | --- |
+| `options` | comma-separated list; each token is `value` or `value:Label` (required) |
+| `value` | the selected option value; reflects, defaults to the first option |
+| `label` | accessible group label (sets `aria-label`) |
+
+`value` is also a property (`el.value`) — get/set; setting reflects to the
+attribute. User selection fires a bubbling `talos:change` event with
+`detail = { value }`. All attributes are reactive — re-set any of them and the
+control re-renders.

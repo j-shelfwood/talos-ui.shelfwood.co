@@ -1,0 +1,111 @@
+---
+title: Input group & search
+description: Bordered control wrappers that fuse addons or a search icon to an input so a prefix, suffix, or filter reads as one continuous part.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-input-group` and `.talos-search` are wrappers, not controls. The group
+owns the visible border and goes borderless on the inner `.talos-input`, so a
+`$`-prefix or `/mo`-suffix reads as one continuous part rather than three boxes.
+`.talos-search` does the same trick for a magnifier and an optional clear button.
+
+## Input group — addons
+
+<Demo>
+  <div class="talos-input-group" style="width:240px">
+    <span class="talos-input-addon talos-input-addon--leading">$</span>
+    <input class="talos-input" placeholder="0.00" />
+    <span class="talos-input-addon talos-input-addon--trailing">/mo</span>
+  </div>
+</Demo>
+
+```html
+<div class="talos-input-group">
+  <span class="talos-input-addon talos-input-addon--leading">$</span>
+  <input class="talos-input" placeholder="0.00" />
+  <span class="talos-input-addon talos-input-addon--trailing">/mo</span>
+</div>
+```
+
+The group draws the 1px border; the inner input drops its own border and
+chamfer (`background: none`) so the three cells fuse. `--leading` sits before the
+input with a right divider, `--trailing` after with a left divider. Either is
+optional — use one, both, or neither.
+
+## Focus-within
+
+<Demo>
+  <div class="talos-input-group" style="width:240px">
+    <span class="talos-input-addon talos-input-addon--leading">https://</span>
+    <input class="talos-input" value="atlas-01" />
+  </div>
+</Demo>
+
+```html
+<div class="talos-input-group">
+  <span class="talos-input-addon talos-input-addon--leading">https://</span>
+  <input class="talos-input" />
+</div>
+```
+
+Because the wrapper owns the outline, focus is handled on the group:
+`:focus-within` brightens the border to `--talos-edge-strong` and adds a 1px
+ring — the whole assembly lights up as one, not just the input cell.
+
+## Search
+
+<Demo>
+  <div class="talos-search" style="width:240px">
+    <span class="talos-search__icon">⌕</span>
+    <input class="talos-input" placeholder="Filter nodes…" />
+  </div>
+</Demo>
+
+```html
+<div class="talos-search">
+  <span class="talos-search__icon">⌕</span>
+  <input class="talos-input" placeholder="Filter nodes…" />
+</div>
+```
+
+`.talos-search` is a relative wrapper that pads the input on both sides and
+absolutely positions `__icon` over the left pad. The icon is `pointer-events:
+none`, so clicks fall through to the input. The input keeps its own chamfer here.
+
+## Search — with clear
+
+<Demo>
+  <div class="talos-search" style="width:240px">
+    <span class="talos-search__icon">⌕</span>
+    <input class="talos-input" value="atlas" />
+    <button class="talos-search__clear" type="button" aria-label="Clear">×</button>
+  </div>
+</Demo>
+
+```html
+<div class="talos-search">
+  <span class="talos-search__icon">⌕</span>
+  <input class="talos-input" value="atlas" />
+  <button class="talos-search__clear" type="button" aria-label="Clear">×</button>
+</div>
+```
+
+`__clear` is an optional `<button>` pinned to the right pad. It is a bare button
+(no background/border) that brightens to `--talos-text-primary` on hover; wiring
+the actual clear is the host's job.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-input-group` | flex wrapper that owns the border; `:focus-within` brightens + rings |
+| `.talos-input-addon` | inline HUD-voice cell beside the input (uppercase, tracked, muted) |
+| `.talos-input-addon--leading` | addon before the input, right divider |
+| `.talos-input-addon--trailing` | addon after the input, left divider |
+| `.talos-search` | relative wrapper that pads the input for icon + clear |
+| `.talos-search__icon` | magnifier glyph, absolutely positioned left, click-through |
+| `.talos-search__clear` | optional bare clear `<button>` pinned right |
+
+Inside a group the `.talos-input` goes borderless; for a standalone control see
+[`.talos-input`](/docs/forms/input/).

@@ -1,0 +1,188 @@
+---
+title: Console shell
+description: A zoned, fixed-viewport layout — rail, scope, aside, status — that rejects the single scrolling document column.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-console` is the non-document layout. Instead of one tall portrait column
+you scroll top-to-bottom, it fills the viewport and divides it into fixed
+**zones** — rail, scope, aside, status. Content that overflows scrolls *within*
+its zone, so the frame stays put while one readout updates — an instrument panel,
+not a page. Lives in the opt-in `talos-console.css` module.
+
+## Default — four zones
+
+<Demo>
+  <div class="talos-console" style="height:280px;width:100%">
+    <header class="console-rail">
+      <span class="console-rail__brand">ATLAS-01</span>
+      <span class="console-rail__spacer"></span>
+      <span class="console-rail__meta">ONLINE · 14:32:07</span>
+    </header>
+    <main class="console-scope">
+      <div class="console-cell">
+        <span class="console-cell__title">CPU</span>
+        <span>30%</span>
+      </div>
+      <div class="console-cell">
+        <span class="console-cell__title">MEM</span>
+        <span>61%</span>
+      </div>
+    </main>
+    <aside class="console-aside">
+      <span class="console-aside__label">// Telemetry</span>
+      <span>Disk 30%</span>
+    </aside>
+    <footer class="console-status">
+      <span class="console-status__stat" style="--_status:var(--talos-success-hsl)">NOMINAL</span>
+      <span class="console-status__spacer"></span>
+      <span>uplink stable</span>
+    </footer>
+  </div>
+</Demo>
+
+```html
+<div class="talos-console talos-console--viewport">
+  <header class="console-rail">
+    <span class="console-rail__brand">ATLAS-01</span>
+    <span class="console-rail__spacer"></span>
+    <span class="console-rail__meta">ONLINE · 14:32:07</span>
+  </header>
+  <main class="console-scope">
+    <div class="console-cell">
+      <span class="console-cell__title">CPU</span>
+      <talos-gauge value="30" warn="70" crit="90" unit="%"></talos-gauge>
+    </div>
+  </main>
+  <aside class="console-aside">
+    <span class="console-aside__label">// Telemetry</span>
+    <talos-meter value="30" warn="70" crit="90" label="Disk" unit="%"></talos-meter>
+  </aside>
+  <footer class="console-status">
+    <span class="console-status__stat" style="--_status:var(--talos-success-hsl)">NOMINAL</span>
+  </footer>
+</div>
+```
+
+`rail` and `status` are `auto` rows; `scope` + `aside` share the `1fr` middle.
+Add `.talos-console--viewport` to pin the grid to `100dvh`. The `scope` is itself
+a responsive instrument grid (`auto-fit, minmax(15rem, 1fr)`) — children lay out
+spatially, not stacked.
+
+## No aside — three-row stack
+
+<Demo>
+  <div class="talos-console talos-console--no-aside" style="height:240px;width:100%">
+    <header class="console-rail">
+      <span class="console-rail__brand">ATLAS-01</span>
+      <span class="console-rail__spacer"></span>
+      <span class="console-rail__meta">14:32:07</span>
+    </header>
+    <main class="console-scope">
+      <div class="console-cell">
+        <span class="console-cell__title">Throughput</span>
+        <span>1.2 Gb/s</span>
+      </div>
+    </main>
+    <footer class="console-status">
+      <span class="console-status__stat" style="--_status:var(--talos-warning-hsl)">DEGRADED</span>
+    </footer>
+  </div>
+</Demo>
+
+```html
+<div class="talos-console talos-console--no-aside talos-console--viewport">
+  <header class="console-rail">…</header>
+  <main class="console-scope">…</main>
+  <footer class="console-status">…</footer>
+</div>
+```
+
+`--no-aside` drops the side telemetry column for a clean three-row stack — rail,
+scope, status.
+
+## Status segments — colour encodes health
+
+<Demo>
+  <footer class="console-status" style="width:100%">
+    <span class="console-status__stat" style="--_status:var(--talos-success-hsl)">NOMINAL</span>
+    <span class="console-status__stat" style="--_status:var(--talos-warning-hsl)">DEGRADED</span>
+    <span class="console-status__stat" style="--_status:var(--talos-danger-hsl)">FAULT</span>
+    <span class="console-status__spacer"></span>
+    <span>14:32:07</span>
+  </footer>
+</Demo>
+
+```html
+<footer class="console-status">
+  <span class="console-status__stat" style="--_status:var(--talos-success-hsl)">NOMINAL</span>
+  <span class="console-status__stat" style="--_status:var(--talos-warning-hsl)">DEGRADED</span>
+  <span class="console-status__spacer"></span>
+  <span>14:32:07</span>
+</footer>
+```
+
+A `.console-status__stat` takes a `--_status` HSL token and shows a dot in that
+colour — form encodes function, so aggregate health reads at a glance.
+
+## Cells — wide & full span
+
+<Demo>
+  <main class="console-scope" style="width:100%">
+    <div class="console-cell">
+      <span class="console-cell__title">A</span>
+      <span>—</span>
+    </div>
+    <div class="console-cell console-cell--wide">
+      <span class="console-cell__title">B · wide</span>
+      <span>—</span>
+    </div>
+    <div class="console-cell console-cell--full">
+      <span class="console-cell__title">C · full</span>
+      <span>—</span>
+    </div>
+  </main>
+</Demo>
+
+```html
+<div class="console-cell">…</div>
+<div class="console-cell console-cell--wide">…</div>
+<div class="console-cell console-cell--full">…</div>
+```
+
+A `.console-cell` is a hairline, square-cornered titled box for grouping
+instruments inside a zone. `--wide` spans two scope columns; `--full` spans the
+whole row.
+
+## Responsive
+
+Below `720px` the aside folds under, the grid becomes a single column, and the
+console is allowed to scroll as one document — on a phone, one column is the
+honest layout. The rejection of the scrolling column is a default, not dogma.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-console` | the zoned grid — `rail` / `scope` + `aside` / `status` |
+| `.talos-console--viewport` | pins the grid to `100dvh`, full width |
+| `.talos-console--no-aside` | drops the side column for a 3-row stack |
+| `.console-rail` | header zone (`grid-area: rail`) |
+| `.console-rail__brand` | uppercase identity at the rail's left |
+| `.console-rail__spacer` | `flex: 1` filler that pushes meta to the right |
+| `.console-rail__meta` | tabular, right-aligned status / clock text |
+| `.console-scope` | main instrument zone; responsive auto-fit grid, scrolls internally |
+| `.console-scope--free` | opt out of the grid (`display: block`), position children yourself |
+| `.console-aside` | side telemetry column (`grid-area: aside`), scrolls internally |
+| `.console-aside__label` | uppercase caption for the aside |
+| `.console-status` | footer status bar (`grid-area: status`) |
+| `.console-status__stat` | inline segment + dot; colour from `--_status` HSL token |
+| `.console-status__spacer` | `flex: 1` filler between status segments |
+| `.console-cell` | hairline titled box for grouping instruments |
+| `.console-cell__title` | uppercase caption for a cell |
+| `.console-cell--wide` | cell spans two scope columns |
+| `.console-cell--full` | cell spans the full scope row |
+
+Drop the data-binding instruments ([`<talos-gauge>`](/docs/recipes/) etc.) inside
+`.console-scope` and `.console-aside`. The [home page](/) is a full live example.

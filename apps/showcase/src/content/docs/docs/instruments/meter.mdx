@@ -1,0 +1,114 @@
+---
+title: Meter
+description: Linear level/threshold instrument — fill length is the value, fill colour is the band, warn/crit sit as ticks on the scale itself.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+
+`<talos-meter>` is the horizontal analog of [`<talos-gauge>`](/docs/instruments/gauge/):
+fill *length* encodes the value, fill *colour* encodes the band, and the
+`warn`/`crit` thresholds are drawn as tick marks on the rail — so the
+breakpoints live on the instrument itself, not hidden in config. Colour snaps
+to the true band the instant the value crosses; only the length tweens.
+
+## Default
+
+<Demo>
+  <talos-meter value="30" warn="70" crit="90" label="Disk" unit="%" width="300"></talos-meter>
+</Demo>
+
+```html
+<talos-meter value="30" warn="70" crit="90"
+             label="Disk" unit="%" width="300"></talos-meter>
+```
+
+`value` over `min`/`max` (default `0`/`100`) sets the filled fraction. The
+`label` caption sits above the rail, the `unit` is appended to the readout, and
+the two ticks mark `warn` and `crit` on the scale.
+
+## Bands — nominal / warning / critical
+
+<Demo>
+  <div style="display:flex;flex-direction:column;gap:1.25rem">
+    <talos-meter value="34" warn="70" crit="90" label="Nominal" unit="%" width="300"></talos-meter>
+    <talos-meter value="78" warn="70" crit="90" label="Warning" unit="%" width="300"></talos-meter>
+    <talos-meter value="96" warn="70" crit="90" label="Critical" unit="%" width="300"></talos-meter>
+  </div>
+</Demo>
+
+```html
+<talos-meter value="34" warn="70" crit="90" label="Nominal" unit="%" width="300"></talos-meter>
+<talos-meter value="78" warn="70" crit="90" label="Warning" unit="%" width="300"></talos-meter>
+<talos-meter value="96" warn="70" crit="90" label="Critical" unit="%" width="300"></talos-meter>
+```
+
+A value at or past `warn` paints the fill (and the readout) `--talos-warning`;
+at or past `crit` it goes `--talos-danger`; otherwise `--talos-success`. The
+colour is the reading — a glance reads the band without parsing the number.
+
+## Inverted — low = bad
+
+<Demo>
+  <talos-meter value="18" warn="40" crit="20" invert label="Battery" unit="%" width="300"></talos-meter>
+</Demo>
+
+```html
+<talos-meter value="18" warn="40" crit="20" invert
+             label="Battery" unit="%" width="300"></talos-meter>
+```
+
+For signals where danger is a value *falling* — battery, coolant, frame rate —
+add `invert`: the bands trip when the value drops to/below the thresholds.
+Here `18 ≤ crit(20)` reads critical.
+
+## Ticks off
+
+<Demo>
+  <talos-meter value="55" warn="70" crit="90" ticks="off" label="Bare" unit="%" width="300"></talos-meter>
+</Demo>
+
+```html
+<talos-meter value="55" warn="70" crit="90" ticks="off"
+             label="Bare" unit="%" width="300"></talos-meter>
+```
+
+Ticks draw automatically when `warn`/`crit` are set; pass `ticks="off"` to
+suppress them and keep the band colour without the scale marks.
+
+## Compact
+
+<Demo>
+  <div style="display:flex;flex-direction:column;gap:0.75rem;width:300px">
+    <talos-meter compact value="34" warn="70" crit="90"></talos-meter>
+    <talos-meter compact value="78" warn="70" crit="90"></talos-meter>
+    <talos-meter compact value="96" warn="70" crit="90"></talos-meter>
+  </div>
+</Demo>
+
+```html
+<talos-meter compact value="78" warn="70" crit="90"></talos-meter>
+```
+
+The `compact` attribute drops the caption/readout chrome down to a 3px micro-bar
+that stretches to its container — the honest replacement for a hand-rolled mini
+"progress" bar inside a dense readout row. Width follows `--talos-meter-w`
+(default `100%`).
+
+## Attributes
+
+| Attribute | Effect |
+| --- | --- |
+| `value` | current value (default `0`); the fill length tweens toward it |
+| `min` / `max` | domain bounds (default `0` / `100`) |
+| `warn` / `crit` | band thresholds; also drawn as ticks on the rail |
+| `invert` | flip band direction — bands trip when value falls to/below thresholds |
+| `label` | caption above the bar (also sets `aria-label`) |
+| `unit` | string appended to the readout |
+| `width` | rail width in px (default `200`) |
+| `ticks` | `"off"` suppresses the warn/crit tick marks (on by default) |
+| `compact` | bare 3px micro-bar, no caption/readout; width from `--talos-meter-w` |
+
+`setAttribute("value", v)` re-renders live; the fill eases (`easeOutCubic`) or
+snaps under `prefers-reduced-motion`. Exposes `role="meter"` with
+`aria-valuenow/min/max`. For the radial form see [`<talos-gauge>`](/docs/instruments/gauge/).

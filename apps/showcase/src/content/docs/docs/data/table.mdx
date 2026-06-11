@@ -1,0 +1,135 @@
+---
+title: Table
+description: Borderless data table with a HUD-uppercase head, hairline rows, tabular numerics, and a chevron that rotates off aria-sort.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-table` is a borderless data grid. The head is uppercase HUD lettering
+over a hairline rule, body rows divide on subtle 1px lines, and each row tints on
+`:hover`. There's no chrome — the structure *is* the readability: numbers lock to
+tabular figures so columns align, and the sort chevron rotates off `aria-sort`, so
+the markup state and the visual state are the same thing.
+
+## Default
+
+<Demo>
+  <div class="talos-table-wrap" style="max-width:480px">
+    <table class="talos-table">
+      <thead>
+        <tr><th>Txn</th><th>Node</th><th class="talos-table__num">Load %</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>TX-9043</td><td>atlas-01</td><td class="talos-table__num">62.4</td><td><span class="talos-badge talos-badge--success">online</span></td></tr>
+        <tr><td>TX-9044</td><td>atlas-02</td><td class="talos-table__num">88.1</td><td><span class="talos-badge talos-badge--warning">busy</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</Demo>
+
+```html
+<div class="talos-table-wrap">
+  <table class="talos-table">
+    <thead>
+      <tr><th>Txn</th><th>Node</th><th class="talos-table__num">Load %</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>TX-9043</td><td>atlas-01</td><td class="talos-table__num">62.4</td></tr>
+    </tbody>
+  </table>
+</div>
+```
+
+Wrap the table in `.talos-table-wrap` so it scrolls horizontally instead of
+overflowing. Each `tbody tr` brightens on `:hover`; numeric cells take
+`__num` to right-align and switch to tabular figures.
+
+## Zebra
+
+<Demo>
+  <div class="talos-table-wrap" style="max-width:480px">
+    <table class="talos-table talos-table--zebra">
+      <thead>
+        <tr><th>Txn</th><th>Node</th><th class="talos-table__num">Load %</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>TX-9043</td><td>atlas-01</td><td class="talos-table__num">62.4</td></tr>
+        <tr><td>TX-9044</td><td>atlas-02</td><td class="talos-table__num">88.1</td></tr>
+        <tr><td>TX-9045</td><td>atlas-03</td><td class="talos-table__num">17.9</td></tr>
+      </tbody>
+    </table>
+  </div>
+</Demo>
+
+```html
+<table class="talos-table talos-table--zebra">…</table>
+```
+
+`--zebra` fills every even `tbody` row with `--talos-surface-1` for scan-down
+banding. The hover tint still layers on top.
+
+## Dense
+
+<Demo>
+  <div class="talos-table-wrap" style="max-width:480px">
+    <table class="talos-table talos-table--dense">
+      <thead>
+        <tr><th>Txn</th><th>Node</th><th class="talos-table__num">Load %</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>TX-9043</td><td>atlas-01</td><td class="talos-table__num">62.4</td></tr>
+        <tr><td>TX-9044</td><td>atlas-02</td><td class="talos-table__num">88.1</td></tr>
+      </tbody>
+    </table>
+  </div>
+</Demo>
+
+```html
+<table class="talos-table talos-table--dense">…</table>
+```
+
+`--dense` tightens head and body padding for high-row-count grids. Combine with
+`--zebra` on the same element.
+
+## Sortable header
+
+<Demo>
+  <div class="talos-table-wrap" style="max-width:480px">
+    <table class="talos-table">
+      <thead>
+        <tr>
+          <th><span class="talos-table__sort">Txn</span></th>
+          <th aria-sort="ascending"><span class="talos-table__sort">Node</span></th>
+          <th class="talos-table__num" aria-sort="descending"><span class="talos-table__sort">Load %</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>TX-9043</td><td>atlas-01</td><td class="talos-table__num">62.4</td></tr>
+        <tr><td>TX-9044</td><td>atlas-02</td><td class="talos-table__num">88.1</td></tr>
+      </tbody>
+    </table>
+  </div>
+</Demo>
+
+```html
+<th aria-sort="ascending"><span class="talos-table__sort">Node</span></th>
+<th aria-sort="descending"><span class="talos-table__sort">Load %</span></th>
+```
+
+Wrap the header label in `__sort` to draw a chevron. It sits dimmed when the
+column is unsorted, and `aria-sort` on the `<th>` lights it and rotates it —
+`ascending` flips it up, `descending` points it down. Toggle `aria-sort` in JS to
+drive sort state; the chevron follows the attribute.
+
+## Classes
+
+| Class / attribute | Effect |
+| --- | --- |
+| `.talos-table-wrap` | scroll container — `overflow-x:auto` so wide tables scroll |
+| `.talos-table` | the grid: HUD-uppercase head, hairline rows, hover tint |
+| `.talos-table--zebra` | fills even `tbody` rows with `--talos-surface-1` |
+| `.talos-table--dense` | tightens head + body cell padding |
+| `.talos-table__num` | right-aligns the cell and locks to tabular figures |
+| `.talos-table__sort` | wraps a header label to render the rotating sort chevron |
+| `[aria-sort="ascending"]` | on the `<th>` — lights the chevron, points it up |
+| `[aria-sort="descending"]` | on the `<th>` — lights the chevron, points it down |

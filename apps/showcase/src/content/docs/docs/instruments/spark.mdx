@@ -1,0 +1,106 @@
+---
+title: Spark
+description: A compact inline sparkline whose stroke colour is the band of the current value — colour is the state.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+
+`<talos-spark>` is a compact inline sparkline — the small sibling of
+`<talos-trend>`. Position and slope carry the shape; the stroke takes the band
+colour of the **current (last)** value, so a glance reads the state without a
+legend. Set the series with the `points` attribute, or stream samples with
+`el.push(value)`.
+
+## Default
+
+<Demo>
+  <talos-spark points="20 28 24 40 38 52 60 66 72 80" style="width:120px"></talos-spark>
+</Demo>
+
+```html
+<talos-spark points="20 28 24 40 38 52 60 66 72 80"></talos-spark>
+```
+
+`points` is a comma/space-separated list, scaled to the `[min,max]` domain
+(default `0`–`100`). A frozen frame still shows the shape — there is no animation
+to lose. The host is `inline-block`; size it with `--talos-spark-w` /
+`--talos-spark-h` (default `100%` × `16px`).
+
+## Bands — warn & crit on the current value
+
+<Demo>
+  <talos-spark points="10 18 22 30 44 58 72" warn="60" crit="80" style="width:120px"></talos-spark>
+  <talos-spark points="10 18 30 50 72 86 92" warn="60" crit="80" style="width:120px"></talos-spark>
+</Demo>
+
+```html
+<!-- last value 72 ≥ warn 60 → warning -->
+<talos-spark points="10 18 22 30 44 58 72" warn="60" crit="80"></talos-spark>
+<!-- last value 92 ≥ crit 80 → critical -->
+<talos-spark points="10 18 30 50 72 86 92" warn="60" crit="80"></talos-spark>
+```
+
+The band is computed from the last sample only. It crosses to `warning` at
+`warn` and `critical` at `crit` — `--talos-success` / `--talos-warning` /
+`--talos-danger` respectively. Absent thresholds never trip.
+
+## Invert — low = bad
+
+<Demo>
+  <talos-spark points="90 84 70 55 40 28 18" warn="40" crit="20" invert style="width:120px"></talos-spark>
+</Demo>
+
+```html
+<!-- last value 18 ≤ crit 20 → critical -->
+<talos-spark points="90 84 70 55 40 28 18" warn="40" crit="20" invert></talos-spark>
+```
+
+With `invert`, the comparison flips: warning/critical trip when the current
+value **falls** to/below the threshold. Use it for frame rate, battery, signal —
+signals where danger is a value falling.
+
+## Fill
+
+<Demo>
+  <talos-spark points="20 28 24 40 38 52 60 66 72 80" fill style="width:120px"></talos-spark>
+</Demo>
+
+```html
+<talos-spark points="20 28 24 40 38 52 60 66 72 80" fill></talos-spark>
+```
+
+`fill` paints the area under the line in the stroke colour at `0.1` opacity —
+denser presence in a stat cell without changing the read.
+
+## Live stream
+
+```js
+const el = document.querySelector("talos-spark");
+el.push(74); // append a sample; the oldest is dropped once past `cap` (default 32)
+```
+
+`push(value)` is the streaming entry point: it appends a sample, trims the
+buffer to `cap`, and re-renders on the next frame. The band recomputes from the
+new last value each push.
+
+## Attributes
+
+| Attribute | Default | Effect |
+| --- | --- | --- |
+| `points` | — | initial series, comma/space separated |
+| `min` | `0` | low end of the y-scale domain |
+| `max` | `100` | high end of the y-scale domain |
+| `warn` | — | warning threshold on the current value |
+| `crit` | — | critical threshold on the current value |
+| `invert` | — | low = bad; flips the band comparison |
+| `cap` | `32` | max samples retained by `push()` |
+| `fill` | — | fill the area under the line |
+
+| Custom property | Default | Effect |
+| --- | --- | --- |
+| `--talos-spark-w` | `100%` | host width |
+| `--talos-spark-h` | `16px` | host height |
+
+Imperative API: `el.push(value)` — preferred for live streams over re-setting
+`points`. Needs at least two samples to draw.

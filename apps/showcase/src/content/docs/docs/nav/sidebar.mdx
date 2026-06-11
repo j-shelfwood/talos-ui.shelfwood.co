@@ -1,0 +1,128 @@
+---
+title: Sidebar nav
+description: App navigation chrome — grouped nav items whose active section reads via a left accent tick, not a heavy fill.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-sidebar` is the application nav rail — a column of `.talos-nav-group`s
+holding `.talos-nav-item`s. The current section is marked by `--active`, which
+draws a 2px `--talos-accent` tick down the left edge rather than filling the row:
+the position carries the state, not the colour weight.
+
+## Default
+
+<Demo>
+  <nav class="talos-sidebar">
+    <div class="talos-nav-group">
+      <span class="talos-nav-group__label">Cluster</span>
+      <a class="talos-nav-item talos-nav-item--active" href="#"><span class="talos-nav-item__label">Overview</span></a>
+      <a class="talos-nav-item" href="#"><span class="talos-nav-item__label">Nodes</span></a>
+      <a class="talos-nav-item" href="#"><span class="talos-nav-item__label">Traffic</span></a>
+    </div>
+    <div class="talos-nav-group">
+      <span class="talos-nav-group__label">System</span>
+      <a class="talos-nav-item" href="#"><span class="talos-nav-item__label">Logs</span></a>
+      <a class="talos-nav-item" href="#"><span class="talos-nav-item__label">Settings</span></a>
+    </div>
+  </nav>
+</Demo>
+
+```html
+<nav class="talos-sidebar">
+  <div class="talos-nav-group">
+    <span class="talos-nav-group__label">Cluster</span>
+    <a class="talos-nav-item talos-nav-item--active" href="#"><span class="talos-nav-item__label">Overview</span></a>
+    <a class="talos-nav-item" href="#"><span class="talos-nav-item__label">Nodes</span></a>
+  </div>
+</nav>
+```
+
+Fixed-width 15rem rail with a right hairline border. `__group__label` is the
+uppercase HUD section heading; items default to `--talos-text-secondary` and
+brighten on `:hover`.
+
+## Active item — left tick
+
+<Demo>
+  <nav class="talos-sidebar">
+    <div class="talos-nav-group">
+      <a class="talos-nav-item" href="#"><span class="talos-nav-item__label">Overview</span></a>
+      <a class="talos-nav-item talos-nav-item--active" href="#"><span class="talos-nav-item__label">Nodes</span></a>
+      <a class="talos-nav-item" href="#"><span class="talos-nav-item__label">Traffic</span></a>
+    </div>
+  </nav>
+</Demo>
+
+```html
+<a class="talos-nav-item talos-nav-item--active" href="#"><span class="talos-nav-item__label">Nodes</span></a>
+```
+
+`--active` lifts the row onto `--talos-surface-2` and draws the left accent tick
+via `::before`. Same surface as `:hover`, but only the active row carries the
+tick — so the current section is unambiguous even mid-hover.
+
+## With icons
+
+<Demo>
+  <nav class="talos-sidebar">
+    <div class="talos-nav-group">
+      <span class="talos-nav-group__label">Cluster</span>
+      <a class="talos-nav-item talos-nav-item--active" href="#"><span class="talos-nav-item__icon">◆</span><span class="talos-nav-item__label">Overview</span></a>
+      <a class="talos-nav-item" href="#"><span class="talos-nav-item__icon">▤</span><span class="talos-nav-item__label">Nodes</span></a>
+      <a class="talos-nav-item" href="#"><span class="talos-nav-item__icon">↯</span><span class="talos-nav-item__label">Traffic</span></a>
+    </div>
+  </nav>
+</Demo>
+
+```html
+<a class="talos-nav-item" href="#">
+  <span class="talos-nav-item__icon">▤</span>
+  <span class="talos-nav-item__label">Nodes</span>
+</a>
+```
+
+`__icon` is a fixed 1.1rem leading slot; `__label` holds the text. The split lets
+the collapsed rail keep icons while folding labels away.
+
+## Collapsed
+
+<Demo>
+  <nav class="talos-sidebar talos-sidebar--collapsed">
+    <div class="talos-nav-group">
+      <span class="talos-nav-group__label">Cluster</span>
+      <a class="talos-nav-item talos-nav-item--active" href="#"><span class="talos-nav-item__icon">◆</span><span class="talos-nav-item__label">Overview</span></a>
+      <a class="talos-nav-item" href="#"><span class="talos-nav-item__icon">▤</span><span class="talos-nav-item__label">Nodes</span></a>
+      <a class="talos-nav-item" href="#"><span class="talos-nav-item__icon">↯</span><span class="talos-nav-item__label">Traffic</span></a>
+    </div>
+  </nav>
+</Demo>
+
+```html
+<nav class="talos-sidebar talos-sidebar--collapsed">
+  <div class="talos-nav-group">
+    <span class="talos-nav-group__label">Cluster</span>
+    <a class="talos-nav-item talos-nav-item--active" href="#"><span class="talos-nav-item__icon">◆</span><span class="talos-nav-item__label">Overview</span></a>
+  </div>
+</nav>
+```
+
+`--collapsed` narrows the rail to 3.5rem (width animates on
+`--talos-ease-glass`) and hides every `__label` and `__group__label`; the
+`__icon`s and active tick remain.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-sidebar` | 15rem nav rail, column of groups, right hairline border |
+| `.talos-sidebar--collapsed` | narrows to 3.5rem, folds away all labels |
+| `.talos-nav-group` | a labelled cluster of nav items |
+| `.talos-nav-group__label` | uppercase HUD section heading (hidden when collapsed) |
+| `.talos-nav-item` | a nav link/row, dim by default, brightens on hover |
+| `.talos-nav-item--active` | lifts onto `--talos-surface-2` + draws left `--talos-accent` tick |
+| `.talos-nav-item__icon` | fixed 1.1rem leading icon slot (kept when collapsed) |
+| `.talos-nav-item__label` | item text (hidden when collapsed) |
+
+`--collapsed` toggling is yours to drive — add/remove the class in JS. For the
+horizontal equivalent see [tabs](/docs/data-nav/).

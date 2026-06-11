@@ -1,0 +1,111 @@
+---
+title: Avatar
+description: Chamfered identity tile carrying initials or an image, with an optional corner status dot.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-avatar` is a square identity tile with a single top-right chamfer — the
+HUD's square-with-a-cut house silhouette. The edge colour rides the clip-path
+(host edge + 1px-inset fill) so the hairline follows the diagonal instead of
+being sliced off, and the optional `__status` dot encodes presence in colour
+alone.
+
+## Default
+
+<Demo>
+  <span class="talos-avatar">JS</span>
+  <span class="talos-avatar"><img src="https://i.pravatar.cc/80?img=12" alt="" /></span>
+</Demo>
+
+```html
+<span class="talos-avatar">JS</span>
+<span class="talos-avatar"><img src="/me.jpg" alt="" /></span>
+```
+
+Holds uppercase initials (display font, tight tracking) or an `<img>` that
+object-fits inside the inset. Background is `--surface-2`, edge `--edge-default`.
+
+## Sizes
+
+<Demo>
+  <span class="talos-avatar talos-avatar--sm">SM</span>
+  <span class="talos-avatar">MD</span>
+  <span class="talos-avatar talos-avatar--lg">LG</span>
+</Demo>
+
+```html
+<span class="talos-avatar talos-avatar--sm">SM</span>
+<span class="talos-avatar">MD</span>
+<span class="talos-avatar talos-avatar--lg">LG</span>
+```
+
+`--sm` is 1.75rem, default 2.5rem, `--lg` 3.5rem — driven by the
+`--talos-avatar-size` var, so font size scales with the tile.
+
+## Ring
+
+<Demo>
+  <span class="talos-avatar talos-avatar--ring">AB</span>
+</Demo>
+
+```html
+<span class="talos-avatar talos-avatar--ring">AB</span>
+```
+
+`--ring` swaps the edge to `--edge-strong` for a brighter hairline — use it to
+mark the current user or a focused tile.
+
+## Status
+
+<Demo>
+  <span class="talos-avatar">ON<span class="talos-avatar__status talos-avatar__status--online"></span></span>
+  <span class="talos-avatar">WN<span class="talos-avatar__status talos-avatar__status--warning"></span></span>
+  <span class="talos-avatar">OF<span class="talos-avatar__status talos-avatar__status--offline"></span></span>
+  <span class="talos-avatar">--<span class="talos-avatar__status"></span></span>
+</Demo>
+
+```html
+<span class="talos-avatar">ON<span class="talos-avatar__status talos-avatar__status--online"></span></span>
+<span class="talos-avatar">WN<span class="talos-avatar__status talos-avatar__status--warning"></span></span>
+<span class="talos-avatar">OF<span class="talos-avatar__status talos-avatar__status--offline"></span></span>
+```
+
+`__status` is a dot tucked into the un-chamfered bottom-right corner. Bare it
+reads `--muted-foreground`; `--online` → `--success`, `--warning` →
+`--warning`, `--offline` → `--danger`. The colour is the presence.
+
+## Group
+
+<Demo>
+  <div class="talos-avatar-group">
+    <span class="talos-avatar">JS</span>
+    <span class="talos-avatar">KP<span class="talos-avatar__status talos-avatar__status--online"></span></span>
+    <span class="talos-avatar talos-avatar--lg">AB</span>
+  </div>
+</Demo>
+
+```html
+<div class="talos-avatar-group">
+  <span class="talos-avatar">JS</span>
+  <span class="talos-avatar">KP<span class="talos-avatar__status talos-avatar__status--online"></span></span>
+  <span class="talos-avatar talos-avatar--lg">AB</span>
+</div>
+```
+
+`.talos-avatar-group` is a spaced inline row — distinct tiles, not an overlapped
+collaborator stack, so each chamfer reads on its own.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-avatar` | chamfered identity tile (initials or `<img>`), 2.5rem |
+| `.talos-avatar--sm` | 1.75rem tile |
+| `.talos-avatar--lg` | 3.5rem tile |
+| `.talos-avatar--ring` | brighter edge (`--edge-strong`) |
+| `.talos-avatar__status` | corner presence dot (default `--muted-foreground`) |
+| `.talos-avatar__status--online` | dot in `--talos-success` |
+| `.talos-avatar__status--warning` | dot in `--talos-warning` |
+| `.talos-avatar__status--offline` | dot in `--talos-danger` |
+| `.talos-avatar-group` | spaced inline row of avatars |

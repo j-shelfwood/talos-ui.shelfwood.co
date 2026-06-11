@@ -1,0 +1,92 @@
+---
+title: Stat
+description: Chamfered KPI card whose delta arrow and colour read up/down at a glance.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-stat` is a single-metric KPI card. Its chamfered top-right + bottom-left
+cut is drawn as a two-layer hairline (host edge, 1px-inset fill), and the delta
+row is the only chroma — `--up`/`--down` flip an ▲/▼ glyph and recolour to
+success/danger, so direction reads before the number does.
+
+## Default
+
+<Demo>
+  <div class="talos-stat" style="min-width:160px">
+    <span class="talos-stat__label">Throughput</span>
+    <span class="talos-stat__value">14.2k</span>
+    <span class="talos-stat__delta talos-stat__delta--up">8.4% vs last hr</span>
+  </div>
+</Demo>
+
+```html
+<div class="talos-stat">
+  <span class="talos-stat__label">Throughput</span>
+  <span class="talos-stat__value">14.2k</span>
+  <span class="talos-stat__delta talos-stat__delta--up">8.4% vs last hr</span>
+</div>
+```
+
+`__label` is uppercase HUD-tracked; `__value` is large, light-weight, tabular.
+The delta sits below.
+
+## Delta — up & down
+
+<Demo>
+  <div style="display:flex;gap:1rem;flex-wrap:wrap">
+    <div class="talos-stat" style="min-width:160px">
+      <span class="talos-stat__label">Latency p95</span>
+      <span class="talos-stat__value">42ms</span>
+      <span class="talos-stat__delta talos-stat__delta--down">12% vs last hr</span>
+    </div>
+    <div class="talos-stat" style="min-width:160px">
+      <span class="talos-stat__label">Requests</span>
+      <span class="talos-stat__value">9.81k</span>
+      <span class="talos-stat__delta talos-stat__delta--up">3.2% vs last hr</span>
+    </div>
+  </div>
+</Demo>
+
+```html
+<span class="talos-stat__delta talos-stat__delta--down">12% vs last hr</span>
+<span class="talos-stat__delta talos-stat__delta--up">3.2% vs last hr</span>
+```
+
+`--up` prepends ▲ in `--talos-success`; `--down` prepends ▼ in `--talos-danger`.
+A bare `__delta` (no modifier) stays neutral with no glyph — use it when the
+move has no good/bad polarity.
+
+## Neutral delta & sub-line
+
+<Demo>
+  <div class="talos-stat" style="min-width:180px">
+    <span class="talos-stat__label">Active nodes</span>
+    <span class="talos-stat__value">128</span>
+    <span class="talos-stat__delta">no change</span>
+    <span class="talos-stat__sub">of 128 provisioned</span>
+  </div>
+</Demo>
+
+```html
+<div class="talos-stat">
+  <span class="talos-stat__label">Active nodes</span>
+  <span class="talos-stat__value">128</span>
+  <span class="talos-stat__delta">no change</span>
+  <span class="talos-stat__sub">of 128 provisioned</span>
+</div>
+```
+
+`__sub` is a small tertiary caption for context that isn't a delta.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-stat` | chamfered KPI card (two-layer hairline cut) |
+| `.talos-stat__label` | uppercase HUD-tracked metric name |
+| `.talos-stat__value` | large light-weight value, tabular figures |
+| `.talos-stat__delta` | change row; neutral/tertiary by default |
+| `.talos-stat__delta--up` | ▲ glyph, recolours to `--talos-success` |
+| `.talos-stat__delta--down` | ▼ glyph, recolours to `--talos-danger` |
+| `.talos-stat__sub` | small tertiary caption (non-delta context) |

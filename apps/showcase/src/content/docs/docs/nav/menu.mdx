@@ -1,0 +1,98 @@
+---
+title: Menu
+description: A floating overlay surface of stacked actions — accent-on-hover rows, right-flushed shortcuts, danger items.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-menu` is the dropdown / context overlay surface: a `--surface-3` panel with
+a hairline edge and shadow, holding stacked `__item` rows. It's chrome only — no
+open/close behaviour. The Talos idea is restraint: a row never fills, it just lifts
+to `--surface-4` on hover, and meaning rides the text colour (a `--danger` item
+reads red, a `__shortcut` is muted and pushed to the far edge).
+
+## Default
+
+<Demo>
+  <div class="talos-menu" style="position:relative">
+    <div class="talos-menu__label">Actions</div>
+    <button class="talos-menu__item">Restart node <span class="talos-menu__shortcut">⌘R</span></button>
+    <button class="talos-menu__item">Drain traffic</button>
+    <hr class="talos-menu__sep" />
+    <button class="talos-menu__item talos-menu__item--danger">Terminate</button>
+  </div>
+</Demo>
+
+```html
+<div class="talos-menu">
+  <div class="talos-menu__label">Actions</div>
+  <button class="talos-menu__item">Restart node <span class="talos-menu__shortcut">⌘R</span></button>
+  <button class="talos-menu__item">Drain traffic</button>
+  <hr class="talos-menu__sep" />
+  <button class="talos-menu__item talos-menu__item--danger">Terminate</button>
+</div>
+```
+
+`__label` is the uppercase HUD section heading. `__shortcut` flushes right with
+`margin-left:auto` and renders tabular-num. `__sep` is a hairline `<hr>` divider;
+`--danger` recolours the item to `--talos-danger`.
+
+## Items — links & disabled
+
+<Demo>
+  <div class="talos-menu" style="position:relative">
+    <a class="talos-menu__item" href="#">View logs</a>
+    <a class="talos-menu__item" href="#">Open dashboard <span class="talos-menu__shortcut">⌘O</span></a>
+    <button class="talos-menu__item" aria-disabled="true">Snapshot (queued)</button>
+  </div>
+</Demo>
+
+```html
+<a class="talos-menu__item" href="#">View logs</a>
+<a class="talos-menu__item" href="#">Open dashboard <span class="talos-menu__shortcut">⌘O</span></a>
+<button class="talos-menu__item" aria-disabled="true">Snapshot (queued)</button>
+```
+
+`__item` styles `<button>` and `<a>` identically. Set `aria-disabled="true"` to dim
+the row to 0.4 and block the pointer — there is no `disabled` *class*, the state is
+the attribute.
+
+## Sections
+
+<Demo>
+  <div class="talos-menu" style="position:relative">
+    <div class="talos-menu__label">Node</div>
+    <button class="talos-menu__item">Restart <span class="talos-menu__shortcut">⌘R</span></button>
+    <button class="talos-menu__item">Drain traffic</button>
+    <hr class="talos-menu__sep" />
+    <div class="talos-menu__label">Danger</div>
+    <button class="talos-menu__item talos-menu__item--danger">Terminate <span class="talos-menu__shortcut">⌫</span></button>
+  </div>
+</Demo>
+
+```html
+<div class="talos-menu">
+  <div class="talos-menu__label">Node</div>
+  <button class="talos-menu__item">Restart</button>
+  <hr class="talos-menu__sep" />
+  <div class="talos-menu__label">Danger</div>
+  <button class="talos-menu__item talos-menu__item--danger">Terminate</button>
+</div>
+```
+
+Stack `__label` + `__sep` to break a long menu into titled groups.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-menu` | overlay surface — `--surface-3` panel, hairline edge, shadow, `z-overlay` |
+| `.talos-menu__label` | uppercase HUD section heading on `--text-tertiary` |
+| `.talos-menu__item` | stacked action row (`<button>` or `<a>`); lifts to `--surface-4` on hover |
+| `.talos-menu__item--danger` | recolours the row text to `--talos-danger` |
+| `.talos-menu__shortcut` | right-flushed (`margin-left:auto`), muted, tabular-num shortcut hint |
+| `.talos-menu__sep` | hairline `<hr>` divider between groups |
+| `[aria-disabled="true"]` | on an item: dims to 0.4, blocks the pointer |
+
+`.talos-menu` ships in the opt-in `talos-nav.css` module — import it after
+`talos.css`. The panel is the surface only; wire open/close and focus yourself.

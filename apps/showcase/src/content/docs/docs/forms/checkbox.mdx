@@ -1,0 +1,77 @@
+---
+title: Checkbox
+description: A square, appearance-none checkbox whose checked state fills solid and draws a corner tick — no iOS rounding.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-checkbox` styles the native `<input type="checkbox">` directly via
+`appearance: none`, so focus rings and form semantics survive. It's a hard square
+(`border-radius: 0`) — checked, it fills solid with `--talos-foreground` and
+draws a rotated open-corner tick. Mechanical, not a rounded toggle.
+
+## Default & checked
+
+<Demo>
+  <div style="display:flex;flex-direction:column;gap:.75rem">
+    <label class="talos-check-row"><input class="talos-checkbox" type="checkbox" /> Send alerts</label>
+    <label class="talos-check-row"><input class="talos-checkbox" type="checkbox" checked /> Enable auto-scaling</label>
+  </div>
+</Demo>
+
+```html
+<label class="talos-check-row"><input class="talos-checkbox" type="checkbox" /> Send alerts</label>
+<label class="talos-check-row"><input class="talos-checkbox" type="checkbox" checked /> Enable auto-scaling</label>
+```
+
+Unchecked is a `--talos-surface-1` box with an `--talos-edge-strong` hairline.
+`:checked` fills with `--talos-foreground` and the `::after` corner tick paints in
+`--talos-background`. `:hover` brightens the border to `--talos-foreground`.
+
+## Check row
+
+<Demo>
+  <label class="talos-check-row"><input class="talos-checkbox" type="checkbox" checked /> Live telemetry</label>
+</Demo>
+
+```html
+<label class="talos-check-row">
+  <input class="talos-checkbox" type="checkbox" checked /> Live telemetry
+</label>
+```
+
+`.talos-check-row` is an inline-flex label that sits the box and its body-font
+text on one baseline with a `--talos-space-2` gap. Wrapping the input in the
+label makes the whole row clickable.
+
+## Disabled
+
+<Demo>
+  <div style="display:flex;flex-direction:column;gap:.75rem">
+    <label class="talos-check-row"><input class="talos-checkbox" type="checkbox" disabled /> Locked off</label>
+    <label class="talos-check-row"><input class="talos-checkbox" type="checkbox" checked disabled /> Locked on</label>
+  </div>
+</Demo>
+
+```html
+<label class="talos-check-row"><input class="talos-checkbox" type="checkbox" disabled /> Locked off</label>
+<label class="talos-check-row"><input class="talos-checkbox" type="checkbox" checked disabled /> Locked on</label>
+```
+
+`:disabled` dims to 0.45 opacity and blocks the cursor. The checked tick still
+shows underneath the dim so the state stays legible.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-checkbox` | square `appearance:none` checkbox; hairline border, solid fill when checked |
+| `.talos-check-row` | inline-flex label pairing the box with its text on one baseline |
+| `:checked` | fills with `--talos-foreground`; `::after` draws the corner tick |
+| `:hover` | brightens border to `--talos-foreground` |
+| `:focus-visible` | draws the `--talos-focus-ring` outline |
+| `:disabled` | dims to 0.45, blocks pointer |
+
+For the round single-select variant see [`.talos-radio`](/docs/forms/); for the
+sliding HUD toggle see [`.talos-switch`](/docs/forms/). Group several under a
+[`.talos-fieldset`](/docs/forms/fieldset/).

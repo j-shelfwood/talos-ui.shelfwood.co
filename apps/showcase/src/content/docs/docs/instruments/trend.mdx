@@ -1,0 +1,118 @@
+---
+title: Trend
+description: A live sparkline whose shape is the recent history and whose slope is the rate — colour bands on the current value.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+
+`<talos-trend>` is a moving window over a value stream. The polyline *is* the
+recent history, so its slope is the rate of change — motion is the data
+advancing, not a transition. The line colour bands on the **current** value
+(nominal / warning / critical), reusing the same `warn`/`crit` threshold logic
+as gauge and meter: colour is the state. Push a sample with `el.push(v)` or set
+`value` and the window scrolls.
+
+## Default
+
+<Demo>
+  <talos-trend value="42" points="48" width="220" height="60"></talos-trend>
+</Demo>
+
+```astro
+<talos-trend value="42"></talos-trend>
+```
+
+With no `warn`/`crit` the line sits in the nominal band (green). The window
+holds `points` samples (default 48); the newest sits at the right edge with a
+dot, and the inline readout shows the rounded current value.
+
+## Banded — warn & crit thresholds
+
+<Demo>
+  <talos-trend value="40" warn="70" crit="90" unit="%" width="220" height="60"></talos-trend>
+  <talos-trend value="78" warn="70" crit="90" unit="%" width="220" height="60"></talos-trend>
+  <talos-trend value="95" warn="70" crit="90" unit="%" width="220" height="60"></talos-trend>
+</Demo>
+
+```astro
+<talos-trend value="40" warn="70" crit="90" unit="%"></talos-trend>
+<talos-trend value="78" warn="70" crit="90" unit="%"></talos-trend>
+<talos-trend value="95" warn="70" crit="90" unit="%"></talos-trend>
+```
+
+`value >= warn` trips warning (amber), `value >= crit` trips critical (red). The
+band is read off the *current* value, so the whole line and readout snap colour
+the instant the latest sample crosses — state never lags the data.
+
+## Inverted — low is bad
+
+<Demo>
+  <talos-trend value="18" warn="40" crit="20" invert unit="fps" width="220" height="60"></talos-trend>
+</Demo>
+
+```astro
+<talos-trend value="18" warn="40" crit="20" invert></talos-trend>
+```
+
+`invert` flips the comparison: warning/critical trip as the value *falls* to/below
+the threshold. For signals where danger is a low reading — frame rate, battery,
+coolant reserve — so a dangerously low curve reads red.
+
+## Fill
+
+<Demo>
+  <talos-trend value="64" warn="70" crit="90" fill unit="%" width="220" height="60"></talos-trend>
+</Demo>
+
+```astro
+<talos-trend value="64" warn="70" crit="90" fill></talos-trend>
+```
+
+`fill` shades the area under the curve in the band colour at low opacity.
+
+## Labelled & sized
+
+<Demo>
+  <talos-trend value="40" points="60" warn="70" crit="90" unit="%" label="Throughput" width="380" height="80" fill></talos-trend>
+</Demo>
+
+```astro
+<talos-trend value="40" points="60" warn="70" crit="90"
+             label="Throughput" unit="%" width="380" height="80" fill></talos-trend>
+```
+
+`label` adds an uppercase HUD caption above the line; `unit` is appended to the
+readout. `width`/`height` size the SVG; `points` sets how many samples the
+window keeps.
+
+## Live updates
+
+Set `value` reactively (a `MutationObserver` appends each new value as a sample),
+or for streams call the imperative `push()` per frame:
+
+```js
+const el = document.querySelector("talos-trend");
+setInterval(() => el.push(60 + Math.random() * 30), 250);
+```
+
+Read the curve twice while a system runs and the shape differs — there is no
+entrance animation; the line simply reflects the buffer.
+
+## Attributes
+
+| Attribute | Effect |
+| --- | --- |
+| `value` | newest sample; appended to the window when it changes |
+| `points` | max samples kept in the window (default 48, min 2) |
+| `min` / `max` | vertical domain; absent = auto-fit the buffer |
+| `warn` | value at/past which the band trips warning (amber) |
+| `crit` | value at/past which the band trips critical (red) |
+| `invert` | flag — low = bad; bands trip as value *falls* |
+| `width` / `height` | SVG size in px (default 220 / 60) |
+| `fill` | flag — shade the area under the curve |
+| `label` | uppercase caption above the line |
+| `unit` | suffix appended to the inline readout |
+
+Imperative API: `el.push(value)` appends a sample and scrolls the window —
+preferred for streams over the `value` attribute path.

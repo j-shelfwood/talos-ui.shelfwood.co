@@ -1,0 +1,93 @@
+---
+title: Radio
+description: Square-edged native radio restyled via appearance:none — a circular control that fills with foreground and drops a centre dot when checked.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-radio` is the native `<input type="radio">` restyled through
+`appearance: none`, so form semantics and keyboard focus survive. It's the one
+round control in the set — a circular hairline ring that fills with
+`--talos-foreground` and stamps a centre dot when checked. Group members by a
+shared `name`; pair each with a `.talos-check-row` so the text sits inline.
+
+## Default
+
+<Demo>
+  <label class="talos-check-row"><input class="talos-radio" type="radio" name="density" /> Compact density</label>
+</Demo>
+
+```html
+<label class="talos-check-row">
+  <input class="talos-radio" type="radio" name="density" /> Compact density
+</label>
+```
+
+Unchecked: a `1.05rem` circle with a `--talos-edge-strong` ring over
+`--talos-surface-1`. `.talos-check-row` is the inline label flex-row.
+
+## Checked
+
+<Demo>
+  <label class="talos-check-row"><input class="talos-radio" type="radio" name="checked-demo" checked /> Comfortable density</label>
+</Demo>
+
+```html
+<label class="talos-check-row">
+  <input class="talos-radio" type="radio" name="checked-demo" checked /> Comfortable density
+</label>
+```
+
+`:checked` fills the ring with `--talos-foreground` and draws a `0.4rem`
+centre dot (`::after`) in the background colour — a punched hole, not a tick.
+
+## Name grouping
+
+<Demo>
+  <div style="display:flex;flex-direction:column;gap:.75rem">
+    <label class="talos-check-row"><input class="talos-radio" type="radio" name="region" checked /> eu-west-3</label>
+    <label class="talos-check-row"><input class="talos-radio" type="radio" name="region" /> us-east-1</label>
+    <label class="talos-check-row"><input class="talos-radio" type="radio" name="region" /> ap-south-1</label>
+  </div>
+</Demo>
+
+```html
+<label class="talos-check-row"><input class="talos-radio" type="radio" name="region" checked /> eu-west-3</label>
+<label class="talos-check-row"><input class="talos-radio" type="radio" name="region" /> us-east-1</label>
+<label class="talos-check-row"><input class="talos-radio" type="radio" name="region" /> ap-south-1</label>
+```
+
+A shared `name` makes the set mutually exclusive — native behaviour, no
+script. Each row is its own `.talos-check-row` label.
+
+## Disabled
+
+<Demo>
+  <div style="display:flex;flex-direction:column;gap:.75rem">
+    <label class="talos-check-row"><input class="talos-radio" type="radio" name="locked" checked disabled /> Selected (locked)</label>
+    <label class="talos-check-row"><input class="talos-radio" type="radio" name="locked" disabled /> Unavailable</label>
+  </div>
+</Demo>
+
+```html
+<label class="talos-check-row"><input class="talos-radio" type="radio" name="locked" checked disabled /> Selected (locked)</label>
+<label class="talos-check-row"><input class="talos-radio" type="radio" name="locked" disabled /> Unavailable</label>
+```
+
+`:disabled` dims to 0.45 and blocks the pointer. `:hover` brightens the ring to
+`--talos-foreground`; `:focus-visible` paints the standard focus ring.
+
+## Classes
+
+| Class / attribute | Effect |
+| --- | --- |
+| `.talos-radio` | circular native radio, `appearance: none`, hairline ring |
+| `:checked` | fills ring with `--talos-foreground` + centre dot |
+| `:hover` | ring brightens to `--talos-foreground` |
+| `:focus-visible` | draws `--talos-focus-ring` outline |
+| `:disabled` | dims to 0.45, blocks pointer |
+| `name="…"` | shared name groups radios as mutually exclusive |
+| `.talos-check-row` | inline label flex-row pairing the control with its text |
+
+Group related radios inside a [`.talos-fieldset`](/docs/forms/fieldset/) for a
+ruled, legended section.

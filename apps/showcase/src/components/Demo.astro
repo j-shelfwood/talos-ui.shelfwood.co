@@ -19,6 +19,17 @@ const { label = "PREVIEW" } = Astro.props;
   </div>
 </div>
 
+{/* Register the <talos-*> web-component instruments CLIENT-SIDE. This must be a
+    bundled Astro <script> (browser-only), NOT a frontmatter import: the wc module
+    defines classes `extends HTMLElement`, which throws "HTMLElement is not
+    defined" if it runs during SSG. And it must NOT be an inline <script> in MDX
+    pages: MDX's SmartyPants rewrites the import's quotes to curly “ ” → runtime
+    SyntaxError. Centralising it here, once, is the only correct home. Astro
+    de-dupes the bundled module across every <Demo> on a page. */}
+<script>
+  import "@j_shelfwood/talos-ui/wc";
+</script>
+
 <style>
   /* The .not-content wrapper opts this block out of DocsShell's prose styling
      (the reset lives in DocsShell so it can override the .docs-prose rules). */

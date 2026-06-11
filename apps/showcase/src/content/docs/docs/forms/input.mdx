@@ -1,0 +1,65 @@
+---
+title: Input & textarea
+description: Chamfered single- and multi-line text controls whose cut and hairline carry the state colour.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-input` and `.talos-textarea` are the text-entry controls. Each draws its
+chamfered bottom-right corner and 1px hairline from an SVG background that
+carries the state colour — so the validation classes recolour the *cut itself*,
+not just the text beside it.
+
+## Default
+
+<Demo>
+  <input class="talos-input" placeholder="atlas-01" style="width:240px" />
+  <textarea class="talos-textarea" placeholder="notes…" style="width:240px"></textarea>
+</Demo>
+
+```html
+<input class="talos-input" placeholder="atlas-01" />
+<textarea class="talos-textarea"></textarea>
+```
+
+Body-font text, light weight. `:focus` brightens the hairline; `:disabled` dims
+to 0.5 and blocks the cursor.
+
+## State — error & success
+
+<Demo>
+  <input class="talos-input talos-input--error" value="99999" style="width:240px" />
+  <input class="talos-input talos-input--success" value="atlas-01" style="width:240px" />
+</Demo>
+
+```html
+<input class="talos-input talos-input--error" value="99999" />
+<input class="talos-input talos-input--success" value="atlas-01" />
+```
+
+`--error` paints the cut + hairline in `--talos-danger`; `--success` in
+`--talos-success`. The colour is the state — it rides the chamfered outline, so a
+glance reads valid/invalid without reading the helper text.
+
+## Disabled
+
+<Demo>
+  <input class="talos-input" value="locked" disabled style="width:240px" />
+</Demo>
+
+```html
+<input class="talos-input" value="locked" disabled />
+```
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-input` | single-line text control |
+| `.talos-textarea` | multi-line variant (same chamfer + states) |
+| `.talos-input--error` | recolours cut + hairline to `--talos-danger` |
+| `.talos-input--success` | recolours cut + hairline to `--talos-success` |
+| `:disabled` | dims to 0.5, blocks pointer |
+
+Wrap in a [`.talos-field`](/docs/forms/field/) to pair with a label and a
+help/error line.

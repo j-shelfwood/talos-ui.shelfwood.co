@@ -1,0 +1,113 @@
+---
+title: Pagination
+description: Chamfer-free page chips where the current page reads via a filled surface and a stronger edge, not a heavy accent fill.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-pagination` lays out a row of `.talos-page` chips — square, hairline-bordered,
+tabular-num. The active page reads through a filled surface and a brighter edge, never a
+loud accent block; selection is *edge weight*, not colour, the same restraint the rest of
+the nav pack uses.
+
+## Default
+
+<Demo>
+  <div class="talos-pagination">
+    <button class="talos-page talos-page--nav" disabled>‹</button>
+    <button class="talos-page talos-page--active">1</button>
+    <button class="talos-page">2</button>
+    <button class="talos-page">3</button>
+    <span class="talos-page talos-page--ellipsis">…</span>
+    <button class="talos-page">9</button>
+    <button class="talos-page talos-page--nav">›</button>
+  </div>
+</Demo>
+
+```html
+<div class="talos-pagination">
+  <button class="talos-page talos-page--nav" disabled>‹</button>
+  <button class="talos-page talos-page--active">1</button>
+  <button class="talos-page">2</button>
+  <button class="talos-page">3</button>
+  <span class="talos-page talos-page--ellipsis">…</span>
+  <button class="talos-page">9</button>
+  <button class="talos-page talos-page--nav">›</button>
+</div>
+```
+
+`.talos-page` chips are `min-width: 2rem` squares with a subtle hairline. `:hover`
+brightens the text and the edge.
+
+## Active
+
+<Demo>
+  <div class="talos-pagination">
+    <button class="talos-page">4</button>
+    <button class="talos-page talos-page--active">5</button>
+    <button class="talos-page">6</button>
+  </div>
+</Demo>
+
+```html
+<button class="talos-page talos-page--active">5</button>
+```
+
+`--active` fills the chip with `--talos-surface-3` and raises the border to
+`--talos-edge-strong` — the current page reads by edge weight and surface, not by an accent
+block.
+
+## Nav arrows & ellipsis
+
+<Demo>
+  <div class="talos-pagination">
+    <button class="talos-page talos-page--nav">‹</button>
+    <button class="talos-page talos-page--active">1</button>
+    <span class="talos-page talos-page--ellipsis">…</span>
+    <button class="talos-page">12</button>
+    <button class="talos-page talos-page--nav">›</button>
+  </div>
+</Demo>
+
+```html
+<button class="talos-page talos-page--nav">‹</button>
+<span class="talos-page talos-page--ellipsis">…</span>
+<button class="talos-page talos-page--nav">›</button>
+```
+
+`--nav` drops the HUD letter-spacing for prev/next glyphs. `--ellipsis` is a non-interactive
+gap marker — transparent border, dimmed colour, pointer disabled.
+
+## Disabled
+
+<Demo>
+  <div class="talos-pagination">
+    <button class="talos-page talos-page--nav" disabled>‹</button>
+    <button class="talos-page talos-page--active">1</button>
+    <button class="talos-page">2</button>
+    <button class="talos-page talos-page--nav">›</button>
+  </div>
+</Demo>
+
+```html
+<button class="talos-page talos-page--nav" disabled>‹</button>
+```
+
+`:disabled` dims to 0.4 and blocks the pointer — used on the prev/next arrows at the
+range ends. Keyboard focus lands on each chip with a `:focus-visible` ring drawn from
+`--talos-focus-ring`.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-pagination` | inline-flex row, display font, tight gap |
+| `.talos-page` | square chip — 2rem min-width, hairline border, tabular-nums |
+| `.talos-page--active` | current page: `--talos-surface-3` fill + `--talos-edge-strong` border |
+| `.talos-page--nav` | prev/next arrow chip; clears HUD letter-spacing |
+| `.talos-page--ellipsis` | non-interactive gap marker; transparent border, dimmed, pointer off |
+| `:disabled` | dims to 0.4, blocks pointer |
+| `:focus-visible` | draws the `--talos-focus-ring` outline |
+
+Pairs with [`.talos-breadcrumbs`](/docs/nav/breadcrumbs/) for the surrounding nav chrome;
+both live in the opt-in `talos-nav.css` module.

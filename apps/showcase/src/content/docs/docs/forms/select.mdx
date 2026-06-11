@@ -1,0 +1,90 @@
+---
+title: Select
+description: Native select restyled to match the inputs, with a hairline border and a background-drawn chevron that the state colour rides.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-select` is a native `<select>` flattened with `appearance: none` so form
+semantics and the OS option list survive, then redressed in HUD chrome: a 1px
+hairline border and a chevron painted as a background SVG. Unlike the text
+inputs (whose outline lives in an SVG chamfer), the select keeps a real border —
+so `--error` / `--success` recolour *that border*, and the state reads off the
+outline, not the text beside it.
+
+## Default
+
+<Demo>
+  <select class="talos-select" style="width:240px">
+    <option>eu-west-3</option>
+    <option>us-east-1</option>
+    <option>ap-south-1</option>
+  </select>
+</Demo>
+
+```html
+<select class="talos-select">
+  <option>eu-west-3</option>
+  <option>us-east-1</option>
+  <option>ap-south-1</option>
+</select>
+```
+
+Body-font, light weight. `:hover` and `:focus` brighten the border to
+`--talos-edge-strong`; focus also adds a 1px ring. The chevron sits 1rem in from
+the right edge.
+
+## State — error & success
+
+<Demo>
+  <select class="talos-select talos-select--error" style="width:240px">
+    <option>— pick a region —</option>
+    <option>eu-west-3</option>
+  </select>
+  <select class="talos-select talos-select--success" style="width:240px">
+    <option>eu-west-3</option>
+    <option>us-east-1</option>
+  </select>
+</Demo>
+
+```html
+<select class="talos-select talos-select--error">
+  <option>— pick a region —</option>
+</select>
+<select class="talos-select talos-select--success">
+  <option>eu-west-3</option>
+</select>
+```
+
+`--error` paints the border in `--talos-danger`; `--success` in
+`--talos-success`. Nesting the select in a [`.talos-field--error`](/docs/forms/field/)
+/ `--success` recolours it the same way without the modifier.
+
+## Disabled
+
+<Demo>
+  <select class="talos-select" disabled style="width:240px">
+    <option>eu-west-3 (locked)</option>
+  </select>
+</Demo>
+
+```html
+<select class="talos-select" disabled>
+  <option>eu-west-3 (locked)</option>
+</select>
+```
+
+`:disabled` dims to 0.5 and blocks the cursor.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-select` | native `<select>` with hairline border + chevron SVG |
+| `.talos-select--error` | recolours the border to `--talos-danger` |
+| `.talos-select--success` | recolours the border to `--talos-success` |
+| `:hover` / `:focus` | brightens border to `--talos-edge-strong` (focus adds a 1px ring) |
+| `:disabled` | dims to 0.5, blocks pointer |
+
+Wrap in a [`.talos-field`](/docs/forms/field/) to pair with a label and a
+help/error line; `.talos-field--error` / `--success` recolour the nested select.

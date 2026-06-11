@@ -1,0 +1,58 @@
+---
+title: Tooltip
+description: A pure-CSS HUD chip — one wrapper attribute reveals it on hover/focus, no JS.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+The tooltip is a small uppercase HUD chip. The interactive form is pure CSS: a
+`.talos-has-tooltip` wrapper carries the text in a `data-tooltip` attribute, and
+its `::after` reads that text with `attr()` and reveals on hover/focus — no
+JS, no positioning library. The label *is* the markup.
+
+## Attribute tooltip
+
+<Demo>
+  <span class="talos-has-tooltip" data-tooltip="Cluster region: eu-west-3">
+    <span class="talos-badge">Hover me</span>
+  </span>
+</Demo>
+
+```html
+<span class="talos-has-tooltip" data-tooltip="Cluster region: eu-west-3">
+  <span class="talos-badge">Hover me</span>
+</span>
+```
+
+The wrapper is an `inline-flex` anchor. Its `::after` sits above the trigger
+(`bottom: 100%`, centred) and fades + slides in on `:hover`, `:focus-visible`,
+and `:focus-within` — so keyboard focus surfaces it too. Text is single-line
+(`white-space: nowrap`).
+
+## Standalone chip
+
+<Demo>
+  <span class="talos-tooltip">Cluster region: eu-west-3</span>
+</Demo>
+
+```html
+<span class="talos-tooltip">Cluster region: eu-west-3</span>
+```
+
+`.talos-tooltip` is the same chip without the hover machinery — an always-visible
+`inline-block` element you place and toggle yourself (e.g. a JS-positioned
+popover). It shares the chip styling with the attribute form: display font,
+`surface-4` fill, hairline border, `radius-sm` corners.
+
+## Attributes
+
+| Selector / attribute | Effect |
+| --- | --- |
+| `.talos-has-tooltip` | `inline-flex` anchor; the relative parent the bubble positions against |
+| `[data-tooltip="…"]` | the label text; rendered via `attr()` into the `::after` |
+| `:hover` / `:focus-visible` / `:focus-within` | reveal triggers — fade + slide the bubble in |
+| `.talos-tooltip` | standalone always-on chip (same styling, no reveal) |
+
+The reveal transition is dropped under `prefers-reduced-motion`. The bubble
+inherits no chroma — it stays monochrome surface + hairline, distinct from the
+status-coloured [badge](/docs/feedback/badge/) and [alert](/docs/feedback/alert/).

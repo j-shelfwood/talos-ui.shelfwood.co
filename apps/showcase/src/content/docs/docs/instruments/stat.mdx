@@ -1,0 +1,127 @@
+---
+title: Stat
+description: A labelled statistic cell — eyebrow, a big number that counts to its new figure, optional unit, and a slot for supporting instruments.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+
+`<talos-stat>` is the atom of a console wall: an eyebrow `label`, a big number,
+an optional `unit`, and a default slot for supporting instruments. The one Talos
+idea — colour is the state. Set `warn`/`crit` and the number takes the band of
+its `value` (nominal / warning / critical); on a value change it *counts* to the
+new figure, because the honest motion for a changing magnitude depicts the
+transition rather than decorating it. Every attribute is reactive.
+
+## Default
+
+<Demo>
+  <talos-stat value="14200" label="throughput" unit="rps"></talos-stat>
+</Demo>
+
+```html
+<talos-stat value="14200" label="throughput" unit="rps"></talos-stat>
+```
+
+`label` is the eyebrow caption; `unit` is appended after the number. With no
+`warn`/`crit` the band is always nominal, so the number stays in
+`--talos-foreground`.
+
+## Precision
+
+<Demo>
+  <talos-stat value="0" label="error rate" unit="%"></talos-stat>
+  <talos-stat value="98.4" precision="1" label="uptime" unit="%"></talos-stat>
+  <talos-stat value="3.142" precision="3" label="latency" unit="ms"></talos-stat>
+</Demo>
+
+```html
+<talos-stat value="98.4" precision="1" label="uptime" unit="%"></talos-stat>
+<talos-stat value="3.142" precision="3" label="latency" unit="ms"></talos-stat>
+```
+
+`precision` is the number of decimals on the displayed value (default `0`); the
+count animation honours it the whole way.
+
+## Bands — warning & critical
+
+<Demo>
+  <talos-stat value="42" warn="60" crit="85" label="cpu" unit="%"></talos-stat>
+  <talos-stat value="72" warn="60" crit="85" label="cpu" unit="%"></talos-stat>
+  <talos-stat value="91" warn="60" crit="85" label="cpu" unit="%"></talos-stat>
+</Demo>
+
+```html
+<talos-stat value="42" warn="60" crit="85" unit="%"></talos-stat>
+<talos-stat value="72" warn="60" crit="85" unit="%"></talos-stat>
+<talos-stat value="91" warn="60" crit="85" unit="%"></talos-stat>
+```
+
+Bands are inclusive-from: `value >= crit` → critical (`--talos-danger`); else
+`value >= warn` → warning (`--talos-warning`); else nominal. Only the number
+recolours — the label and unit stay tertiary.
+
+## Inverted — low is bad
+
+<Demo>
+  <talos-stat value="80" warn="40" crit="20" invert label="battery" unit="%"></talos-stat>
+  <talos-stat value="32" warn="40" crit="20" invert label="battery" unit="%"></talos-stat>
+  <talos-stat value="15" warn="40" crit="20" invert label="battery" unit="%"></talos-stat>
+</Demo>
+
+```html
+<talos-stat value="80" warn="40" crit="20" invert unit="%"></talos-stat>
+<talos-stat value="32" warn="40" crit="20" invert unit="%"></talos-stat>
+<talos-stat value="15" warn="40" crit="20" invert unit="%"></talos-stat>
+```
+
+`invert` flips the comparison: warning/critical trip when the value *falls*
+to/below the threshold. For "low = bad" signals — battery, coolant reserve,
+frame rate — a dangerously low reading reads red.
+
+## With supporting instruments
+
+<Demo>
+  <talos-stat value="14200" label="throughput" unit="rps">
+    <talos-delta value="14200" good="up" precision="0"></talos-delta>
+    <talos-spark points="40 52 48 61 58 70 66 74" warn="60" crit="85"></talos-spark>
+  </talos-stat>
+  <talos-stat value="3" warn="4" crit="6" label="retries">
+    <talos-dots value="3" total="8" warn="4" crit="6"></talos-dots>
+  </talos-stat>
+</Demo>
+
+```html
+<talos-stat value="14200" label="throughput" unit="rps">
+  <talos-delta value="14200" good="up"></talos-delta>
+  <talos-spark points="40 52 48 61 58 70 66 74" warn="60" crit="85"></talos-spark>
+</talos-stat>
+
+<talos-stat value="3" warn="4" crit="6" label="retries">
+  <talos-dots value="3" total="8" warn="4" crit="6"></talos-dots>
+</talos-stat>
+```
+
+The default slot sits under the number for sub-instruments — a
+[`<talos-delta>`](/docs/instruments/delta/),
+[`<talos-spark>`](/docs/instruments/spark/) or
+[`<talos-dots>`](/docs/instruments/dots/). The support row hides itself when the
+slot is empty.
+
+## Attributes
+
+| Attribute | Effect |
+| --- | --- |
+| `value` | the figure; on change the number counts to it (default `0`) |
+| `label` | eyebrow caption above the number |
+| `unit` | appended after the number (e.g. `%`, `rps`) |
+| `precision` | decimals on the displayed value (default `0`) |
+| `warn` | value at/after which band = warning (omit → never warns) |
+| `crit` | value at/after which band = critical (omit → never crits) |
+| `invert` | flip thresholds to "low = bad" — bands trip as value falls |
+| `duration` | count-animation length in ms (default `500`) |
+
+All attributes are reactive — re-set `value` and it re-counts. The count snaps
+instantly under `prefers-reduced-motion`. Imperative API: `el.set(value)`.
+Shares its band model (`warn`/`crit`/`invert`) with the other data-binding
+instruments.

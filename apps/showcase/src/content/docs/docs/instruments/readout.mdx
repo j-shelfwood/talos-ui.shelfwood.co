@@ -1,0 +1,104 @@
+---
+title: Readout
+description: A scramble-decode telemetry value — text resolves from glyph noise when it changes, with optional band tint.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+
+`<talos-readout>` is a text value that *decodes* when it changes. The resolved
+characters are the value exactly; a change fires a brief left-to-right scramble
+that resolves into the new text — so motion marks the *arrival* of fresh
+telemetry, the way a flipboard or segment display settles. A stable value is
+stable text. The scramble is the one idea: it is the event, not decoration.
+
+## Default
+
+<Demo>
+  <talos-readout value="atlas-01" label="Node"></talos-readout>
+</Demo>
+
+```astro
+<talos-readout value="atlas-01" label="Node"></talos-readout>
+```
+
+`value` is the displayed text exactly. `label` renders an uppercase HUD caption
+above it. Non-numeric values have no band — they render neutral foreground.
+
+## Unit
+
+<Demo>
+  <talos-readout value="1042" unit="req/s" label="Ingest"></talos-readout>
+</Demo>
+
+```astro
+<talos-readout value="1042" unit="req/s" label="Ingest"></talos-readout>
+```
+
+`unit` is appended after the resolved value at a smaller, muted size. It is not
+part of the scramble — only the value decodes.
+
+## Bands — warn & crit
+
+<Demo>
+  <talos-readout value="42" unit="%" label="Saturation" warn="70" crit="90"></talos-readout>
+  <talos-readout value="78" unit="%" label="Saturation" warn="70" crit="90"></talos-readout>
+  <talos-readout value="96" unit="%" label="Saturation" warn="70" crit="90"></talos-readout>
+</Demo>
+
+```astro
+<talos-readout value="42" unit="%" warn="70" crit="90"></talos-readout>
+<talos-readout value="78" unit="%" warn="70" crit="90"></talos-readout>
+<talos-readout value="96" unit="%" warn="70" crit="90"></talos-readout>
+```
+
+When `value` parses as a number, `warn` and `crit` tint the text by band
+(inclusive-from): nominal stays foreground, `warn` paints `--talos-warning`,
+`crit` paints `--talos-danger`. Same threshold convention as gauge and meter.
+
+## Invert — low is bad
+
+<Demo>
+  <talos-readout value="12" unit="%" label="Battery" warn="40" crit="20" invert></talos-readout>
+  <talos-readout value="88" unit="%" label="Battery" warn="40" crit="20" invert></talos-readout>
+</Demo>
+
+```astro
+<talos-readout value="12" unit="%" warn="40" crit="20" invert></talos-readout>
+<talos-readout value="88" unit="%" warn="40" crit="20" invert></talos-readout>
+```
+
+`invert` flips the band so it trips as the value *falls* — for metrics where low
+readings are the alarm (battery, headroom, uptime margin).
+
+## Duration
+
+<Demo>
+  <talos-readout value="0300" label="Fast" duration="200"></talos-readout>
+  <talos-readout value="0800" label="Slow" duration="800"></talos-readout>
+</Demo>
+
+```astro
+<talos-readout value="0300" duration="200"></talos-readout>
+<talos-readout value="0800" duration="800"></talos-readout>
+```
+
+`duration` is the scramble length in ms (default `420`). Under
+`prefers-reduced-motion: reduce` the scramble is skipped entirely and the new
+value snaps in — the meaning is the text, and a static frame is always correct.
+
+## Attributes
+
+| Attribute | Default | Effect |
+| --- | --- | --- |
+| `value` | `""` | the text/number to display; resolved characters are the value exactly |
+| `label` | — | uppercase HUD caption above the readout |
+| `unit` | — | appended after the value at a smaller muted size |
+| `warn` | — | numeric value at/after which the band tints `--talos-warning` |
+| `crit` | — | numeric value at/after which the band tints `--talos-danger` |
+| `invert` | flag | band trips as the value *falls* (low = bad) |
+| `duration` | `420` | scramble length in ms |
+
+All attributes are reactive — changing `value` fires the decode; writing the
+same value is a no-op (stable value, stable text). Bands apply only when `value`
+parses as a number.

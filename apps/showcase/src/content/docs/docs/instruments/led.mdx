@@ -1,0 +1,122 @@
+---
+title: LED
+description: A single status light — colour is the state, pulse means live. The honest replacement for a hand-coloured status dot.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+
+`<talos-led>` is the smallest instrument: one dot whose *colour* is a state and
+whose *pulse* means "live". Drive it qualitatively with `state` (ok / warn /
+crit / idle), or bind a numeric `value` against `warn`/`crit` thresholds and let
+it band like the gauge and meter. The colour is bound, not decorative — the
+state survives in a single static frame (and an `aria-label`) without colour or
+motion. Every attribute is reactive.
+
+## State — ok / warn / crit / idle
+
+<Demo>
+  <talos-led state="ok" label="ok"></talos-led>
+  <talos-led state="warn" label="warn"></talos-led>
+  <talos-led state="crit" label="crit"></talos-led>
+  <talos-led state="idle" label="idle"></talos-led>
+</Demo>
+
+```html
+<talos-led state="ok"></talos-led>
+<talos-led state="warn"></talos-led>
+<talos-led state="crit"></talos-led>
+<talos-led state="idle"></talos-led>
+```
+
+`state` drives a direct qualitative colour: `ok` → `--talos-success`, `warn` →
+`--talos-warning`, `crit` → `--talos-danger`, `idle` → `--talos-muted-foreground`
+(muted, "nothing to report"). Default is `ok`.
+
+## Live — pulse
+
+<Demo>
+  <talos-led state="ok" live label="reporting"></talos-led>
+  <talos-led state="warn" live label="reporting"></talos-led>
+  <talos-led state="crit" live label="reporting"></talos-led>
+</Demo>
+
+```html
+<talos-led state="ok" live></talos-led>
+<talos-led state="crit" live></talos-led>
+```
+
+`live` makes the dot pulse — a slow steady beat meaning the channel is actively
+reporting, not a decorative shimmer. Drop `live` and the light holds steady, which
+is still a valid readable state. Under `prefers-reduced-motion` the pulse is
+dropped but the lit colour is held.
+
+## Banded — value + warn / crit
+
+<Demo>
+  <talos-led value="40" warn="60" crit="85" label="nominal"></talos-led>
+  <talos-led value="72" warn="60" crit="85" label="warning"></talos-led>
+  <talos-led value="92" warn="60" crit="85" label="critical"></talos-led>
+</Demo>
+
+```html
+<talos-led value="40" warn="60" crit="85"></talos-led>
+<talos-led value="72" warn="60" crit="85"></talos-led>
+<talos-led value="92" warn="60" crit="85"></talos-led>
+```
+
+A numeric `value` is banded against `warn`/`crit` via the shared band helper:
+`value >= crit` → critical, else `value >= warn` → warning, else nominal. If both
+`value` and `state` are present, the live reading wins.
+
+## Inverted — low is bad
+
+<Demo>
+  <talos-led value="80" warn="40" crit="20" invert label="battery"></talos-led>
+  <talos-led value="32" warn="40" crit="20" invert label="battery"></talos-led>
+  <talos-led value="15" warn="40" crit="20" invert label="battery"></talos-led>
+</Demo>
+
+```html
+<talos-led value="80" warn="40" crit="20" invert></talos-led>
+<talos-led value="32" warn="40" crit="20" invert></talos-led>
+<talos-led value="15" warn="40" crit="20" invert></talos-led>
+```
+
+`invert` flips the comparison: warning/critical trip when `value` *falls* to/below
+the threshold. For "low = bad" signals — battery, coolant reserve, signal
+strength — a dangerously low reading reads red. Same semantics as the gauge.
+
+## Size
+
+<Demo>
+  <talos-led state="ok" size="8" label="8px"></talos-led>
+  <talos-led state="ok" size="14" label="14px"></talos-led>
+  <talos-led state="ok" size="24" label="24px"></talos-led>
+</Demo>
+
+```html
+<talos-led state="ok" size="8"></talos-led>
+<talos-led state="ok" size="14"></talos-led>
+<talos-led state="ok" size="24"></talos-led>
+```
+
+`size` is the px diameter of the dot (default `10`). The pulse glow scales from it.
+
+## Attributes
+
+| Attribute | Effect |
+| --- | --- |
+| `state` | qualitative state: `ok` / `warn` / `crit` / `idle` (default `ok`) |
+| `value` | numeric reading; banded by `warn`/`crit` — wins over `state` if both set |
+| `warn` | value at/after which band = warning (omit → never warns) |
+| `crit` | value at/after which band = critical (omit → never crits) |
+| `invert` | flip thresholds to "low = bad" — bands trip as value falls |
+| `live` | pulse the dot to signal an actively-reporting channel |
+| `label` | accessible label / state caption; prefixes the `aria-label` |
+| `size` | px diameter of the dot (default `10`) |
+
+All attributes are reactive — re-set any of them and the light re-renders.
+Exposes `role="status"` with an `aria-label` carrying the resolved state, so the
+meaning survives without colour or motion. Shares its band model
+(`warn`/`crit`/`invert`) with [`<talos-gauge>`](/docs/instruments/gauge/).

@@ -1,0 +1,67 @@
+---
+title: Skeleton
+description: Loading placeholders with a shimmer sweep — block, text-line, and circle shapes.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-skeleton` is the loading placeholder — a flat `--talos-surface-2` block
+with a faint light band sweeping across it. Square corners (`border-radius: 0`)
+by default keep it on the HUD grid; the shimmer is pure CSS, so the placeholder
+animates with no JS and stops dead under `prefers-reduced-motion`.
+
+## Default
+
+<Demo>
+  <span class="talos-skeleton" style="width:240px"></span>
+</Demo>
+
+```html
+<span class="talos-skeleton" style="width:240px"></span>
+```
+
+The base block: full-width, `1.5rem` tall, square. A `::after` band sweeps
+left→right on a 1.6s loop. Size it with `width`/`height` to match the content it
+stands in for.
+
+## Text lines
+
+<Demo>
+  <div style="display:flex;flex-direction:column;gap:.5rem;width:240px">
+    <span class="talos-skeleton talos-skeleton--text" style="width:90%"></span>
+    <span class="talos-skeleton talos-skeleton--text" style="width:70%"></span>
+    <span class="talos-skeleton talos-skeleton--text" style="width:80%"></span>
+  </div>
+</Demo>
+
+```html
+<span class="talos-skeleton talos-skeleton--text" style="width:90%"></span>
+<span class="talos-skeleton talos-skeleton--text" style="width:70%"></span>
+<span class="talos-skeleton talos-skeleton--text" style="width:80%"></span>
+```
+
+`--text` shrinks the block to `0.8em` with a bottom margin so you can stack
+several for a paragraph; vary the `width` per line (the last one usually
+narrower) to read as wrapping prose.
+
+## Circle
+
+<Demo>
+  <span class="talos-skeleton talos-skeleton--circle"></span>
+</Demo>
+
+```html
+<span class="talos-skeleton talos-skeleton--circle"></span>
+```
+
+`--circle` makes a `2.5rem` round placeholder for an avatar or icon slot.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-skeleton` | base block — full-width, `1.5rem` tall, shimmer sweep |
+| `.talos-skeleton--text` | `0.8em` line + bottom margin; stack for paragraphs |
+| `.talos-skeleton--circle` | `2.5rem` round placeholder (avatar/icon) |
+
+The shimmer `::after` animation is suppressed under `prefers-reduced-motion`.

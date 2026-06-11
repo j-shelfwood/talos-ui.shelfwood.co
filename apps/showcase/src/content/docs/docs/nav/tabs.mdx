@@ -1,0 +1,88 @@
+---
+title: Tabs
+description: HUD section switcher — an underline tick rides the shared bottom border, or a boxed segmented control with a filled active edge.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-tabs` is the in-console section switcher. The active tab carries an accent
+underline tick that rides the row's shared bottom border — selection is a bright
+hairline edge, never a heavy fill. State lives entirely on `aria-selected`: the
+markup encodes which tab is current, and the tick follows it.
+
+## Default
+
+<Demo>
+  <div class="talos-tabs" role="tablist">
+    <button class="talos-tab" role="tab" aria-selected="true">Overview</button>
+    <button class="talos-tab" role="tab" aria-selected="false">Metrics</button>
+    <button class="talos-tab" role="tab" aria-selected="false">Logs</button>
+  </div>
+</Demo>
+
+```html
+<div class="talos-tabs" role="tablist">
+  <button class="talos-tab" role="tab" aria-selected="true">Overview</button>
+  <button class="talos-tab" role="tab" aria-selected="false">Metrics</button>
+  <button class="talos-tab" role="tab" aria-selected="false">Logs</button>
+</div>
+```
+
+Display-font, light weight, uppercase HUD tracking. `aria-selected="true"` scales
+the accent underline in (`--talos-ease-glass`) and lifts the label to primary
+text; hover brightens an unselected label. Toggle `aria-selected` in JS to switch.
+
+## Segmented
+
+<Demo>
+  <div class="talos-tabs--segmented" role="tablist">
+    <button class="talos-tab" role="tab" aria-selected="true">Day</button>
+    <button class="talos-tab" role="tab" aria-selected="false">Week</button>
+    <button class="talos-tab" role="tab" aria-selected="false">Month</button>
+  </div>
+</Demo>
+
+```html
+<div class="talos-tabs--segmented" role="tablist">
+  <button class="talos-tab" role="tab" aria-selected="true">Day</button>
+  <button class="talos-tab" role="tab" aria-selected="false">Week</button>
+  <button class="talos-tab" role="tab" aria-selected="false">Month</button>
+</div>
+```
+
+`--segmented` boxes the tabs into one bordered control with hairline dividers.
+The underline tick is dropped; the active segment fills to `--talos-surface-3`
+instead. Inline-flex, so it shrinks to its contents.
+
+## With panel
+
+<Demo>
+  <div style="display:flex;flex-direction:column;width:100%;max-width:420px">
+    <div class="talos-tabs" role="tablist">
+      <button class="talos-tab" role="tab" aria-selected="true">Overview</button>
+      <button class="talos-tab" role="tab" aria-selected="false">Metrics</button>
+    </div>
+    <div class="talos-tabpanel" role="tabpanel">Node atlas-01 — 62.4% load, online.</div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-tabs" role="tablist">
+  <button class="talos-tab" role="tab" aria-selected="true">Overview</button>
+  <button class="talos-tab" role="tab" aria-selected="false">Metrics</button>
+</div>
+<div class="talos-tabpanel" role="tabpanel">…</div>
+```
+
+`.talos-tabpanel` pads the content area below the tab row. Show/hide panels in JS
+in step with the `aria-selected` toggle.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-tabs` | tab row; flex with a shared bottom hairline |
+| `.talos-tabs--segmented` | boxed inline-flex control with hairline dividers, filled active segment, no underline |
+| `.talos-tab` | a single tab button (display font, uppercase, light) |
+| `.talos-tabpanel` | padded content region below the tab row |
+| `[aria-selected="true"]` | marks the active tab — scales in the accent underline (or fills the segment) and lifts the label to primary |

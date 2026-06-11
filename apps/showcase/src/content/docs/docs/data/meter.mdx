@@ -1,0 +1,75 @@
+---
+title: Meter
+description: Linear telemetry gauge whose segmented tick fill and band colour read as a live level, not a progress bar.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-meter` is a horizontal level gauge. The fill is a segmented tick
+texture — not a solid bar — which is the one thing that separates it from
+progress: the ticks read as *telemetry* (a measured value), and the band
+modifier colours the fill to encode the level itself (ok / warn / crit).
+
+## Default
+
+<Demo>
+  <div class="talos-meter" style="--talos-value:62;width:240px">
+    <div class="talos-meter__fill"></div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-meter" style="--talos-value:62">
+  <div class="talos-meter__fill"></div>
+</div>
+```
+
+The `--talos-value` custom property (0–100) drives the fill width. Default fill
+is `--talos-accent`. Width transitions on change, so updating the variable in JS
+animates the level.
+
+## Bands — ok / warn / crit
+
+<Demo>
+  <div style="display:flex;flex-direction:column;gap:1rem;width:240px">
+    <div class="talos-meter talos-meter--ok" style="--talos-value:34">
+      <div class="talos-meter__fill"></div>
+    </div>
+    <div class="talos-meter talos-meter--warn" style="--talos-value:71">
+      <div class="talos-meter__fill"></div>
+    </div>
+    <div class="talos-meter talos-meter--crit" style="--talos-value:93">
+      <div class="talos-meter__fill"></div>
+    </div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-meter talos-meter--ok" style="--talos-value:34">
+  <div class="talos-meter__fill"></div>
+</div>
+<div class="talos-meter talos-meter--warn" style="--talos-value:71">
+  <div class="talos-meter__fill"></div>
+</div>
+<div class="talos-meter talos-meter--crit" style="--talos-value:93">
+  <div class="talos-meter__fill"></div>
+</div>
+```
+
+`--ok` paints the ticks in `--talos-success`, `--warn` in `--talos-warning`,
+`--crit` in `--talos-danger`. The colour is the reading — a glance at the band
+tells you the state without parsing the number.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-meter` | gauge track (12px tall, hairline edge, hidden overflow) |
+| `.talos-meter__fill` | segmented tick fill; width = `--talos-value%` |
+| `.talos-meter--ok` | fill colour → `--talos-success` |
+| `.talos-meter--warn` | fill colour → `--talos-warning` |
+| `.talos-meter--crit` | fill colour → `--talos-danger` |
+
+`--talos-value` (0–100) sets the level; it transitions on change and respects
+`prefers-reduced-motion`. For the radial / decode-on-change instrument see the
+[telemetry recipes](/docs/recipes/).

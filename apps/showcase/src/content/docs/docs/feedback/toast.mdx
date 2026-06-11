@@ -1,0 +1,134 @@
+---
+title: Toast
+description: Chamfered transient notification that slides in from the edge; status colour rides the cut and the left accent bar.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-toast` is the transient notification. It shares the alert's two-layer
+chamfer hairline and 2px left status bar, but lives in a fixed
+`.talos-toast-region` and enters on a pure-CSS keyframe — you add or remove the
+node, CSS slides + fades it in. The status colour is the only chroma: it paints
+the chamfered edge, the icon, the title, and the left bar at once.
+
+## Default — neutral
+
+<Demo>
+  <div class="talos-toast" style="max-width:360px">
+    <span class="talos-toast__icon">◆</span>
+    <div class="talos-toast__title">Snapshot saved</div>
+    <div class="talos-toast__body">Checkpoint atlas-01 written to cold store.</div>
+    <button class="talos-toast__close" aria-label="Dismiss">×</button>
+  </div>
+</Demo>
+
+```html
+<div class="talos-toast">
+  <span class="talos-toast__icon">◆</span>
+  <div class="talos-toast__title">Snapshot saved</div>
+  <div class="talos-toast__body">Checkpoint atlas-01 written to cold store.</div>
+  <button class="talos-toast__close" aria-label="Dismiss">×</button>
+</div>
+```
+
+A 3-column grid (icon · title+body · close) on `--talos-surface-3` with the
+float shadow. With no status modifier the edge + accents read as neutral
+foreground.
+
+## Status variants
+
+<Demo>
+  <div style="display:flex;flex-direction:column;gap:.75rem;max-width:360px">
+    <div class="talos-toast talos-toast--success">
+      <span class="talos-toast__icon">✓</span>
+      <div class="talos-toast__title">Synced</div>
+      <div class="talos-toast__body">All replicas consistent.</div>
+      <button class="talos-toast__close" aria-label="Dismiss">×</button>
+    </div>
+    <div class="talos-toast talos-toast--info">
+      <span class="talos-toast__icon">◆</span>
+      <div class="talos-toast__title">Build queued</div>
+      <div class="talos-toast__body">Build #482 waiting on the test gate.</div>
+      <button class="talos-toast__close" aria-label="Dismiss">×</button>
+    </div>
+    <div class="talos-toast talos-toast--warning">
+      <span class="talos-toast__icon">▲</span>
+      <div class="talos-toast__title">Replica lag</div>
+      <div class="talos-toast__body">eu-west-3 is 4s behind primary.</div>
+      <button class="talos-toast__close" aria-label="Dismiss">×</button>
+    </div>
+    <div class="talos-toast talos-toast--danger">
+      <span class="talos-toast__icon">✕</span>
+      <div class="talos-toast__title">Push rejected</div>
+      <div class="talos-toast__body">Remote refused: non-fast-forward.</div>
+      <button class="talos-toast__close" aria-label="Dismiss">×</button>
+    </div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-toast talos-toast--success">…</div>
+<div class="talos-toast talos-toast--info">…</div>
+<div class="talos-toast talos-toast--warning">…</div>
+<div class="talos-toast talos-toast--danger">…</div>
+```
+
+Each modifier rebinds one channel triplet (`--_status-hsl`); the base rules
+build the edge, icon, title, and left bar from it. Four colours, one source of
+truth per toast.
+
+## In the region
+
+<Demo>
+  <div class="talos-toast-region" style="position:static;width:360px">
+    <div class="talos-toast talos-toast--success">
+      <span class="talos-toast__icon">✓</span>
+      <div class="talos-toast__title">Synced</div>
+      <div class="talos-toast__body">All replicas consistent.</div>
+      <button class="talos-toast__close" aria-label="Dismiss">×</button>
+    </div>
+    <div class="talos-toast talos-toast--info">
+      <span class="talos-toast__icon">◆</span>
+      <div class="talos-toast__title">Build queued</div>
+      <div class="talos-toast__body">Build #482 waiting on the test gate.</div>
+      <button class="talos-toast__close" aria-label="Dismiss">×</button>
+    </div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-toast-region">
+  <div class="talos-toast talos-toast--success">…</div>
+  <div class="talos-toast talos-toast--info">…</div>
+</div>
+```
+
+`.talos-toast-region` is `position: fixed` bottom-right and stacks toasts in a
+column. The region is `pointer-events: none` (inert); each toast re-enables its
+own pointer events so only the cards are clickable. (The demo above pins it
+`position: static` so it sits inline.)
+
+## Animation
+
+Every `.talos-toast` runs the `talos-toast-in` keyframe on mount — slide from
+the right edge + fade to opaque, on `--talos-dur-slow` / `--talos-ease-liquid`.
+It is suppressed under `prefers-reduced-motion: reduce`. There is no exit
+keyframe; removal is up to the consumer.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-toast-region` | fixed bottom-right column container; inert (`pointer-events: none`) |
+| `.talos-toast` | one notification card — chamfered, shadowed, slides in via `talos-toast-in` |
+| `.talos-toast__icon` | leading glyph, painted in the status colour |
+| `.talos-toast__title` | uppercase HUD heading, status-coloured |
+| `.talos-toast__body` | secondary-text message line |
+| `.talos-toast__close` | dismiss button (top-right) |
+| `.talos-toast--success` | recolours edge + accents to `--talos-success` |
+| `.talos-toast--warning` | recolours edge + accents to `--talos-warning` |
+| `.talos-toast--danger` | recolours edge + accents to `--talos-danger` |
+| `.talos-toast--info` | recolours edge + accents to `--talos-info` |
+
+Shares the status vocabulary with [`.talos-alert`](/docs/feedback/alert/) and
+[`.talos-badge`](/docs/feedback/badge/).

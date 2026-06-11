@@ -1,0 +1,77 @@
+---
+title: Progress
+description: A chamfer-less HUD progress bar driven by a single --talos-value custom prop, with an indeterminate scanning sweep.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-progress` is a thin square HUD bar — no chamfer, no chrome. The fill is
+driven entirely by one animatable custom prop, `--talos-value` (0–100), on the
+`.talos-progress__bar`: the number *is* the geometry, so the same markup reads as
+a value gauge or, with `--indeterminate`, a scanning loader.
+
+## Determinate
+
+<Demo>
+  <div class="talos-progress" style="width:320px">
+    <div class="talos-progress__bar" style="--talos-value:68"></div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-progress">
+  <div class="talos-progress__bar" style="--talos-value:68"></div>
+</div>
+```
+
+Set `--talos-value` (0–100) on the bar; width is `calc(var(--talos-value) * 1%)`.
+The fill is `--talos-accent` with an accent glow, and `width` transitions
+smoothly because `--talos-value` is registered with `@property`.
+
+## Indeterminate
+
+<Demo>
+  <div class="talos-progress talos-progress--indeterminate" style="width:320px">
+    <div class="talos-progress__bar"></div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-progress talos-progress--indeterminate">
+  <div class="talos-progress__bar"></div>
+</div>
+```
+
+Add `--indeterminate` to the container. The bar's own width is ignored; a bright
+accent segment on the `::after` scans left→right (the `talos-scan` keyframe). Under
+`prefers-reduced-motion` the sweep parks as a static centred segment so the
+busy state stays legible.
+
+## Sizes
+
+<Demo>
+  <div style="display:flex;flex-direction:column;gap:1rem;width:320px">
+    <div class="talos-progress talos-progress--sm"><div class="talos-progress__bar" style="--talos-value:42"></div></div>
+    <div class="talos-progress"><div class="talos-progress__bar" style="--talos-value:42"></div></div>
+    <div class="talos-progress talos-progress--lg"><div class="talos-progress__bar" style="--talos-value:42"></div></div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-progress talos-progress--sm"><div class="talos-progress__bar" style="--talos-value:42"></div></div>
+<div class="talos-progress"><div class="talos-progress__bar" style="--talos-value:42"></div></div>
+<div class="talos-progress talos-progress--lg"><div class="talos-progress__bar" style="--talos-value:42"></div></div>
+```
+
+Track height only: `--sm` is 4px, default is 8px, `--lg` is 14px.
+
+## Classes
+
+| Class / prop | Effect |
+| --- | --- |
+| `.talos-progress` | square track container (8px, `--talos-border` hairline) |
+| `.talos-progress__bar` | the fill; width = `calc(var(--talos-value) * 1%)` |
+| `--talos-value` | 0–100, set on the bar; the determinate value |
+| `.talos-progress--sm` | 4px track height |
+| `.talos-progress--lg` | 14px track height |
+| `.talos-progress--indeterminate` | ignores width; runs the `::after` scan sweep |

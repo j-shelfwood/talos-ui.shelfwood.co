@@ -1,0 +1,132 @@
+---
+title: Glass panel
+description: Two-layer chamfered chrome whose lift, sheen, and edge brighten encode that it is reachable — not decoration.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.glass-panel` is the base HUD surface: a `clip-path` polygon cuts the
+top-right + bottom-left corners, the host paints the edge colour, and a 1px-inset
+`::before` paints the fill — so the hairline rides every edge including the cuts.
+Add `.interactive-panel` and the lift + cursor sheen + edge brighten only fire
+where the panel is actually reachable; a static panel stays still and reads as
+just a container.
+
+## Default
+
+<Demo>
+  <div class="glass-panel" style="width:280px">
+    <div class="glass-panel-content talos-pad">
+      <span class="talos-eyebrow">Panel</span>
+      <h3 style="margin-top:.5rem">Composable chrome</h3>
+    </div>
+  </div>
+</Demo>
+
+```html
+<div class="glass-panel">
+  <div class="glass-panel-content">…</div>
+</div>
+```
+
+The host clips the chamfered silhouette; the `::before` fill insets 1px to leave
+the hairline. Always nest a `.glass-panel-content` — it stacks above the fill +
+sheen layers and lays out as a full-width column.
+
+## Interactive
+
+<Demo>
+  <div class="glass-panel interactive-panel" style="width:280px">
+    <div class="glass-panel-content talos-pad">
+      <span class="talos-eyebrow">Hover me</span>
+      <h3 style="margin-top:.5rem">Lift · sheen · edge</h3>
+    </div>
+  </div>
+</Demo>
+
+```html
+<div class="glass-panel interactive-panel">
+  <div class="glass-panel-content">…</div>
+</div>
+```
+
+`:hover` lifts the panel `-3px`, raises `--talos-sheen` to `1` (a cursor-tracked
+white spotlight via `::after`), and swaps the edge to `--talos-hud-edge-hot`.
+`:active` settles the lift to `-1px`. The motion is the affordance — only add it
+where the panel does something.
+
+## Focus
+
+<Demo>
+  <div class="glass-panel interactive-panel" tabindex="0" style="width:280px">
+    <div class="glass-panel-content talos-pad">
+      <span class="talos-eyebrow">Tab to me</span>
+      <h3 style="margin-top:.5rem">Focus pulse</h3>
+    </div>
+  </div>
+</Demo>
+
+```html
+<div class="glass-panel interactive-panel" tabindex="0">
+  <div class="glass-panel-content">…</div>
+</div>
+```
+
+`:focus-visible` drops the native outline and runs `talos-focus-pulse` once — a
+brightness flash on the chamfered silhouette itself, so keyboard focus reads on
+the panel outline rather than a bolted-on ring.
+
+## As a link
+
+<Demo>
+  <a class="glass-panel interactive-panel" href="#" style="width:280px">
+    <div class="glass-panel-content talos-pad">
+      <span class="talos-eyebrow">Anchor</span>
+      <h3 style="margin-top:.5rem">The panel is the affordance</h3>
+    </div>
+  </a>
+</Demo>
+
+```html
+<a class="glass-panel interactive-panel" href="#">
+  <div class="glass-panel-content">…</div>
+</a>
+```
+
+When the panel is itself the link, the underline + colour are stripped from the
+child text — the whole chamfered surface is the click target, not the words.
+
+## Variants
+
+<Demo>
+  <div class="glass-panel glass-panel--navbar-dense" style="width:240px">
+    <div class="glass-panel-content talos-pad"><span class="talos-eyebrow">--navbar-dense</span></div>
+  </div>
+  <div class="glass-panel glass-panel--reading" style="width:240px">
+    <div class="glass-panel-content"><span class="talos-eyebrow">--reading</span></div>
+  </div>
+</Demo>
+
+```html
+<div class="glass-panel glass-panel--navbar-dense">…</div>
+<div class="glass-panel glass-panel--reading">…</div>
+```
+
+`--navbar-dense` darkens the fill and brightens the edge for compact bars;
+`--reading` widens the chamfer to `24px`, darkens the fill, and adds generous
+padding for article-width content containers.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.glass-panel` | base chamfered surface — host edge + 1px-inset fill, cuts top-right & bottom-left |
+| `.glass-panel-content` | required content wrapper — stacks above fill/sheen, full-width column |
+| `.interactive-panel` | adds hover lift (`-3px`), cursor sheen, hot edge; `:active` settles to `-1px` |
+| `.glass-panel--navbar-dense` | darker fill + brighter edge for compact nav / bars |
+| `.glass-panel--reading` | wider 24px chamfer, darker fill, generous padding for content |
+| `:focus-visible` | runs the one-shot `talos-focus-pulse` brightness flash, no outline |
+| `a.glass-panel` | strips child underline/colour when the panel is the link |
+
+Sheen and lift are suppressed under `prefers-reduced-motion`, on touch (`hover:
+none`), and at narrow widths — the panel falls back to a correct still frame.

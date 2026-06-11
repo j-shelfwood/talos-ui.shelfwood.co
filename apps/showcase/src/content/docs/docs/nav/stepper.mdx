@@ -1,0 +1,83 @@
+---
+title: Stepper
+description: A horizontal wizard track whose connector hairline fills as steps complete, so progress reads off the line itself.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-steps` lays out a row of `.talos-step` nodes joined by a connector
+hairline. Each node carries an `__index` chip and an `__label`. Progress is
+encoded in the line, not a bar: a `--done` step both inverts its chip and
+brightens the connector running to the next node, so the filled segment *is* the
+progress.
+
+## Default
+
+<Demo>
+  <div class="talos-steps" style="max-width:520px">
+    <div class="talos-step"><span class="talos-step__index">1</span><span class="talos-step__label">Plan</span></div>
+    <div class="talos-step"><span class="talos-step__index">2</span><span class="talos-step__label">Build</span></div>
+    <div class="talos-step"><span class="talos-step__index">3</span><span class="talos-step__label">Verify</span></div>
+    <div class="talos-step"><span class="talos-step__index">4</span><span class="talos-step__label">Ship</span></div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-steps">
+  <div class="talos-step"><span class="talos-step__index">1</span><span class="talos-step__label">Plan</span></div>
+  <div class="talos-step"><span class="talos-step__index">2</span><span class="talos-step__label">Build</span></div>
+  <div class="talos-step"><span class="talos-step__index">3</span><span class="talos-step__label">Verify</span></div>
+  <div class="talos-step"><span class="talos-step__index">4</span><span class="talos-step__label">Ship</span></div>
+</div>
+```
+
+Each `.talos-step` flexes to an equal width. The `__index` is a square chip;
+every node but the last draws a subtle connector hairline to its right neighbour.
+
+## Done
+
+<Demo>
+  <div class="talos-steps" style="max-width:520px">
+    <div class="talos-step talos-step--done"><span class="talos-step__index">✓</span><span class="talos-step__label">Plan</span></div>
+    <div class="talos-step talos-step--done"><span class="talos-step__index">✓</span><span class="talos-step__label">Build</span></div>
+    <div class="talos-step"><span class="talos-step__index">3</span><span class="talos-step__label">Verify</span></div>
+    <div class="talos-step"><span class="talos-step__index">4</span><span class="talos-step__label">Ship</span></div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-step talos-step--done"><span class="talos-step__index">✓</span><span class="talos-step__label">Plan</span></div>
+```
+
+`--done` inverts the chip — foreground fill, background glyph — and brightens its
+outgoing connector to `--talos-edge-strong`. Swap the index for a `✓` to read as
+complete.
+
+## Current
+
+<Demo>
+  <div class="talos-steps" style="max-width:520px">
+    <div class="talos-step talos-step--done"><span class="talos-step__index">✓</span><span class="talos-step__label">Plan</span></div>
+    <div class="talos-step talos-step--current"><span class="talos-step__index">2</span><span class="talos-step__label">Build</span></div>
+    <div class="talos-step"><span class="talos-step__index">3</span><span class="talos-step__label">Verify</span></div>
+    <div class="talos-step"><span class="talos-step__index">4</span><span class="talos-step__label">Ship</span></div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-step talos-step--current"><span class="talos-step__index">2</span><span class="talos-step__label">Build</span></div>
+```
+
+`--current` outlines the chip in `--talos-accent` with a 1px accent glow and
+lifts its label to the primary text colour — the active node, no fill.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-steps` | flex row track; lays out and joins the steps |
+| `.talos-step` | one node; flexes to equal width, draws the connector to the next |
+| `.talos-step__index` | square index chip (number or `✓`) |
+| `.talos-step__label` | uppercase HUD caption under the chip |
+| `.talos-step--done` | inverts the chip and brightens the outgoing connector |
+| `.talos-step--current` | accent-outlined chip + glow, label raised to primary |

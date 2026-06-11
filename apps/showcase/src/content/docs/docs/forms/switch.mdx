@@ -1,0 +1,67 @@
+---
+title: Switch
+description: A square mechanical toggle — square thumb sliding in a square track, accent fill when checked.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-switch` is a native checkbox styled with `appearance: none` into a HUD
+toggle: a SQUARE thumb sliding inside a SQUARE track — mechanical, no iOS
+rounding. The one Talos idea: checked is not a colour tint on a pill, it's the
+track filling with `--talos-accent` while the thumb hard-translates to the right.
+
+## Default
+
+<Demo>
+  <label class="talos-check-row"><input class="talos-switch" type="checkbox" /> Live telemetry</label>
+</Demo>
+
+```html
+<label class="talos-check-row"><input class="talos-switch" type="checkbox" /> Live telemetry</label>
+```
+
+Unchecked: muted `--talos-edge-strong` track and thumb, parked left. Pair it
+with a [`.talos-check-row`](/docs/forms/checkbox/) label so the text sits inline.
+
+## Checked
+
+<Demo>
+  <label class="talos-check-row"><input class="talos-switch" type="checkbox" checked /> Live telemetry</label>
+</Demo>
+
+```html
+<label class="talos-check-row"><input class="talos-switch" type="checkbox" checked /> Live telemetry</label>
+```
+
+`:checked` fills the track with `--talos-accent` at 0.2 alpha, recolours the
+border to `--talos-accent`, and translates the thumb fully right. The accent fill
+is the on-state — it reads as energised, not just shifted.
+
+## Disabled
+
+<Demo>
+  <label class="talos-check-row"><input class="talos-switch" type="checkbox" disabled /> Telemetry off</label>
+  <label class="talos-check-row"><input class="talos-switch" type="checkbox" checked disabled /> Telemetry locked</label>
+</Demo>
+
+```html
+<label class="talos-check-row"><input class="talos-switch" type="checkbox" disabled /> Telemetry off</label>
+<label class="talos-check-row"><input class="talos-switch" type="checkbox" checked disabled /> Telemetry locked</label>
+```
+
+`:disabled` dims to 0.45 and blocks the pointer; the checked/unchecked geometry
+is preserved.
+
+## Attributes
+
+| Attribute / class | Effect |
+| --- | --- |
+| `.talos-switch` | square track + square thumb, parked left (off) |
+| `type="checkbox"` | the underlying native control — keyboard + form semantics survive |
+| `:checked` | accent-filled track, accent border, thumb translates right |
+| `disabled` | dims to 0.45, blocks pointer |
+| `:focus-visible` | draws the `--talos-focus-ring` outline |
+
+The thumb slide uses `--talos-ease-glass`; under `prefers-reduced-motion: reduce`
+the transition is dropped. Wrap in [`.talos-check-row`](/docs/forms/checkbox/) for
+the inline label.

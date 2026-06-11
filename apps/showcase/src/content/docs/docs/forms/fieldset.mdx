@@ -1,0 +1,66 @@
+---
+title: Fieldset
+description: A top-ruled section that groups related toggles under a muted HUD legend.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-fieldset` is the grouping divider: a single 1px top rule with a tiny
+uppercase legend riding it, then a stacked column of controls below. No box, no
+fill — the rule alone says "these belong together", mirroring the contact form's
+top line that splits off secondary fields.
+
+## Default
+
+<Demo>
+  <fieldset class="talos-fieldset" style="width:280px">
+    <legend class="talos-fieldset__legend">Toggles</legend>
+    <label class="talos-check-row"><input class="talos-checkbox" type="checkbox" checked /> Enable auto-scaling</label>
+    <label class="talos-check-row"><input class="talos-checkbox" type="checkbox" /> Send alerts</label>
+  </fieldset>
+</Demo>
+
+```html
+<fieldset class="talos-fieldset">
+  <legend class="talos-fieldset__legend">Toggles</legend>
+  <label class="talos-check-row"><input class="talos-checkbox" type="checkbox" checked /> Enable auto-scaling</label>
+  <label class="talos-check-row"><input class="talos-checkbox" type="checkbox" /> Send alerts</label>
+</fieldset>
+```
+
+The fieldset is a flex column with `1.25rem` gap and a `1px` top border; the
+legend sits in display font, wide tracking, dimmed to 40% — pure HUD label
+voice. Grouped controls are typically [`.talos-check-row`](/docs/forms/checkbox/)
+labels, but any control stacks the same way.
+
+## Bare legend
+
+<Demo>
+  <fieldset class="talos-fieldset" style="width:280px">
+    <legend>Network</legend>
+    <label class="talos-check-row"><input class="talos-switch" type="checkbox" checked /> Live telemetry</label>
+    <label class="talos-check-row"><input class="talos-switch" type="checkbox" /> Verbose logging</label>
+  </fieldset>
+</Demo>
+
+```html
+<fieldset class="talos-fieldset">
+  <legend>Network</legend>
+  <label class="talos-check-row"><input class="talos-switch" type="checkbox" checked /> Live telemetry</label>
+</fieldset>
+```
+
+A direct `<legend>` child is styled the same as `.talos-fieldset__legend`, so
+the native element needs no extra class — reach for the modifier only when the
+legend isn't a `<legend>`.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-fieldset` | top-ruled flex column (`1.25rem` gap) that groups controls |
+| `.talos-fieldset__legend` | tiny uppercase HUD legend, dimmed to 40% |
+| `> legend` | a native `<legend>` child inherits the same legend styling |
+
+Stack [`.talos-check-row`](/docs/forms/checkbox/) labels inside, or any
+[`.talos-field`](/docs/forms/field/) controls.

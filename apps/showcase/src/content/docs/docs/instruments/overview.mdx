@@ -1,0 +1,123 @@
+---
+title: Instruments
+description: The data-binding tier — custom elements that bind a live value to position, length, and band colour. Form encodes function.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+
+The instruments are the data-binding layer: custom elements that take a live
+value and render its *meaning*, not a styled box you fill in yourself. A value
+maps to position (needle, fill, dot count), and a threshold band maps to colour
+— so a single static frame reads nominal / warn / crit without a legend. This is
+the law the [philosophy](/docs/philosophy/) calls **form encodes function**.
+
+They all upgrade from one import:
+
+```html
+```
+
+That registers the panel chrome (`<talos-panel>`, `<talos-corner>`,
+`<talos-notch>` — see [web components](/docs/web-components/)) *and* every
+instrument below. Idempotent: import it once, anywhere on the page.
+
+## Form encodes function
+
+An instrument never asks you to colour it. You bind a `value`; the element
+decides position and colour from the data. Drive it live by setting the
+attribute (or the property) again and it re-renders — read it twice while a
+system runs and you see two different things.
+
+<Demo>
+  <talos-gauge value="34" warn="60" crit="85" unit="%" label="CPU"></talos-gauge>
+  <talos-gauge value="72" warn="60" crit="85" unit="%" label="HEAP"></talos-gauge>
+  <talos-gauge value="93" warn="60" crit="85" unit="%" label="DISK"></talos-gauge>
+</Demo>
+
+```html
+<talos-gauge value="34" warn="60" crit="85" unit="%" label="CPU"></talos-gauge>
+<talos-gauge value="72" warn="60" crit="85" unit="%" label="HEAP"></talos-gauge>
+<talos-gauge value="93" warn="60" crit="85" unit="%" label="DISK"></talos-gauge>
+```
+
+Same markup, same thresholds — three values, three states. The colour *is* the
+band; it rides the needle and arc, not a chip beside them.
+
+## The band ladder
+
+The threshold model is uniform across the tier. A value crosses into **warning**
+at the `warn` attribute and **critical** at the `crit` attribute; below both it
+is **nominal**. Thresholds are read live from the element — omit an attribute and
+that band simply never trips (the absence is the contract, no implicit default).
+
+| Band | Trips when | Token |
+| --- | --- | --- |
+| nominal | below `warn` | `--talos-success` |
+| warning | value ≥ `warn` | `--talos-warning` |
+| critical | value ≥ `crit` | `--talos-danger` |
+
+### `invert` — low = bad
+
+By default high = bad: the band trips as the value *rises* (CPU, heap, error
+rate). Some signals are low = bad — frame rate, battery, coolant reserve, signal
+strength — where danger is a value *falling*. Add `invert` and the comparison
+flips: warning / critical trip as the value drops to/below the threshold. Same
+instrument, honest colour.
+
+<Demo>
+  <talos-meter value="18" warn="40" crit="20" invert unit="fps" label="FRAMERATE" width="240"></talos-meter>
+  <talos-meter value="55" warn="40" crit="20" invert unit="fps" label="FRAMERATE" width="240"></talos-meter>
+</Demo>
+
+```html
+<!-- low = bad: 18 ≤ crit(20) → critical; 55 > warn(40) → nominal -->
+<talos-meter value="18" warn="40" crit="20" invert unit="fps" label="FRAMERATE"></talos-meter>
+<talos-meter value="55" warn="40" crit="20" invert unit="fps" label="FRAMERATE"></talos-meter>
+```
+
+`bandOf()` is shared by gauge, meter, trend, spark, flow, dots, stat, readout and
+led — so `warn` / `crit` / `invert` mean the same thing everywhere. The one
+exception is [`<talos-orbital>`](/docs/instruments/orbital/), which uses defaulted
+thresholds and returns a colour rather than a state name.
+
+## Honest motion
+
+Animated instruments tween (the needle eases, the fill grows, the readout
+scrambles) — but the information is complete in any single frame. Under
+`prefers-reduced-motion` the tween is dropped, never the meaning. Motion that
+had to be watched to be understood would be decoration wearing a function's coat.
+
+## The roster
+
+| Instrument | Binds | Reads as |
+| --- | --- | --- |
+| [`<talos-gauge>`](/docs/instruments/gauge/) | `value` | radial needle + arc, banded |
+| [`<talos-meter>`](/docs/instruments/meter/) | `value` | linear fill with threshold ticks |
+| [`<talos-led>`](/docs/instruments/led/) | `state` / `value` | one status light; `live` pulses |
+| [`<talos-trend>`](/docs/instruments/trend/) | pushed `value` | live trend line; slope = rate |
+| [`<talos-spark>`](/docs/instruments/spark/) | series / pushed | compact inline sparkline |
+| [`<talos-flow>`](/docs/instruments/flow/) | `rate` | a connection whose dash speed = throughput |
+| [`<talos-orbital>`](/docs/instruments/orbital/) | child nodes | radial system map |
+| [`<talos-readout>`](/docs/instruments/readout/) | `value` | text that scrambles on change |
+| [`<talos-dots>`](/docs/instruments/dots/) | `value` of `total` | dot-matrix count |
+| [`<talos-delta>`](/docs/instruments/delta/) | `value` vs last | ▲▼ change + magnitude |
+| [`<talos-stat>`](/docs/instruments/stat/) | `value` | labelled statistic cell, counts up |
+| [`<talos-toggle>`](/docs/instruments/toggle/) | `value` | segmented control; selection is state |
+
+## Shared attributes
+
+These mean the same thing across the banded instruments:
+
+| Attribute | Effect |
+| --- | --- |
+| `value` | the bound reading; set it again to re-render live |
+| `warn` | value at/after which the band is `warning` |
+| `crit` | value at/after which the band is `critical` |
+| `invert` | flip band direction — low = bad |
+| `min` / `max` | domain range for position mapping (default 0 / 100) |
+| `label` | uppercase caption / accessible label |
+| `unit` | appended to the readout (e.g. `%`, `fps`) |
+
+Per-instrument geometry (`size`, `width`, `sweep`, `points`, …) lives on each
+instrument's own page. For copy-paste console layouts wiring several of these
+together, see the [recipes](/docs/recipes/).

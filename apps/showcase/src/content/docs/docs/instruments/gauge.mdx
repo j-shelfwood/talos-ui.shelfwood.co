@@ -1,0 +1,128 @@
+---
+title: Gauge
+description: Radial gauge that renders a value's meaning — needle is the value, arc colour is the threshold band it falls in.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+
+`<talos-gauge>` is a data-binding instrument: the needle angle *is* the value
+and the arc colour *is* the threshold band it lands in (nominal / warning /
+critical). Colour is the state, not a decoration applied beside it — set
+`warn`/`crit` and a reading that crosses them recolours the arc, needle, hub and
+readout at once. Every attribute is reactive; re-setting `value` re-renders.
+
+## Default
+
+<Demo>
+  <talos-gauge value="62" label="cpu" unit="%"></talos-gauge>
+</Demo>
+
+```html
+<talos-gauge value="62" label="cpu" unit="%"></talos-gauge>
+```
+
+Single-band gauge over the default `0–100` domain. With no `warn`/`crit` the band
+is always nominal, so the arc stays in `--talos-success`. The `label` sets the
+caption under the dial; `unit` is appended to the readout.
+
+## Bands — warning & critical
+
+<Demo>
+  <talos-gauge value="62" warn="60" crit="85" label="nominal" unit="%"></talos-gauge>
+  <talos-gauge value="74" warn="60" crit="85" label="warning" unit="%"></talos-gauge>
+  <talos-gauge value="92" warn="60" crit="85" label="critical" unit="%"></talos-gauge>
+</Demo>
+
+```html
+<talos-gauge value="62" warn="60" crit="85" unit="%"></talos-gauge>
+<talos-gauge value="74" warn="60" crit="85" unit="%"></talos-gauge>
+<talos-gauge value="92" warn="60" crit="85" unit="%"></talos-gauge>
+```
+
+Bands are inclusive-from: `value >= crit` → critical (`--talos-danger`); else
+`value >= warn` → warning (`--talos-warning`); else nominal (`--talos-success`).
+
+## Inverted — low is bad
+
+<Demo>
+  <talos-gauge value="80" warn="40" crit="20" invert label="battery" unit="%"></talos-gauge>
+  <talos-gauge value="32" warn="40" crit="20" invert label="battery" unit="%"></talos-gauge>
+  <talos-gauge value="15" warn="40" crit="20" invert label="battery" unit="%"></talos-gauge>
+</Demo>
+
+```html
+<talos-gauge value="80" warn="40" crit="20" invert unit="%"></talos-gauge>
+<talos-gauge value="32" warn="40" crit="20" invert unit="%"></talos-gauge>
+<talos-gauge value="15" warn="40" crit="20" invert unit="%"></talos-gauge>
+```
+
+`invert` flips the comparison: warning/critical trip when value *falls* to/below
+the threshold. For "low = bad" signals — battery, coolant reserve, frame rate,
+signal strength — a dangerously low reading reads red, no separate instrument.
+
+## Domain — custom min / max
+
+<Demo>
+  <talos-gauge value="3200" min="800" max="6000" warn="4500" crit="5400" label="rpm"></talos-gauge>
+</Demo>
+
+```html
+<talos-gauge value="3200" min="800" max="6000" warn="4500" crit="5400" label="rpm"></talos-gauge>
+```
+
+`min`/`max` set the domain the needle maps across (default `0–100`). The needle
+fraction is `(value − min) / (max − min)`; `warn`/`crit` are expressed in the
+same domain units.
+
+## Sweep — arc span
+
+<Demo>
+  <talos-gauge value="62" sweep="180" label="180°" unit="%"></talos-gauge>
+  <talos-gauge value="62" sweep="240" label="240°" unit="%"></talos-gauge>
+  <talos-gauge value="62" sweep="300" label="300°" unit="%"></talos-gauge>
+</Demo>
+
+```html
+<talos-gauge value="62" sweep="180" unit="%"></talos-gauge>
+<talos-gauge value="62" sweep="240" unit="%"></talos-gauge>
+<talos-gauge value="62" sweep="300" unit="%"></talos-gauge>
+```
+
+`sweep` is the arc span in degrees, clamped to `180–300` (default `240`). The
+arc opens at the bottom and fills left→right across the top.
+
+## Size
+
+<Demo>
+  <talos-gauge value="62" size="96" warn="60" crit="85" unit="%"></talos-gauge>
+  <talos-gauge value="62" size="160" warn="60" crit="85" unit="%"></talos-gauge>
+  <talos-gauge value="62" size="220" warn="60" crit="85" unit="%"></talos-gauge>
+</Demo>
+
+```html
+<talos-gauge value="62" size="96" unit="%"></talos-gauge>
+<talos-gauge value="62" size="160" unit="%"></talos-gauge>
+<talos-gauge value="62" size="220" unit="%"></talos-gauge>
+```
+
+`size` is the px square of the dial (default `160`). Stroke, readout text, hub
+and the needle keep-out all scale from it, so the gauge stays legible at any size.
+
+## Attributes
+
+| Attribute | Effect |
+| --- | --- |
+| `value` | current value; sets needle angle + readout (default `0`) |
+| `min` / `max` | domain range the needle maps across (default `0` / `100`) |
+| `warn` | value at/after which band = warning (omit → never warns) |
+| `crit` | value at/after which band = critical (omit → never crits) |
+| `invert` | flip thresholds to "low = bad" — bands trip as value falls |
+| `label` | caption under the dial; also sets `aria-label` |
+| `unit` | appended to the readout (e.g. `%`) |
+| `sweep` | arc span in degrees, clamped `180–300` (default `240`) |
+| `size` | px square of the dial (default `160`) |
+
+All attributes are reactive — re-set any of them and the gauge re-renders.
+Exposes `role="meter"` with live `aria-valuenow`/`min`/`max`. Shares its band
+model (`warn`/`crit`/`invert`) with [`<talos-meter>`](/docs/data/meter/).

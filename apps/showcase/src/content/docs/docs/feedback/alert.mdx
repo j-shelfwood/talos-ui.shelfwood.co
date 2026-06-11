@@ -1,0 +1,114 @@
+---
+title: Alert
+description: Chamfered status callout — a 1px hairline edge plus a 2px status bar, both carrying the status colour.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-alert` is the inline status callout. It's a 3-column grid (icon ·
+title+body · close) wrapped in a chamfered cut: the host paints the edge colour,
+a `::before` insets 1px with the fill, and a `::after` lays a 2px status bar down
+the inner-left. The status modifier rebinds one channel (`--_status-hsl`) and the
+icon, title, edge, and bar all recolour from it — form encodes function.
+
+## Default (neutral)
+
+<Demo>
+  <div class="talos-alert" style="max-width:420px">
+    <span class="talos-alert__icon">◆</span>
+    <div class="talos-alert__title">Notice</div>
+    <div class="talos-alert__body">No status modifier — edge and bar fall back to the foreground channel.</div>
+    <button class="talos-alert__close" aria-label="Dismiss">×</button>
+  </div>
+</Demo>
+
+```html
+<div class="talos-alert">
+  <span class="talos-alert__icon">◆</span>
+  <div class="talos-alert__title">Notice</div>
+  <div class="talos-alert__body">No status modifier — edge and bar fall back to the foreground channel.</div>
+  <button class="talos-alert__close" aria-label="Dismiss">×</button>
+</div>
+```
+
+The `__close` button is optional; drop it and the grid collapses the close
+column. `__title` and `__body` can each stand alone.
+
+## Status — info, success, warning, danger
+
+<Demo>
+  <div style="display:flex;flex-direction:column;gap:1rem;max-width:420px">
+    <div class="talos-alert talos-alert--info">
+      <span class="talos-alert__icon">◆</span>
+      <div class="talos-alert__title">Deployment queued</div>
+      <div class="talos-alert__body">Build #482 is waiting on the test gate.</div>
+      <button class="talos-alert__close" aria-label="Dismiss">×</button>
+    </div>
+    <div class="talos-alert talos-alert--success">
+      <span class="talos-alert__icon">✓</span>
+      <div class="talos-alert__title">Synced</div>
+      <div class="talos-alert__body">All replicas consistent.</div>
+    </div>
+    <div class="talos-alert talos-alert--warning">
+      <span class="talos-alert__icon">▲</span>
+      <div class="talos-alert__title">Quota near limit</div>
+      <div class="talos-alert__body">Storage at 91% of the allotted region cap.</div>
+    </div>
+    <div class="talos-alert talos-alert--danger">
+      <span class="talos-alert__icon">✕</span>
+      <div class="talos-alert__title">Gate failed</div>
+      <div class="talos-alert__body">3 of 12 integration checks did not pass.</div>
+    </div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-alert talos-alert--info">…</div>
+<div class="talos-alert talos-alert--success">…</div>
+<div class="talos-alert talos-alert--warning">…</div>
+<div class="talos-alert talos-alert--danger">…</div>
+```
+
+Each modifier rebinds `--_status-hsl` to `--talos-info-hsl` / `--success-hsl` /
+`--warning-hsl` / `--danger-hsl`. The hairline edge, the 2px left bar, the icon,
+and the title all read that one channel.
+
+## Bare
+
+<Demo>
+  <div class="talos-alert talos-alert--bare talos-alert--danger" style="max-width:420px">
+    <span class="talos-alert__icon">✕</span>
+    <div class="talos-alert__title">Gate failed</div>
+    <div class="talos-alert__body">A plain left-border variant — no chamfer machinery.</div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-alert talos-alert--bare talos-alert--danger">
+  <span class="talos-alert__icon">✕</span>
+  <div class="talos-alert__title">Gate failed</div>
+  <div class="talos-alert__body">A plain left-border variant — no chamfer machinery.</div>
+</div>
+```
+
+`--bare` drops the `clip-path` and the two pseudo-element layers, leaving a flat
+surface with a 2px left status border. Cheaper to render and good for dense
+stacks.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-alert` | chamfered grid container; neutral status by default |
+| `.talos-alert__icon` | leading glyph, coloured by the status channel |
+| `.talos-alert__title` | display-font, uppercase HUD heading in the status colour |
+| `.talos-alert__body` | body-font message, secondary text |
+| `.talos-alert__close` | optional dismiss button (top-right column) |
+| `.talos-alert--info` | rebinds status to `--talos-info-hsl` |
+| `.talos-alert--success` | rebinds status to `--talos-success-hsl` |
+| `.talos-alert--warning` | rebinds status to `--talos-warning-hsl` |
+| `.talos-alert--danger` | rebinds status to `--talos-danger-hsl` |
+| `.talos-alert--bare` | drops the chamfer + hairline; plain left status border only |
+
+Same status vocabulary as [`.talos-badge`](/docs/feedback/badge/) and
+[`.talos-toast`](/docs/feedback/toast/).

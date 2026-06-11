@@ -1,0 +1,91 @@
+---
+title: Toolbar
+description: A hairline-bordered strip that groups action controls, dividing them with separators and pushing trailing actions to the far edge.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-toolbar` is a flex strip of grouped controls on a `--talos-surface-1`
+band with a single hairline border — no fill per control. It holds whatever you
+put in it (usually `.talos-button --sm --ghost`); the layout primitives are a
+1px `__sep` divider between groups and a `__spacer` that eats the remaining
+width so the rest is flushed right.
+
+## Default
+
+<Demo>
+  <div class="talos-toolbar">
+    <button class="talos-button talos-button--sm talos-button--ghost">Bold</button>
+    <button class="talos-button talos-button--sm talos-button--ghost">Italic</button>
+    <button class="talos-button talos-button--sm talos-button--ghost">Underline</button>
+  </div>
+</Demo>
+
+```html
+<div class="talos-toolbar">
+  <button class="talos-button talos-button--sm talos-button--ghost">Bold</button>
+  <button class="talos-button talos-button--sm talos-button--ghost">Italic</button>
+  <button class="talos-button talos-button--sm talos-button--ghost">Underline</button>
+</div>
+```
+
+Centre-aligned row, `--talos-space-2` gap. The strip carries the band colour and
+border; the controls inside it stay ghost so the toolbar reads as one chrome.
+
+## Separator
+
+<Demo>
+  <div class="talos-toolbar">
+    <button class="talos-button talos-button--sm talos-button--ghost">Cut</button>
+    <button class="talos-button talos-button--sm talos-button--ghost">Copy</button>
+    <span class="talos-toolbar__sep"></span>
+    <button class="talos-button talos-button--sm talos-button--ghost">Paste</button>
+  </div>
+</Demo>
+
+```html
+<div class="talos-toolbar">
+  <button class="talos-button talos-button--sm talos-button--ghost">Cut</button>
+  <button class="talos-button talos-button--sm talos-button--ghost">Copy</button>
+  <span class="talos-toolbar__sep"></span>
+  <button class="talos-button talos-button--sm talos-button--ghost">Paste</button>
+</div>
+```
+
+`__sep` is a 1px full-height hairline that divides logical groups of controls.
+
+## Spacer
+
+<Demo>
+  <div class="talos-toolbar" style="width:100%;max-width:420px">
+    <button class="talos-button talos-button--sm talos-button--ghost">Bold</button>
+    <button class="talos-button talos-button--sm talos-button--ghost">Italic</button>
+    <span class="talos-toolbar__sep"></span>
+    <span class="talos-toolbar__spacer"></span>
+    <button class="talos-button talos-button--sm talos-button--ghost">Export</button>
+  </div>
+</Demo>
+
+```html
+<div class="talos-toolbar">
+  <button class="talos-button talos-button--sm talos-button--ghost">Bold</button>
+  <button class="talos-button talos-button--sm talos-button--ghost">Italic</button>
+  <span class="talos-toolbar__sep"></span>
+  <span class="talos-toolbar__spacer"></span>
+  <button class="talos-button talos-button--sm talos-button--ghost">Export</button>
+</div>
+```
+
+`__spacer` is `flex: 1` — it absorbs the slack and pushes everything after it to
+the far edge.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-toolbar` | flex strip on `--talos-surface-1` with a 1px hairline border |
+| `.talos-toolbar__sep` | 1px full-height divider between control groups |
+| `.talos-toolbar__spacer` | `flex: 1` filler that pushes trailing items to the far edge |
+
+Fill it with [`.talos-button`](/docs/forms/button/) (`--sm --ghost` reads best).
+For a dropdown of grouped actions instead, see [`.talos-menu`](/docs/nav/menu/).

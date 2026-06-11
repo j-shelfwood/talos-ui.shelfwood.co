@@ -1,0 +1,79 @@
+---
+title: Dots
+description: A dot-matrix count — value-of-total lit marks whose colour rides the band.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+
+`<talos-dots>` is a dot-matrix: a discrete count shown as filled-of-total marks.
+It is the honest form for small countable quantities (active jobs, retries,
+stalls) where a bar would fake a continuous magnitude against a fake ceiling —
+here the ceiling is real and small, and each lit mark is one unit you can count.
+The lit dots take the **band of `value`**, so colour is the state.
+
+## Default — value of total
+
+<Demo>
+  <talos-dots value="3" total="8"></talos-dots>
+</Demo>
+
+```astro
+<talos-dots value="3" total="8"></talos-dots>
+```
+
+`value` lit dots of `total` (default `total="8"`, `value="0"`). `value` is
+clamped to `0…total` and rounded — a frozen frame shows the exact count, no
+animation to lose. With no thresholds the lit dots sit in the nominal band and
+carry a faint accent glow.
+
+## Bands — warn & crit on value
+
+<Demo>
+  <talos-dots value="3" total="8" warn="5" crit="7"></talos-dots>
+  <talos-dots value="5" total="8" warn="5" crit="7"></talos-dots>
+  <talos-dots value="7" total="8" warn="5" crit="7"></talos-dots>
+</Demo>
+
+```astro
+<talos-dots value="3" total="8" warn="5" crit="7"></talos-dots>
+<talos-dots value="5" total="8" warn="5" crit="7"></talos-dots>
+<talos-dots value="7" total="8" warn="5" crit="7"></talos-dots>
+```
+
+`value >= warn` recolours the lit dots to `--talos-warning`; `value >= crit` to
+`--talos-danger`. An absent threshold simply never trips — the absence is the
+contract. Below `warn` the dots stay nominal (`--talos-success`) and keep the
+accent glow.
+
+## Inverted — low = bad
+
+<Demo>
+  <talos-dots value="6" total="8" warn="4" crit="2" invert></talos-dots>
+  <talos-dots value="4" total="8" warn="4" crit="2" invert></talos-dots>
+  <talos-dots value="2" total="8" warn="4" crit="2" invert></talos-dots>
+</Demo>
+
+```astro
+<talos-dots value="6" total="8" warn="4" crit="2" invert></talos-dots>
+<talos-dots value="4" total="8" warn="4" crit="2" invert></talos-dots>
+<talos-dots value="2" total="8" warn="4" crit="2" invert></talos-dots>
+```
+
+`invert` flips the comparison: warning/critical trip when `value` falls *to or
+below* the threshold (reserve depth, free slots). A dangerously low count reads
+red without a separate inverted element.
+
+## Attributes
+
+| Attribute | Effect |
+| --- | --- |
+| `value` | number of lit dots (default `0`, clamped to `0…total`, rounded) |
+| `total` | number of dots drawn (default `8`) |
+| `warn` | threshold on `value` for the warning band (`--talos-warning`); absent = never trips |
+| `crit` | threshold on `value` for the critical band (`--talos-danger`); absent = never trips |
+| `invert` | low = bad — bands trip when `value` drops to/below the threshold |
+
+Dot size and gap are tunable via `--talos-dots-size` (default `5px`) and
+`--talos-dots-gap` (default `2px`). The lit/unlit fills come from the band tokens
+(`--talos-success` / `--talos-warning` / `--talos-danger`) and `--talos-surface-3`.

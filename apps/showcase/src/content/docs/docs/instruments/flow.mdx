@@ -1,0 +1,128 @@
+---
+title: Flow
+description: A throughput edge whose dash travels at a speed bound to rate — the motion is the flow, not decoration.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+
+`<talos-flow>` is the link primitive for pipeline diagrams: a dashed stroke
+travels along a path at a speed bound to `rate`. The animation *is* the
+throughput — zero rate means no motion, so a glance reads whether anything is
+flowing. Colour rides the `warn` / `crit` band, so health is the colour, not a
+caption.
+
+## Default — idle
+
+<Demo>
+  <talos-flow rate="0" width="180" height="36"></talos-flow>
+</Demo>
+
+```html
+<talos-flow rate="0" width="180" height="36"></talos-flow>
+```
+
+`rate="0"` (the default) draws only the static base hairline — connected,
+nothing flowing. No travelling dash at all.
+
+## Rate → speed
+
+<Demo>
+  <talos-flow rate="20" max="100" width="180" height="36"></talos-flow>
+  <talos-flow rate="60" max="100" width="180" height="36"></talos-flow>
+  <talos-flow rate="100" max="100" width="180" height="36"></talos-flow>
+</Demo>
+
+```html
+<talos-flow rate="20"  max="100" width="180" height="36"></talos-flow>
+<talos-flow rate="60"  max="100" width="180" height="36"></talos-flow>
+<talos-flow rate="100" max="100" width="180" height="36"></talos-flow>
+```
+
+Dash travel velocity is `∝ rate`, saturating at `max` (so a huge rate stays
+legible). Higher rate, faster sweep.
+
+## Band → colour
+
+<Demo>
+  <talos-flow rate="40" max="100" warn="70" crit="90" width="180" height="36"></talos-flow>
+  <talos-flow rate="78" max="100" warn="70" crit="90" width="180" height="36"></talos-flow>
+  <talos-flow rate="95" max="100" warn="70" crit="90" width="180" height="36"></talos-flow>
+</Demo>
+
+```html
+<talos-flow rate="40" max="100" warn="70" crit="90" width="180" height="36"></talos-flow>
+<talos-flow rate="78" max="100" warn="70" crit="90" width="180" height="36"></talos-flow>
+<talos-flow rate="95" max="100" warn="70" crit="90" width="180" height="36"></talos-flow>
+```
+
+`rate` crossing `warn` paints the dash `--talos-warning`; crossing `crit` paints
+`--talos-danger`. Below both, `--talos-success`. Colour snaps to the band —
+state must not lag.
+
+## Invert — low = bad
+
+<Demo>
+  <talos-flow rate="15" max="100" warn="40" crit="20" invert width="180" height="36"></talos-flow>
+</Demo>
+
+```html
+<talos-flow rate="15" max="100" warn="40" crit="20" invert width="180" height="36"></talos-flow>
+```
+
+With `invert`, the band trips as `rate` *falls* — a starved link (low
+throughput as the symptom) reads red. Same `warn` / `crit` semantics as gauge,
+meter, and trend, flipped.
+
+## Reverse
+
+<Demo>
+  <talos-flow rate="60" max="100" width="180" height="36"></talos-flow>
+  <talos-flow rate="60" max="100" reverse width="180" height="36"></talos-flow>
+</Demo>
+
+```html
+<talos-flow rate="60" max="100" width="180" height="36"></talos-flow>
+<talos-flow rate="60" max="100" reverse width="180" height="36"></talos-flow>
+```
+
+`reverse` flips travel direction — the visual direction is the data direction.
+
+## Curve
+
+<Demo>
+  <talos-flow rate="60" max="100" curve="14" width="180" height="48"></talos-flow>
+</Demo>
+
+```html
+<talos-flow rate="60" max="100" curve="14" width="180" height="48"></talos-flow>
+```
+
+`curve` bows the path by that many px (quadratic). `0` (default) is a straight
+line. Endpoints are set with `x1 y1 x2 y2` in viewBox units.
+
+## Reduced motion
+
+Under `prefers-reduced-motion: reduce` the dash does **not** travel — instead
+the edge renders static directional chevrons and exposes the rate via
+`aria-label` (`role="img"`). The information — there is flow, this fast, this
+direction, this health — survives without the animation. No flag to set; it
+reads the OS preference.
+
+## Attributes
+
+| Attribute | Effect |
+| --- | --- |
+| `rate` | throughput; `0` = idle, no motion (default `0`) |
+| `max` | rate at which speed saturates (default `100`) |
+| `warn` | warning band threshold on `rate` (optional) |
+| `crit` | critical band threshold on `rate` (optional) |
+| `invert` | flag — band trips as `rate` *falls* (low = bad) |
+| `reverse` | flag — reverses dash travel direction |
+| `curve` | bow height for a curved path, px (default `0` = straight) |
+| `x1` `y1` `x2` `y2` | endpoints in viewBox units (default a horizontal line) |
+| `width` `height` | viewBox px (default `200` / `40`) |
+
+Bands use the same threshold + `invert` logic as
+[`<talos-gauge>`](/docs/web-components/), [`<talos-meter>`](/docs/web-components/),
+and `<talos-trend>`.
