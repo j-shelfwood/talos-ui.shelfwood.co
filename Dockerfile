@@ -1,7 +1,9 @@
-# Talos UI showcase — static Astro site, served by nginx. Consumes the published
-# @j_shelfwood/talos-ui package from npm (the design system lives in its own repo,
-# github.com/j-shelfwood/talos-ui). Coolify builds this Dockerfile from the repo
-# root; Traefik fronts it with TLS for talos-ui.shelfwood.co.
+# Talos UI showcase — static Astro site, served by nginx. Consumes the design
+# system as a GIT dependency (github:j-shelfwood/talos-ui#main, lockfile-pinned),
+# NOT the published npm artifact — so `bun install` below clones github.com over
+# the network at build time and needs the package repo reachable + public (the
+# oven/bun image ships git). Coolify builds this Dockerfile from the repo root;
+# Traefik fronts it with TLS for talos-ui.shelfwood.co.
 
 # ---- build stage ----------------------------------------------------------
 FROM oven/bun:1.2 AS build
