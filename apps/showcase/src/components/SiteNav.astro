@@ -35,7 +35,7 @@ const isActive = (l: (typeof links)[number]) =>
       <div>
         <a class="talos-nav-link" href="/" aria-label="Home">
           <span class="talos-dot"></span>
-          <span class="talos-nav-text">Talos&nbsp;UI</span>
+          <span class="nav-brand-label">Talos&nbsp;UI</span>
         </a>
       </div>
       <div></div>
@@ -113,14 +113,24 @@ const isActive = (l: (typeof links)[number]) =>
   .talos-navbar-inner > :nth-child(3) { justify-content: flex-end; }
 
   /* Compact state — collapse to a small pill, hide link text. */
+  /* Compact (scrolled): shrink the pill and collapse the nav-LINK labels — but
+     keep the brand ("● TALOS UI") as the persistent home affordance, so the
+     collapsed pill is never an empty box. Width holds the brand without clipping. */
   .talos-navbar[data-compact="true"]:not(.toc-expanded) .talos-navbar-pill {
-    max-width: 220px;
-    padding: 0.75rem 1rem;
+    max-width: 320px;
+    padding: 0.75rem 1.25rem;
   }
   .talos-nav-text {
     white-space: nowrap;
     transition: opacity 0.4s var(--talos-ease-out), max-width 0.4s var(--talos-ease-out);
   }
+  /* The brand label is NOT a .talos-nav-text, so the compact collapse below
+     never touches it — "● TALOS UI" stays put as the home affordance and the
+     collapsed pill is never an empty box. (Earlier attempts to exempt it via a
+     :not() or a re-show rule were silently dropped by the CSS minifier; keeping
+     the brand out of the collapsed class entirely needs no exemption rule.) */
+  .nav-brand-label { white-space: nowrap; }
+  /* Compact: collapse the nav-LINK labels only. */
   .talos-navbar[data-compact="true"]:not(.toc-expanded) .talos-nav-text {
     opacity: 0;
     max-width: 0;
