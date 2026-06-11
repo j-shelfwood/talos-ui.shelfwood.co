@@ -16,29 +16,32 @@ as gauge and meter: colour is the state. Push a sample with `el.push(v)` or set
 ## Default
 
 <Demo>
-  <talos-trend value="42" points="48" width="220" height="60"></talos-trend>
+  <talos-trend data="30 34 28 40 38 46 42 50 44 52" width="220" height="60"></talos-trend>
 </Demo>
 
 ```astro
-<talos-trend value="42"></talos-trend>
+<!-- data= seeds the window so a static trend draws a curve -->
+<talos-trend data="30 34 28 40 38 46 42 50 44 52"></talos-trend>
 ```
 
-With no `warn`/`crit` the line sits in the nominal band (green). The window
+With no `warn`/`crit` the line sits in the nominal band (green). `data=` is a
+declarative series (comma/space separated) that fills the window; the window
 holds `points` samples (default 48); the newest sits at the right edge with a
-dot, and the inline readout shows the rounded current value.
+dot, and the inline readout shows its rounded value. For live streams, call
+`el.push(v)` instead of seeding `data`.
 
 ## Banded — warn & crit thresholds
 
 <Demo>
-  <talos-trend value="40" warn="70" crit="90" unit="%" width="220" height="60"></talos-trend>
-  <talos-trend value="78" warn="70" crit="90" unit="%" width="220" height="60"></talos-trend>
-  <talos-trend value="95" warn="70" crit="90" unit="%" width="220" height="60"></talos-trend>
+  <talos-trend data="20 28 24 32 30 38 36 42 40" warn="70" crit="90" unit="%" width="220" height="60"></talos-trend>
+  <talos-trend data="40 48 52 60 58 66 72 76 78" warn="70" crit="90" unit="%" width="220" height="60"></talos-trend>
+  <talos-trend data="60 66 72 80 84 88 92 94 95" warn="70" crit="90" unit="%" width="220" height="60"></talos-trend>
 </Demo>
 
 ```astro
-<talos-trend value="40" warn="70" crit="90" unit="%"></talos-trend>
-<talos-trend value="78" warn="70" crit="90" unit="%"></talos-trend>
-<talos-trend value="95" warn="70" crit="90" unit="%"></talos-trend>
+<talos-trend data="20 28 24 …40"  warn="70" crit="90" unit="%"></talos-trend>
+<talos-trend data="40 48 52 …78"  warn="70" crit="90" unit="%"></talos-trend>
+<talos-trend data="60 66 72 …95"  warn="70" crit="90" unit="%"></talos-trend>
 ```
 
 `value >= warn` trips warning (amber), `value >= crit` trips critical (red). The
@@ -48,11 +51,11 @@ the instant the latest sample crosses — state never lags the data.
 ## Inverted — low is bad
 
 <Demo>
-  <talos-trend value="18" warn="40" crit="20" invert unit="fps" width="220" height="60"></talos-trend>
+  <talos-trend data="58 54 50 44 38 32 26 22 18" warn="40" crit="20" invert unit="fps" width="220" height="60"></talos-trend>
 </Demo>
 
 ```astro
-<talos-trend value="18" warn="40" crit="20" invert></talos-trend>
+<talos-trend data="58 54 50 …18" warn="40" crit="20" invert></talos-trend>
 ```
 
 `invert` flips the comparison: warning/critical trip as the value *falls* to/below
@@ -62,11 +65,11 @@ coolant reserve — so a dangerously low curve reads red.
 ## Fill
 
 <Demo>
-  <talos-trend value="64" warn="70" crit="90" fill unit="%" width="220" height="60"></talos-trend>
+  <talos-trend data="40 46 52 50 58 56 62 60 64" warn="70" crit="90" fill unit="%" width="220" height="60"></talos-trend>
 </Demo>
 
 ```astro
-<talos-trend value="64" warn="70" crit="90" fill></talos-trend>
+<talos-trend data="40 46 52 …64" warn="70" crit="90" fill></talos-trend>
 ```
 
 `fill` shades the area under the curve in the band colour at low opacity.
@@ -74,17 +77,17 @@ coolant reserve — so a dangerously low curve reads red.
 ## Labelled & sized
 
 <Demo>
-  <talos-trend value="40" points="60" warn="70" crit="90" unit="%" label="Throughput" width="380" height="80" fill></talos-trend>
+  <talos-trend data="28 34 30 42 38 50 46 58 54 62 66 60 70 68 74" warn="70" crit="90" unit="%" label="Throughput" width="380" height="80" fill></talos-trend>
 </Demo>
 
 ```astro
-<talos-trend value="40" points="60" warn="70" crit="90"
+<talos-trend data="28 34 30 …74" warn="70" crit="90"
              label="Throughput" unit="%" width="380" height="80" fill></talos-trend>
 ```
 
 `label` adds an uppercase HUD caption above the line; `unit` is appended to the
 readout. `width`/`height` size the SVG; `points` sets how many samples the
-window keeps.
+window keeps (the `data` series above is well under it).
 
 ## Live updates
 
