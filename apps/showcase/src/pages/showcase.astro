@@ -1,266 +1,533 @@
 ---
+// Showcase — CONSTELLATION OPS WALL, as a DRILL-DOWN THREAD.
+//
+// Four stacked consoles that zoom into each other: FLEET (all 1,584 sats) →
+// POWER (the same fleet as distributions) → PLANE (the 22 sats of one selected
+// orbital plane, with their real ISL links) → SATELLITE (one sat + its real
+// neighbours, located back in the full grid). A single selection — a plane and a
+// slot — flows down the wall: click a cell in the fleet matrix and the plane
+// console fills with that column's 22 satellites; click one of those and the
+// satellite console drills in. Each level is a visible magnification of the one
+// above, so the scale is coherent, not four unrelated widgets.
+//
+// One ConstellationModel (typed arrays over 1,584 sats) is the single source of
+// truth; the consoles are lenses on it, all live (PHILOSOPHY.md: live not static;
+// motion is telemetry; selection is state). Grounded figures: shell = 72×22 =
+// 1,584 @ 550 km / 53° / ~95 min; compute 120 kW sustained per "AI1"-class sat;
+// solar ~150 kW; eclipse ≈ 35% of each orbit; radiator band ~0–30 °C; ISL mesh.
 import Landing from "../layouts/Landing.astro";
-import GlassPanel from "@j_shelfwood/talos-ui/astro/GlassPanel.astro";
-import Button from "@j_shelfwood/talos-ui/astro/Button.astro";
-import TitlePanel from "@j_shelfwood/talos-ui/astro/TitlePanel.astro";
-import ServicePanel from "@j_shelfwood/talos-ui/astro/ServicePanel.astro";
-import ToolkitPanel from "@j_shelfwood/talos-ui/astro/ToolkitPanel.astro";
-import ProjectPanel from "@j_shelfwood/talos-ui/astro/ProjectPanel.astro";
+import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
 ---
 
 <Landing title="Showcase" navActive="showcase">
-  <!-- HERO -->
-  <header class="talos-stack">
-    <div class="talos-row" style="justify-content:space-between">
-      <span class="talos-eyebrow">// Component showcase</span>
-      <span class="talos-row" style="gap:.5rem">
-        <span class="talos-dot"></span>
-        <span class="talos-eyebrow">v0.1.0</span>
-      </span>
+  <header class="sc-intro talos-stack">
+    <div class="talos-row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+      <span class="talos-eyebrow">// Constellation ops · drill-down</span>
+      <talos-status id="sc-rollup" label="GROUND STATION" channels="ok,ok,ok,ok" scan style="min-width:280px"></talos-status>
     </div>
-    <h1 style="font-size:clamp(2.25rem,5vw,4rem);letter-spacing:.005em;line-height:1.05">
-      Panels, buttons,<br />notched components
+    <h1 style="font-size:clamp(2rem,4.5vw,3.4rem);letter-spacing:.005em;line-height:1.06">
+      Drill from 1,584 satellites down to one.
     </h1>
-    <p class="talos-muted" style="max-width:46ch;font-size:1.05rem">
-      The chrome layer — chamfered hairline panels, Oxanium type, and composable
-      notched-panel web components. For the live instruments, see the
-      <a class="doclink" href="/" style="border-bottom:1px solid var(--talos-accent)">home console</a>;
-      for the CSS primitive reference, the <a class="doclink" href="/gallery/" style="border-bottom:1px solid var(--talos-accent)">gallery</a>.
+    <p class="talos-muted" style="max-width:62ch;font-size:1.05rem">
+      Seventy-two orbital planes, twenty-two compute satellites each. The four
+      consoles below are one zoom: the whole fleet, the fleet as distributions,
+      a single plane's 22 satellites and their laser links, and one satellite in
+      detail. <b style="color:var(--talos-foreground);font-weight:500">Click any
+      cell</b> in the fleet grid to choose a plane; click a satellite in the plane
+      ring to focus it. The selection threads down the wall while the whole shell
+      keeps flying.
     </p>
-    <div class="talos-row" style="margin-top:.5rem">
-      <Button href="/docs/getting-started/">Get started</Button>
-      <Button variant="secondary" href="/gallery/">Gallery</Button>
-      <Button variant="ghost" href="https://github.com/shelfwood">Source</Button>
-    </div>
   </header>
 
-  <!-- PANELS -->
-  <section class="talos-stack">
-    <span class="talos-eyebrow">// 01 — Panels</span>
-    <div class="talos-grid-auto">
-      <GlassPanel as="a" href="/docs/components/" class="talos-pad">
-        <h3 style="font-size:1.1rem">Glass panel</h3>
-        <p class="talos-muted">Two-layer chamfer hairline. Hover for lift, sheen, brackets.</p>
-      </GlassPanel>
-      <GlassPanel as="a" href="/docs/tokens/" class="talos-pad">
-        <h3 style="font-size:1.1rem">Tokens</h3>
-        <p class="talos-muted">Every decision is a <code>--talos-*</code> property.</p>
-      </GlassPanel>
-      <GlassPanel as="a" href="/docs/web-components/" class="talos-pad">
-        <h3 style="font-size:1.1rem">Web components</h3>
-        <p class="talos-muted">Composable notched panels via custom elements.</p>
-      </GlassPanel>
-      <GlassPanel as="a" href="/docs/blade/" class="talos-pad">
-        <h3 style="font-size:1.1rem">Laravel / Blade</h3>
-        <p class="talos-muted">CSS + a module script. No Composer package.</p>
-      </GlassPanel>
-    </div>
-  </section>
-
-  <!-- BUTTONS -->
-  <section class="talos-stack">
-    <span class="talos-eyebrow">// 02 — Buttons</span>
-    <div class="talos-row">
-      <Button>Primary</Button>
-      <Button variant="secondary">Secondary</Button>
-      <Button variant="ghost">Ghost</Button>
-      <Button size="sm">Small</Button>
-      <Button size="lg">Large</Button>
-    </div>
-  </section>
-
-  <!-- WEB COMPONENTS -->
-  <section class="talos-stack">
-    <span class="talos-eyebrow">// 03 — Notched panels (web components)</span>
-    <div class="talos-row" style="gap:2rem;align-items:flex-start">
-      <talos-panel panel-width="360" panel-height="200" animate>
-        <talos-corner edge="top-right" radius="24"></talos-corner>
-        <talos-corner edge="bottom-left" radius="24"></talos-corner>
-        <talos-notch edge="top" width="90" depth="14"></talos-notch>
-        <div class="talos-pad">
-          <span class="talos-eyebrow">SYS://PANEL</span>
-          <h3 style="font-size:1.05rem;margin-top:.5rem">Corners + top notch</h3>
-        </div>
-      </talos-panel>
-
-      <talos-panel panel-width="360" panel-height="200">
-        <talos-notch edge="left" width="70" depth="16"></talos-notch>
-        <talos-notch edge="right" width="70" depth="16"></talos-notch>
-        <div class="talos-pad">
-          <span class="talos-eyebrow">SYS://PANEL</span>
-          <h3 style="font-size:1.05rem;margin-top:.5rem">Side notches</h3>
-        </div>
-      </talos-panel>
-    </div>
-  </section>
-
-  <!-- LIVE COMPONENTS — feedback / data / nav families -->
-  <section class="talos-stack">
-    <span class="talos-eyebrow">// 04 — Live components</span>
-
-    <div class="talos-row" style="gap:.6rem">
-      <span class="talos-badge talos-badge--success talos-badge--dot">Online</span>
-      <span class="talos-badge talos-badge--info">Build 0.1.0</span>
-      <span class="talos-badge talos-badge--warning">Beta</span>
-      <span class="talos-badge talos-badge--neutral">MIT</span>
-    </div>
-
-    <div class="talos-grid-auto" style="margin-top:.5rem">
-      <div class="talos-stat">
-        <span class="talos-stat__label">Components</span>
-        <span class="talos-stat__value">48</span>
-        <span class="talos-stat__delta">CSS + WC</span>
+  <!-- ════ CONSOLE 1 — FLEET (all 1,584) ══════════════════════════════════════ -->
+  <section class="sc-panel">
+    <div class="talos-console sc-console">
+      <div class="console-rail con-rail">
+        <span class="console-rail__brand">
+          <talos-led id="con-led" state="ok" live size="9"></talos-led>
+          SYS://FLEET
+        </span>
+        <span class="console-rail__spacer"></span>
+        <span class="con-rail-meta">
+          <span>SUN <b id="m-sun">—</b></span>
+          <span>ECL <b id="m-ecl">—</b></span>
+          <span>SEL <b id="m-sel">P00·S00</b></span>
+        </span>
       </div>
-      <div class="talos-stat">
-        <span class="talos-stat__label">Token vars</span>
-        <span class="talos-stat__value">120+</span>
-        <span class="talos-stat__delta">retheme on :root</span>
-      </div>
-      <div class="talos-stat">
-        <span class="talos-stat__label">Bundle</span>
-        <span class="talos-stat__value">0 JS</span>
-        <span class="talos-stat__delta">CSS-only core</span>
-      </div>
-    </div>
 
-    <div class="talos-alert talos-alert--info" role="status" style="margin-top:.5rem">
-      <span class="talos-alert__icon">◆</span>
-      <div>
-        <div class="talos-alert__title">Dogfooded</div>
-        <div class="talos-alert__body">
-          This page and the docs are built from Talos UI itself — every panel,
-          badge, stat card, and code block is a library component.
-        </div>
-      </div>
-    </div>
-
-    <div class="talos-tabs talos-tabs--segmented" role="tablist" style="margin-top:.75rem">
-      <button class="talos-tab" role="tab" aria-selected="true">Astro</button>
-      <button class="talos-tab" role="tab" aria-selected="false">Web components</button>
-      <button class="talos-tab" role="tab" aria-selected="false">Blade</button>
-    </div>
-  </section>
-
-  <!-- INTERACTION — pointer affordances + decode-on-change -->
-  <section class="talos-stack">
-    <span class="talos-eyebrow">// 05 — Interaction</span>
-    <p class="talos-muted" style="max-width:52ch">
-      Pointer affordances bound to the same law as the instruments: the sheen
-      tracks pointer presence, the activity edge spins at a rate, the readout
-      decodes when its value changes.
-    </p>
-
-    <div class="talos-row" style="gap:2rem;align-items:flex-start;flex-wrap:wrap">
-      <talos-sheen>
-        <div class="glass-panel interactive-panel" style="width:260px;height:130px">
-          <div class="glass-panel-content talos-pad">
-            <span class="talos-eyebrow">SHEEN</span>
-            <h3 style="font-size:1.05rem;margin-top:.4rem">Pointer-tracked</h3>
-            <p class="talos-muted" style="font-size:.85rem">Move across me.</p>
+      <div class="console-scope con-scope">
+        <div class="view-a">
+          <div class="va-main">
+            <div class="va-head">
+              <span class="con-k">Fleet health · 72 planes × 22 satellites · <span class="con-k--accent">click a cell to select a plane</span></span>
+              <span class="con-k con-k--dim">terminator sweeping →</span>
+            </div>
+            <talos-matrix id="a-matrix" cols="72" rows="22" warn="70" crit="88" terminator="0" terminator-width="0.32" gap="1"></talos-matrix>
+            <div class="va-head" style="margin-top:.75rem">
+              <span class="con-k">Ground track · sub-satellite points & gateways</span>
+            </div>
+            <talos-groundtrack id="a-track" inclination="53" tracks="6"></talos-groundtrack>
           </div>
-        </div>
-      </talos-sheen>
-
-      <div class="glass-panel activity-edge" id="sc-activity" style="--talos-rate:.5;width:260px;height:130px">
-        <div class="glass-panel-content talos-pad">
-          <span class="talos-eyebrow">ACTIVITY EDGE</span>
-          <h3 style="font-size:1.05rem;margin-top:.4rem">Rate-bound ring</h3>
-          <p class="talos-muted" style="font-size:.85rem">Speed = throughput.</p>
+          <aside class="va-side">
+            <div class="con-cell">
+              <span class="con-k">Constellation compute</span>
+              <div class="con-cell__row">
+                <talos-gauge id="a-compute" value="0" warn="82" crit="94" unit="%" size="100"></talos-gauge>
+                <div class="con-cell__side">
+                  <talos-readout id="a-kw" value="0" unit="MW" label="fleet draw"></talos-readout>
+                  <span class="con-sub">1,584 × ~120 kW</span>
+                </div>
+              </div>
+            </div>
+            <div class="va-stats">
+              <div class="va-stat"><span class="va-stat__k">Operational</span><span class="va-stat__v num" id="a-online">—</span></div>
+              <div class="va-stat"><span class="va-stat__k">In eclipse</span><span class="va-stat__v num" id="a-ecl">—</span></div>
+              <div class="va-stat"><span class="va-stat__k">Downlink</span><span class="va-stat__v num" id="a-link">—</span></div>
+              <div class="va-stat"><span class="va-stat__k">Batt. margin</span><span class="va-stat__v num" id="a-margin">—</span></div>
+            </div>
+            <div class="con-cell">
+              <span class="con-k">Mean core temp</span>
+              <talos-meter id="a-temp" value="0" min="-20" max="45" warn="28" crit="36" unit="°C"></talos-meter>
+            </div>
+          </aside>
         </div>
       </div>
 
-      <div class="talos-row" style="gap:2rem;align-items:center">
-        <talos-readout id="sc-readout" value="1042" unit="req/s" label="Ingest" warn="2000" crit="4000"></talos-readout>
+      <div class="console-status">
+        <span class="console-status__stat">shell <b>1,584 sats</b></span>
+        <span class="console-status__stat">alt <b>550 km</b></span>
+        <span class="console-status__stat">incl <b>53°</b></span>
+        <span class="console-status__stat">period <b>95 min</b></span>
+        <span class="console-status__spacer"></span>
+        <span class="console-status__stat">CONSOLE 1 · FLEET</span>
       </div>
     </div>
   </section>
 
-  <section class="talos-stack">
-    <span class="talos-eyebrow">// Panel composition</span>
-    <p class="talos-muted" style="max-width:60ch">
-      The same chamfered chrome, composed into a bento mosaic — title, service,
-      toolkit, and project panels share one outline language.
-    </p>
-    <div class="talos-grid" style="margin-top:.5rem">
-      <TitlePanel
-        class="col-span-12"
-        title="Component library"
-        subtitle="Every panel is the same chamfered chrome — composed into a bento mosaic."
-      />
+  <!-- ════ CONSOLE 2 — POWER & THERMAL (fleet distributions) ═══════════════════ -->
+  <section class="sc-panel">
+    <div class="talos-console sc-console">
+      <div class="console-rail con-rail">
+        <span class="console-rail__brand"><talos-led state="ok" live size="9"></talos-led> SYS://POWER-THERMAL</span>
+        <span class="console-rail__spacer"></span>
+        <span class="con-rail-meta"><span>SOLAR <b id="m2-solar">—</b></span><span>MEAN SOC <b id="m2-soc">—</b></span></span>
+      </div>
 
-      <ServicePanel
-        class="col-span-12 lg:col-span-6"
-        title="Design systems"
-        description="Token-driven, framework-agnostic UI that scales across Astro and Laravel."
-        features={[
-          { title: "Plain-CSS core", description: "No Tailwind required to consume the look." },
-          { title: "Web components", description: "Composable notched panels via custom elements." },
-          { title: "Astro wrappers", description: "Ergonomic .astro components for the common cases." },
-        ]}
-      />
+      <div class="console-scope con-scope">
+        <div class="view-b">
+          <div class="vb-col">
+            <span class="con-k">Battery state-of-charge · distribution across 1,584 sats</span>
+            <talos-histogram id="b-batt" bins="28" min="0" max="100" warn="45" crit="28" invert style="height:120px"></talos-histogram>
+            <span class="con-sub">The eclipse cohort sits to the left; the bulk of the fleet holds charge on the right.</span>
+            <span class="con-k" style="margin-top:1.25rem">Core temperature · distribution (°C)</span>
+            <talos-histogram id="b-temp" bins="28" min="0" max="45" warn="29" crit="34" style="height:120px"></talos-histogram>
+          </div>
+          <aside class="vb-side">
+            <div class="con-cell">
+              <span class="con-k">Selected plane <b class="con-k--accent" id="b-plane">P00</b></span>
+              <div class="va-stats">
+                <div class="va-stat"><span class="va-stat__k">Plane SoC</span><span class="va-stat__v num" id="b-psoc">—</span></div>
+                <div class="va-stat"><span class="va-stat__k">Plane temp</span><span class="va-stat__v num" id="b-ptemp">—</span></div>
+              </div>
+            </div>
+            <div class="con-cell">
+              <span class="con-k">Fleet solar input</span>
+              <talos-meter id="b-solar" value="0" warn="40" crit="15" invert unit="%"></talos-meter>
+              <span class="con-k" style="margin-top:.75rem">Mean battery SoC</span>
+              <talos-meter id="b-battm" value="100" warn="42" crit="28" invert unit="%"></talos-meter>
+              <span class="con-k" style="margin-top:.75rem">Radiator dissipation</span>
+              <talos-readout id="b-rad" value="0" unit="MW" label="fleet dump"></talos-readout>
+            </div>
+            <div class="con-cell con-cell--trend">
+              <span class="con-k">Fleet power draw · live window</span>
+              <talos-trend id="b-trend" min="0" max="200" height="80" fill></talos-trend>
+            </div>
+          </aside>
+        </div>
+      </div>
 
-      <ToolkitPanel
-        class="col-span-12 lg:col-span-6"
-        groups={[
-          { level: "Expert", emphasis: "high", items: ["Astro", "TypeScript", "CSS", "Laravel", "Bun"] },
-          { level: "Working", emphasis: "low", items: ["Web Components", "Vite", "PHP", "SQLite"] },
-        ]}
-      />
-
-      <ProjectPanel
-        class="col-span-12 md:col-span-4"
-        title="talos-ui"
-        description="This design system — monochrome HUD chrome packaged for reuse."
-        tags={["css", "astro"]}
-        href="/"
-      />
-      <ProjectPanel
-        class="col-span-12 md:col-span-4"
-        title="tesseract-dash"
-        description="Hardware telemetry dashboard — rings, sparklines, scatter."
-        tags={["dashboard", "canvas"]}
-        href="https://github.com/shelfwood"
-        external
-      />
-      <ProjectPanel
-        class="col-span-12 md:col-span-4"
-        title="shelfwood.co"
-        description="The studio site — origin of the refined monochrome direction."
-        tags={["astro"]}
-        href="https://shelfwood.co"
-        external
-      />
+      <div class="console-status">
+        <span class="console-status__stat">solar array <b>~150 kW/sat</b></span>
+        <span class="console-status__stat">radiator band <b>0–30 °C</b></span>
+        <span class="console-status__spacer"></span>
+        <span class="console-status__stat">CONSOLE 2 · POWER & THERMAL</span>
+      </div>
     </div>
   </section>
 
-  <footer class="talos-row talos-muted" style="justify-content:space-between;border-top:1px solid var(--talos-border);padding-top:1.5rem">
-    <span class="talos-eyebrow">SYS://TALOS-UI</span>
-    <span class="talos-eyebrow">MIT — Shelfwood ◢</span>
+  <!-- ════ CONSOLE 3 — PLANE (the selected plane's 22 sats + ISL ring) ════════ -->
+  <section class="sc-panel">
+    <div class="talos-console sc-console">
+      <div class="console-rail con-rail">
+        <span class="console-rail__brand"><talos-led id="c-led" state="ok" live size="9"></talos-led> SYS://PLANE-<span id="c-plane-id">00</span></span>
+        <span class="console-rail__spacer"></span>
+        <span class="con-rail-meta"><span>SATS <b>22</b></span><span>ISL <b>laser ×4</b></span></span>
+      </div>
+
+      <div class="console-scope con-scope">
+        <div class="view-c">
+          <div class="vc-ring">
+            <talos-plane id="c-ring" slots="22" plane-label="P00"></talos-plane>
+            <span class="con-sub" style="text-align:center;margin-top:.5rem">Click a satellite to focus it · fore/aft = in-plane ISL · radial stubs = cross-plane links</span>
+          </div>
+          <aside class="vc-side">
+            <span class="con-k">Plane <b class="con-k--accent" id="c-plane-id2">P00</b> · health</span>
+            <div class="va-stats va-stats--col">
+              <div class="va-stat"><span class="va-stat__k">Nominal</span><span class="va-stat__v num" id="c-nom">—</span></div>
+              <div class="va-stat"><span class="va-stat__k">In eclipse</span><span class="va-stat__v num" id="c-ecl">—</span></div>
+              <div class="va-stat"><span class="va-stat__k">Plane downlink</span><span class="va-stat__v num" id="c-dl">—</span></div>
+              <div class="va-stat"><span class="va-stat__k">ISL links up</span><span class="va-stat__v num" id="c-links">—</span></div>
+            </div>
+            <div class="con-cell con-cell--trend">
+              <span class="con-k">Plane mean SoC · live</span>
+              <talos-trend id="c-trend" min="0" max="100" height="64" fill></talos-trend>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <div class="console-status">
+        <span class="console-status__stat">ISL <b>laser · 10 Gbps–Tbps</b></span>
+        <span class="console-status__stat">topology <b>grid-mesh ×4</b></span>
+        <span class="console-status__spacer"></span>
+        <span class="console-status__stat">CONSOLE 3 · PLANE</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ CONSOLE 4 — SATELLITE (focus + locator) ════════════════════════════ -->
+  <section class="sc-panel">
+    <div class="talos-console sc-console">
+      <div class="console-rail con-rail">
+        <span class="console-rail__brand"><talos-led id="d-led" state="ok" live size="9"></talos-led> SYS://SAT-<span id="d-name">P00-S00</span></span>
+        <span class="console-rail__spacer"></span>
+        <span class="con-rail-meta"><span id="d-state">SUNLIT</span></span>
+      </div>
+
+      <div class="console-scope con-scope">
+        <div class="view-d">
+          <div class="vd-left">
+            <span class="con-k">Locator · where in the shell</span>
+            <talos-matrix id="d-loc" cols="72" rows="22" warn="70" crit="88" gap="1" style="--talos-success:hsl(140 30% 28%);--talos-warning:hsl(38 40% 30%);--talos-danger:hsl(0 45% 32%)"></talos-matrix>
+            <div class="vd-orbital">
+              <talos-orbital id="d-orb" rings="2" warn="70" crit="88" core-label="SAT" core-sub="ISL NEIGHBOURHOOD" size="300"></talos-orbital>
+            </div>
+          </div>
+          <aside class="vd-side">
+            <div class="con-detail">
+              <div class="con-detail__row"><span>Sun state</span><span class="con-detail__v" id="d-phase">—</span></div>
+              <div class="con-detail__row"><span>Compute</span><span class="con-detail__v num" id="d-cpu">—</span></div>
+              <div class="con-detail__row"><span>Core temp</span><span class="con-detail__v num" id="d-temp">—</span></div>
+              <div class="con-detail__row"><span>Battery</span><span class="con-detail__v num" id="d-batt">—</span></div>
+              <div class="con-detail__row"><span>Plane / slot</span><span class="con-detail__v num" id="d-loc-id">—</span></div>
+              <div class="con-detail__row"><span>ISL neighbours</span><span class="con-detail__v" id="d-nb">—</span></div>
+              <div class="con-detail__row"><span>Next sunlight</span><span class="con-detail__v" id="d-next">—</span></div>
+            </div>
+            <div class="con-cell" style="margin-top:1rem">
+              <span class="con-k">GPU thermal · live</span>
+              <talos-trend id="d-trend" min="0" max="45" height="64" fill></talos-trend>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <div class="console-status">
+        <span class="console-status__stat">payload <b>AMD Versal AI</b></span>
+        <span class="console-status__stat">compute <b>120 kW sustained</b></span>
+        <span class="console-status__spacer"></span>
+        <span class="console-status__stat">CONSOLE 4 · SATELLITE</span>
+      </div>
+    </div>
+  </section>
+
+  <p class="talos-muted sc-note">
+    One zoom, four consoles, real shell scale — the selection threads fleet → plane
+    → satellite while everything stays live. New instruments built for this:
+    <b>talos-matrix</b> (1,584-cell grid, clickable + terminator), <b>talos-plane</b>
+    (a plane's 22 sats + ISL links), <b>talos-groundtrack</b> (sub-satellite map),
+    <b>talos-histogram</b> (fleet distributions) — alongside gauge, meter, trend,
+    orbital, readout and the status rollup. Every value is bound to the model.
+  </p>
+
+  <footer class="sc-footer talos-row" style="justify-content:space-between;align-items:center;border-top:1px solid var(--talos-border);padding-top:1.5rem">
+    <BrandMark />
+    <span class="talos-eyebrow talos-muted">1,584 sats · fleet → plane → sat · MIT</span>
   </footer>
 
-  <script>
-    // Minimal segmented-tab toggle so the showcase strip is interactive.
-    document.querySelectorAll<HTMLElement>('.talos-tabs[role="tablist"]').forEach((list) => {
-      list.addEventListener("click", (e) => {
-        const tab = (e.target as HTMLElement).closest('[role="tab"]');
-        if (!tab) return;
-        list.querySelectorAll('[role="tab"]').forEach((t) =>
-          t.setAttribute("aria-selected", String(t === tab)),
-        );
-      });
-    });
+  <style>
+    .sc-intro { margin-bottom: 2.5rem; }
+    .sc-intro b { color: var(--talos-foreground); }
+    .sc-panel { margin-bottom: 1.5rem; }
+    .sc-console { height: auto; border: 1px solid var(--talos-hud-edge, hsl(0 0% 100% / 0.18)); border-radius: 4px; overflow: hidden; }
+    .sc-console .console-scope { min-height: 0; }
 
-    // Drive the interaction demos from a tiny pseudo-telemetry loop so the
-    // readout decodes on real value changes and the activity edge varies rate —
-    // the same "motion is data" contract the home console runs at full scale.
-    const readout = document.getElementById("sc-readout");
-    const activity = document.getElementById("sc-activity");
-    let ingest = 1042;
-    setInterval(() => {
-      ingest = Math.max(200, Math.round(ingest + (Math.random() - 0.45) * 600));
-      readout?.setAttribute("value", String(ingest));
-      // rate 0..1 from the same signal: more ingest → faster ring
-      activity?.style.setProperty("--talos-rate", (Math.min(ingest, 4000) / 4000).toFixed(2));
-    }, 1800);
+    .con-rail { gap: 1rem; }
+    .con-rail-meta { display: inline-flex; gap: 1rem; align-items: baseline; font-family: var(--talos-font-display); font-size: 0.6rem; letter-spacing: var(--talos-tracking-hud); text-transform: uppercase; color: var(--talos-muted-foreground); }
+    .con-rail-meta b { color: var(--talos-foreground); font-weight: 500; font-variant-numeric: tabular-nums; display: inline-block; min-width: 3.2ch; text-align: right; }
+    .num { font-variant-numeric: tabular-nums; }
+
+    .con-k { font-family: var(--talos-font-display); font-size: 0.6rem; letter-spacing: var(--talos-tracking-hud); text-transform: uppercase; color: var(--talos-muted-foreground); display: block; }
+    .con-k--dim { opacity: 0.6; }
+    .con-k--accent { color: var(--talos-accent, hsl(140 90% 60%)); }
+    .con-sub { font-size: 0.62rem; color: var(--talos-muted-foreground); letter-spacing: 0.03em; display: block; }
+    .con-scope { padding: 1.5rem; }
+
+    .view-a { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px); gap: 1.75rem; align-items: start; }
+    .va-main { min-width: 0; }
+    .va-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; gap: 1rem; }
+    #a-matrix, #a-track { width: 100%; }
+    .va-side { display: flex; flex-direction: column; gap: 1.25rem; }
+    .va-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 1rem; }
+    .va-stats--col { grid-template-columns: 1fr; }
+    .va-stat { display: flex; flex-direction: column; gap: 0.15rem; }
+    .va-stat__k { font-family: var(--talos-font-display); font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--talos-muted-foreground); }
+    .va-stat__v { font-size: 1.1rem; color: var(--talos-foreground); }
+
+    .view-b { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(220px, 300px); gap: 1.75rem; align-items: start; }
+    .vb-col { min-width: 0; }
+    .vb-side { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .view-c { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px); gap: 1.75rem; align-items: start; }
+    .vc-ring { display: flex; flex-direction: column; align-items: center; min-width: 0; }
+    .vc-ring talos-plane { width: 100%; max-width: 380px; }
+    .vc-side { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .view-d { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 320px); gap: 1.75rem; align-items: start; }
+    .vd-left { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+    #d-loc { width: 100%; }
+    .vd-orbital { display: flex; align-items: center; justify-content: center; }
+    .vd-orbital talos-orbital { width: 100%; max-width: 320px; }
+    .vd-side { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .con-cell { display: flex; flex-direction: column; gap: 0.5rem; }
+    .con-cell__row { display: flex; align-items: center; gap: 1rem; }
+    .con-cell__side { display: flex; flex-direction: column; gap: 0.3rem; }
+    .con-cell talos-meter { display: block; width: 100% !important; }
+    .con-cell--trend talos-trend { display: block; width: 100% !important; }
+
+    .con-detail__row { display: flex; justify-content: space-between; font-family: var(--talos-font-display); font-size: 0.66rem; letter-spacing: 0.03em; color: var(--talos-muted-foreground); padding: 0.3rem 0; border-bottom: 1px solid hsl(0 0% 100% / 0.06); }
+    .con-detail__v { color: var(--talos-foreground); }
+
+    .sc-note { font-size: 0.82rem; margin: 1.5rem 0 1rem; max-width: 78ch; }
+    .sc-note b { color: var(--talos-foreground); font-weight: 500; }
+
+    @media (max-width: 900px) {
+      .view-a, .view-b, .view-c, .view-d { grid-template-columns: 1fr; }
+    }
+  </style>
+
+  <script>
+    import type { TalosMatrix, TalosGroundtrack, TalosHistogram, TalosPlane, OrbitalNode } from "@j_shelfwood/talos-ui/wc";
+
+    // ════ ONE CONSTELLATION MODEL · one selection threads through it ══════════
+    const PLANES = 72, SLOTS = 22, N = PLANES * SLOTS, INCL = 53;
+    const PERIOD_MS = 36_000, ECLIPSE_FRAC = 0.35;
+    const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n));
+
+    const phase0 = new Float32Array(N), raan = new Float32Array(N), batt = new Float32Array(N), tbias = new Float32Array(N);
+    for (let p = 0; p < PLANES; p++) for (let s = 0; s < SLOTS; s++) {
+      const i = p * SLOTS + s;
+      phase0[i] = (p / PLANES) * 0.6 + (s / SLOTS);
+      raan[i] = (p / PLANES) * 360 - 180;
+      batt[i] = 74 + Math.cos(p * 0.5 + s) * 14;
+      tbias[i] = ((i * 13) % 7) - 3;
+    }
+    const cellVal = new Float32Array(N), battArr = new Float32Array(N), tempArr = new Float32Array(N);
+    const computeArr = new Float32Array(N), eclArr = new Uint8Array(N), bandArr = new Uint8Array(N), linkArr = new Float32Array(N);
+
+    // The selection that threads down the wall.
+    let selPlane = 0;   // 0..71
+    let selSlot = 0;    // 0..21
+    const idxOf = (plane: number, slot: number) => plane * SLOTS + slot;
+
+    type Snap = {
+      sunlit: number; meanComputePct: number; fleetDrawMW: number; meanTemp: number;
+      meanBattPct: number; solarPct: number; radMW: number; downlinkTbps: number;
+      nominal: number; warning: number; critical: number; terminator: number;
+    };
+
+    function step(base: number, dtMs: number): Snap {
+      const dtH = (dtMs / PERIOD_MS) * (95 / 60);
+      let sunlit = 0, sumC = 0, sumT = 0, sumB = 0, sumSolar = 0, sumRad = 0, sumLink = 0, nN = 0, nW = 0, nC = 0;
+      for (let i = 0; i < N; i++) {
+        const p = (base + phase0[i]) % 1;
+        const eclipse = p >= (1 - ECLIPSE_FRAC);
+        eclArr[i] = eclipse ? 1 : 0;
+        if (!eclipse) sunlit++;
+        const sun = eclipse ? 0 : Math.sin((p / (1 - ECLIPSE_FRAC)) * Math.PI);
+        const solarKw = eclipse ? 0 : clamp(230 * (0.45 + 0.55 * sun), 0, 240);
+        const computeKw = clamp(108 + Math.sin((p + i * 0.13) * 6) * 10, 70, 150);
+        const draw = computeKw + 8;
+        batt[i] = clamp(batt[i] + (solarKw - draw) * dtH * 0.4, 30, 100);
+        const eclipseRise = eclipse ? 9 * ((p - (1 - ECLIPSE_FRAC)) / ECLIPSE_FRAC) : 0;
+        const temp = 14 + (computeKw - 108) / 150 * 10 + eclipseRise + tbias[i] * 0.6;
+        const radKw = clamp(draw * (eclipse ? 0.6 : 1) * 0.9, 30, 160);
+        const link = eclipse ? 0.42 : clamp(0.6 + Math.sin(p * 19 + i) * 0.3, 0, 1);
+        const tB = temp >= 34 ? 2 : temp >= 29 ? 1 : 0;
+        const bB = batt[i] <= 28 ? 2 : batt[i] <= 42 ? 1 : 0;
+        const cB = computeKw >= 146 ? 2 : computeKw >= 138 ? 1 : 0;
+        const worst = Math.max(tB, bB, cB);
+        if (worst === 2) nC++; else if (worst === 1) nW++; else nN++;
+        bandArr[i] = worst;
+        cellVal[i] = worst === 2 ? 94 : worst === 1 ? 78 : 30 + (temp - 14) * 1.5;
+        battArr[i] = batt[i]; tempArr[i] = temp; computeArr[i] = computeKw; linkArr[i] = link;
+        sumC += computeKw; sumT += temp; sumB += batt[i]; sumSolar += solarKw; sumRad += radKw; sumLink += link;
+      }
+      return {
+        sunlit, meanComputePct: (sumC / N / 150) * 100, fleetDrawMW: (sumC + N * 8) / 1000,
+        meanTemp: sumT / N, meanBattPct: sumB / N, solarPct: (sumSolar / N / 150) * 100,
+        radMW: (sumRad / N) * N / 1000, downlinkTbps: (sumLink / N) * N * 0.01,
+        nominal: nN, warning: nW, critical: nC, terminator: (base + (1 - ECLIPSE_FRAC / 2)) % 1,
+      };
+    }
+
+    const $ = (id: string) => document.getElementById(id);
+    const set = (el: Element | null, a: string, v: string) => el?.setAttribute(a, v);
+    const txt = (el: Element | null, v: string) => { if (el) el.textContent = v; };
+    const pad2 = (n: number) => String(n).padStart(2, "0");
+
+    const rollup = $("sc-rollup"), conLed = $("con-led"), mSun = $("m-sun"), mEcl = $("m-ecl"), mSel = $("m-sel");
+    const aMatrix = $("a-matrix") as TalosMatrix | null, aTrack = $("a-track") as TalosGroundtrack | null;
+    const aCompute = $("a-compute"), aKw = $("a-kw"), aTemp = $("a-temp");
+    const aOnline = $("a-online"), aEcl = $("a-ecl"), aLink = $("a-link"), aMargin = $("a-margin");
+    const bBatt = $("b-batt") as TalosHistogram | null, bTemp = $("b-temp") as TalosHistogram | null;
+    const bSolar = $("b-solar"), bBattm = $("b-battm"), bRad = $("b-rad"), bTrend = $("b-trend");
+    const m2Solar = $("m2-solar"), m2Soc = $("m2-soc"), bPlane = $("b-plane"), bPsoc = $("b-psoc"), bPtemp = $("b-ptemp");
+    const cRing = $("c-ring") as TalosPlane | null, cLed = $("c-led"), cPlaneId = $("c-plane-id"), cPlaneId2 = $("c-plane-id2");
+    const cNom = $("c-nom"), cEcl = $("c-ecl"), cDl = $("c-dl"), cLinks = $("c-links"), cTrend = $("c-trend");
+    const dLoc = $("d-loc") as TalosMatrix | null, dOrb = $("d-orb") as (HTMLElement & { nodes: OrbitalNode[] }) | null;
+    const dLed = $("d-led"), dName = $("d-name"), dState = $("d-state"), dTrend = $("d-trend");
+    const dPhase = $("d-phase"), dCpu = $("d-cpu"), dTempEl = $("d-temp"), dBatt = $("d-batt"), dLocId = $("d-loc-id"), dNb = $("d-nb"), dNext = $("d-next");
+
+    // ── Selection wiring: fleet matrix → plane; plane ring → sat. ─────────────
+    function setSelection(plane: number, slot: number) {
+      selPlane = clamp(plane, 0, PLANES - 1);
+      selSlot = clamp(slot, 0, SLOTS - 1);
+      const tag = `P${pad2(selPlane)}·S${pad2(selSlot)}`;
+      txt(mSel, tag);
+      txt(bPlane, `P${pad2(selPlane)}`);
+      txt(cPlaneId, pad2(selPlane)); txt(cPlaneId2, `P${pad2(selPlane)}`);
+      txt(dName, `P${pad2(selPlane)}-S${pad2(selSlot)}`);
+      txt(dLocId, `${pad2(selPlane)} / ${pad2(selSlot)}`);
+      if (aMatrix) aMatrix.highlight = { col: selPlane };
+      if (dLoc) dLoc.highlight = { index: idxOf(selPlane, selSlot) };
+      if (cRing) cRing.setAttribute("plane-label", `P${pad2(selPlane)}`);
+    }
+    aMatrix?.addEventListener("talos:cell", (e) => {
+      const { col, row } = (e as CustomEvent).detail;   // col = plane, row = slot
+      setSelection(col, row);
+    });
+    cRing?.addEventListener("talos:sat", (e) => {
+      setSelection(selPlane, (e as CustomEvent).detail.slot);
+    });
+    setSelection(0, 0);
+
+    const gateways = [
+      { lon: -122, lat: 37 }, { lon: -74, lat: 40 }, { lon: -47, lat: -23 }, { lon: 0, lat: 51 },
+      { lon: 13, lat: 52 }, { lon: 28, lat: -26 }, { lon: 55, lat: 25 }, { lon: 77, lat: 13 },
+      { lon: 121, lat: 31 }, { lon: 139, lat: 35 }, { lon: 151, lat: -34 }, { lon: 174, lat: -37 },
+    ];
+
+    let lastMatrix = 0, lastHist = 0;
+    function frame(now: number) {
+      const dtMs = now - (frame as any)._last || 16; (frame as any)._last = now;
+      if (!(frame as any)._t0) (frame as any)._t0 = now;
+      const base = ((now - (frame as any)._t0) % PERIOD_MS) / PERIOD_MS;
+      const snap = step(base, dtMs);
+
+      // ── Console 1: FLEET ──
+      if (aMatrix && now - lastMatrix > 80) {
+        lastMatrix = now;
+        aMatrix.cells = cellVal;
+        aMatrix.setAttribute("terminator", snap.terminator.toFixed(3));
+        if (dLoc) dLoc.cells = cellVal;
+      }
+      if (aTrack) {
+        const sats: { lon: number; lat: number; band: number }[] = [];
+        for (let p = 0; p < PLANES; p += 2) for (let s = 0; s < SLOTS; s += 2) {
+          const i = p * SLOTS + s;
+          const ph = (base + phase0[i]) % 1, orbitAngle = ph * 360;
+          const lat = INCL * Math.sin((orbitAngle * Math.PI) / 180);
+          let lon = (raan[i] + orbitAngle * 4) % 360; if (lon > 180) lon -= 360;
+          sats.push({ lon, lat, band: bandArr[i] });
+        }
+        aTrack.sats = sats;
+        aTrack.gateways = gateways.map((g) => ({ ...g, active: sats.some((s) => Math.abs(s.lon - g.lon) < 14 && Math.abs(s.lat - g.lat) < 14) }));
+      }
+      set(aCompute, "value", snap.meanComputePct.toFixed(0));
+      set(aKw, "value", snap.fleetDrawMW.toFixed(1));
+      set(aTemp, "value", snap.meanTemp.toFixed(0));
+      txt(aOnline, (N - snap.critical).toLocaleString());
+      txt(aEcl, `${N - snap.sunlit}`);
+      txt(aLink, `${snap.downlinkTbps.toFixed(1)} Tbps`);
+      txt(aMargin, `+${clamp(snap.meanBattPct - 28, 0, 100).toFixed(0)}%`);
+      txt(mSun, `${snap.sunlit}`); txt(mEcl, `${N - snap.sunlit}`);
+      const chans: string[] = [];
+      for (let k = 0; k < 40; k++) { const f = k / 40; chans.push(f < snap.critical / N ? "crit" : f < (snap.critical + snap.warning) / N ? "warn" : "ok"); }
+      set(rollup, "channels", chans.join(","));
+      set(conLed, "state", snap.critical > 0 ? "crit" : snap.warning > 0 ? "warn" : "ok");
+
+      // ── Console 2: POWER (+ selected-plane figures) ──
+      if (now - lastHist > 120) { lastHist = now; if (bBatt) bBatt.values = battArr; if (bTemp) bTemp.values = tempArr; }
+      set(bSolar, "value", snap.solarPct.toFixed(0));
+      set(bBattm, "value", snap.meanBattPct.toFixed(0));
+      set(bRad, "value", snap.radMW.toFixed(1));
+      set(bTrend, "value", snap.fleetDrawMW.toFixed(0));
+      txt(m2Solar, `${snap.solarPct.toFixed(0)}%`); txt(m2Soc, `${snap.meanBattPct.toFixed(0)}%`);
+      let pSoc = 0, pTemp = 0;
+      for (let s = 0; s < SLOTS; s++) { const i = idxOf(selPlane, s); pSoc += battArr[i]; pTemp += tempArr[i]; }
+      txt(bPsoc, `${(pSoc / SLOTS).toFixed(0)}%`); txt(bPtemp, `${(pTemp / SLOTS).toFixed(0)}°C`);
+
+      // ── Console 3: PLANE (the selected plane's 22 sats) ──
+      if (cRing) {
+        const ring: { band: number; eclipse: boolean; selected: boolean }[] = [];
+        let nom = 0, ecl = 0, dl = 0, pmSoc = 0;
+        for (let s = 0; s < SLOTS; s++) {
+          const i = idxOf(selPlane, s);
+          ring.push({ band: bandArr[i], eclipse: !!eclArr[i], selected: s === selSlot });
+          if (bandArr[i] === 0) nom++; if (eclArr[i]) ecl++; dl += linkArr[i]; pmSoc += battArr[i];
+        }
+        cRing.sats = ring;
+        // Eclipse arc on the ring: the shadow occupies the tail of the orbit;
+        // map each slot's eclipse to an arc fraction. Slot 0 = phase0[plane,0].
+        const fi = idxOf(selPlane, 0);
+        const planePhase = (base + phase0[fi]) % 1;
+        cRing.setAttribute("eclipse-from", (((1 - ECLIPSE_FRAC) - planePhase + 1) % 1).toFixed(3));
+        cRing.setAttribute("eclipse-to", ((1 - planePhase + 1) % 1).toFixed(3));
+        txt(cNom, `${nom}/22`); txt(cEcl, `${ecl}/22`);
+        txt(cDl, `${(dl * 0.4).toFixed(0)} Tbps`); txt(cLinks, `${(22 * 4 - ecl).toFixed(0)}`);
+        set(cTrend, "value", (pmSoc / SLOTS).toFixed(0));
+        set(cLed, "state", nom < 14 ? "warn" : "ok");
+      }
+
+      // ── Console 4: SATELLITE (focus + locator + real neighbours) ──
+      const fi = idxOf(selPlane, selSlot);
+      const ph = (base + phase0[fi]) % 1, eclipse = ph >= (1 - ECLIPSE_FRAC);
+      // Real ISL neighbours: in-plane ±1 slot, cross-plane ±1 plane (same slot).
+      const nbIdx = [
+        fi,
+        idxOf(selPlane, (selSlot + 1) % SLOTS),
+        idxOf(selPlane, (selSlot - 1 + SLOTS) % SLOTS),
+        idxOf((selPlane + 1) % PLANES, selSlot),
+        idxOf((selPlane - 1 + PLANES) % PLANES, selSlot),
+      ];
+      if (dOrb) dOrb.nodes = nbIdx.map((i, k) => ({
+        id: String(i), ring: k === 0 ? 1 : 2, value: cellVal[i], load: clamp(computeArr[i] / 150, 0.3, 1),
+        rate: eclArr[i] ? 0.15 : 0.7, label: k === 0 ? "SAT" : k <= 2 ? `S${k}` : `P${k - 2}`,
+      }));
+      const fb = bandArr[fi] === 2 ? "crit" : bandArr[fi] === 1 ? "warn" : "ok";
+      set(dLed, "state", fb);
+      txt(dState, eclipse ? "ECLIPSE" : "SUNLIT");
+      txt(dPhase, eclipse ? "ECLIPSE (shadow)" : "SUNLIT");
+      txt(dCpu, `${computeArr[fi].toFixed(0)} kW`);
+      txt(dTempEl, `${tempArr[fi].toFixed(1)} °C`);
+      txt(dBatt, `${batt[fi].toFixed(0)} %`);
+      txt(dNb, "2 in-plane · 2 cross-plane");
+      txt(dNext, eclipse ? `${((1 - ph) * 95).toFixed(0)} min` : "in sunlight");
+      set(dTrend, "value", tempArr[fi].toFixed(1));
+
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
   </script>
 </Landing>
