@@ -1,13 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <!-- Talos mark: a chamfered HUD panel (signature bottom-right cut) with the
-       live status dot. Monochrome chrome + the single accent, matching the
-       design tokens (bg hsl(0 0% 0%), fg white, accent hsl(140 90% 60%)). -->
-  <rect width="32" height="32" fill="#000"/>
-  <!-- Panel silhouette with the bottom-right chamfer -->
-  <path d="M5 5 H27 V21 L21 27 H5 Z"
-        fill="none" stroke="#e7e9ec" stroke-width="2"/>
-  <!-- The chamfer hairline echoed inside (the two-layer cut) -->
-  <path d="M21 27 L27 21" stroke="#e7e9ec" stroke-width="2" fill="none"/>
-  <!-- Live status dot -->
-  <circle cx="10.5" cy="10.5" r="2.4" fill="hsl(140 90% 60%)"/>
+  <!-- Talos mark: a SOLID inverted triangle (the anti.space 'descend' silhouette,
+       a bold filled mass) with a wide, shallow rounded NOTCH bitten from its
+       lower-right edge — Talos's tell. Solid white, no outline, no letter, no
+       pip. Transparent background (no bg rect) so the icon composites on any
+       surface. Mark: hsl(0 0% 95%). -->
+
+  <!-- Inverted triangle: top-left → top-right → apex. The lower-right edge
+       (top-right vertex → apex) is interrupted by a rounded trapezoidal notch
+       cut inward toward the centre. -->
+  <path d="M5.6 7.2
+           Q5 6 6.4 6
+           H25.6
+           Q27 6 26.4 7.2
+           L23.13 13.72 Q22.82 14.35 22.19 14.04
+           L21.84 13.86 Q21.21 13.55 20.90 14.18
+           L18.84 18.29 Q18.53 18.92 19.16 19.23
+           L19.51 19.41 Q20.14 19.72 19.83 20.35
+           L16.9 26.2
+           Q16 28 15.1 26.2
+           Z"
+        fill="hsl(0 0% 95%)" stroke-linejoin="round"/>
 </svg>

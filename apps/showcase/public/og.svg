@@ -13,6 +13,18 @@
   <path d="M40 40 H1160 V520 L1100 580 H40 Z"
         fill="none" stroke="#ffffff" stroke-opacity="0.16" stroke-width="2"/>
 
+  <!-- Brand mark — the inverted triangle with the lower-right notch, scaled from
+       its 32-unit viewBox (×3.4) and parked top-right of the content frame. -->
+  <g transform="translate(960 96) scale(3.4)">
+    <path d="M5.6 7.2 Q5 6 6.4 6 H25.6 Q27 6 26.4 7.2
+             L23.13 13.72 Q22.82 14.35 22.19 14.04
+             L21.84 13.86 Q21.21 13.55 20.90 14.18
+             L18.84 18.29 Q18.53 18.92 19.16 19.23
+             L19.51 19.41 Q20.14 19.72 19.83 20.35
+             L16.9 26.2 Q16 28 15.1 26.2 Z"
+          fill="hsl(0 0% 95%)" stroke-linejoin="round"/>
+  </g>
+
   <!-- system label -->
   <g transform="translate(96 130)">
     <circle cx="6" cy="-6" r="5" fill="hsl(140 90% 60%)"/>

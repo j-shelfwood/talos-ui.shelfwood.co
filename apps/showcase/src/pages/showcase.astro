@@ -21,26 +21,54 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
 
 <Landing title="Showcase" navActive="showcase">
   <header class="sc-intro talos-stack">
-    <div class="talos-row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
-      <span class="talos-eyebrow">// Constellation ops · drill-down</span>
-      <talos-status id="sc-rollup" label="GROUND STATION" channels="ok,ok,ok,ok" scan style="min-width:280px"></talos-status>
-    </div>
+    <span class="talos-eyebrow">// Constellation ops · drill-down</span>
     <h1 style="font-size:clamp(2rem,4.5vw,3.4rem);letter-spacing:.005em;line-height:1.06">
       Drill from 1,584 satellites down to one.
     </h1>
     <p class="talos-muted" style="max-width:62ch;font-size:1.05rem">
-      Seventy-two orbital planes, twenty-two compute satellites each. The four
-      consoles below are one zoom: the whole fleet, the fleet as distributions,
-      a single plane's 22 satellites and their laser links, and one satellite in
-      detail. <b style="color:var(--talos-foreground);font-weight:500">Click any
-      cell</b> in the fleet grid to choose a plane; click a satellite in the plane
-      ring to focus it. The selection threads down the wall while the whole shell
-      keeps flying.
+      Seventy-two orbital planes, twenty-two compute satellites each. The five
+      lenses below are one continuous zoom: the whole fleet, the fleet as
+      distributions, a single plane's 22 satellites and their laser links, one
+      satellite in detail, and its anatomy in 3D. <b style="color:var(--talos-foreground);font-weight:500">Click any
+      cell</b> in the fleet grid to choose a plane; click a satellite to focus it.
+      The selection threads down the spine while the whole shell keeps flying.
     </p>
   </header>
 
+  <div class="ops-wall">
+    <!-- Left rail: a connector threading the five lenses, with a live "you are here" node. -->
+    <nav class="ops-rail" aria-label="Lens navigation">
+      <div class="ops-nodes">
+        <a class="ops-node" href="#lens-1" data-lens="1"><b>L1</b> Fleet ×1</a>
+        <a class="ops-node" href="#lens-2" data-lens="2"><b>L2</b> Power ×1584</a>
+        <a class="ops-node" href="#lens-3" data-lens="3"><b>L3</b> Plane ×72</a>
+        <a class="ops-node" href="#lens-4" data-lens="4"><b>L4</b> Sat ×1584</a>
+        <a class="ops-node" href="#lens-5" data-lens="5"><b>L5</b> Anatomy 3D</a>
+      </div>
+    </nav>
+
+    <div class="ops-content">
+      <!-- Sticky mission spine: the live drill-down path + the selected sat's status. -->
+      <div class="ops-spine">
+        <span class="spine-crumb">
+          <a href="#lens-1">FLEET</a>
+          <span class="sep">▸</span>
+          <a href="#lens-3">P<b id="spine-plane">00</b></a>
+          <span class="sep">▸</span>
+          <a href="#lens-4">S<b id="spine-slot">00</b></a>
+        </span>
+        <span class="spine-lens">LENS <b id="spine-lens">1</b>/5</span>
+        <span class="spine-spacer"></span>
+        <span class="spine-status">
+          <span id="spine-state">SUNLIT</span>
+          <span>CORE <b id="spine-temp">—</b></span>
+          <span>BATT <b id="spine-batt">—</b></span>
+        </span>
+        <talos-status id="sc-rollup" label="GROUND STATION" channels="ok,ok,ok,ok" scan style="min-width:230px"></talos-status>
+      </div>
+
   <!-- ════ CONSOLE 1 — FLEET (all 1,584) ══════════════════════════════════════ -->
-  <section class="sc-panel">
+  <section class="sc-panel" id="lens-1">
     <div class="talos-console sc-console">
       <div class="console-rail con-rail">
         <span class="console-rail__brand">
@@ -69,7 +97,7 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
             <talos-groundtrack id="a-track" inclination="53" tracks="6"></talos-groundtrack>
           </div>
           <aside class="va-side">
-            <div class="con-cell">
+            <div class="con-cell span2">
               <span class="con-k">Constellation compute</span>
               <div class="con-cell__row">
                 <talos-gauge id="a-compute" value="0" warn="82" crit="94" unit="%" size="100"></talos-gauge>
@@ -86,7 +114,14 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
               <div class="va-stat"><span class="va-stat__k">Batt. margin</span><span class="va-stat__v num" id="a-margin">—</span></div>
             </div>
             <div class="con-cell">
-              <span class="con-k">Mean core temp</span>
+              <span class="con-k">Selected plane <b class="con-k--accent" id="a-pl-id">P00</b></span>
+              <div class="va-stats va-stats--col" style="gap:.4rem">
+                <div class="va-stat"><span class="va-stat__k">Mean SoC</span><span class="va-stat__v num" id="a-pl-soc">—</span></div>
+                <div class="va-stat"><span class="va-stat__k">Mean temp</span><span class="va-stat__v num" id="a-pl-temp">—</span></div>
+              </div>
+            </div>
+            <div class="con-cell span2">
+              <span class="con-k">Mean core temp · fleet</span>
               <talos-meter id="a-temp" value="0" min="-20" max="45" warn="28" crit="36" unit="°C"></talos-meter>
             </div>
           </aside>
@@ -105,7 +140,7 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
   </section>
 
   <!-- ════ CONSOLE 2 — POWER & THERMAL (fleet distributions) ═══════════════════ -->
-  <section class="sc-panel">
+  <section class="sc-panel" id="lens-2">
     <div class="talos-console sc-console">
       <div class="console-rail con-rail">
         <span class="console-rail__brand"><talos-led state="ok" live size="9"></talos-led> SYS://POWER-THERMAL</span>
@@ -116,11 +151,16 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
       <div class="console-scope con-scope">
         <div class="view-b">
           <div class="vb-col">
-            <span class="con-k">Battery state-of-charge · distribution across 1,584 sats</span>
-            <talos-histogram id="b-batt" bins="28" min="0" max="100" warn="45" crit="28" invert style="height:120px"></talos-histogram>
-            <span class="con-sub">The eclipse cohort sits to the left; the bulk of the fleet holds charge on the right.</span>
-            <span class="con-k" style="margin-top:1.25rem">Core temperature · distribution (°C)</span>
-            <talos-histogram id="b-temp" bins="28" min="0" max="45" warn="29" crit="34" style="height:120px"></talos-histogram>
+            <div class="vb-hist">
+              <span class="con-k">Battery state-of-charge · across 1,584 sats</span>
+              <talos-histogram id="b-batt" bins="28" min="0" max="100" warn="45" crit="28" invert style="height:150px"></talos-histogram>
+              <span class="con-sub">The eclipse cohort sits to the left; the bulk of the fleet holds charge on the right.</span>
+            </div>
+            <div class="vb-hist">
+              <span class="con-k">Core temperature · distribution (°C)</span>
+              <talos-histogram id="b-temp" bins="28" min="0" max="45" warn="29" crit="34" style="height:150px"></talos-histogram>
+              <span class="con-sub">A right-shifting bulk signals the constellation warming through the sunlit arc.</span>
+            </div>
           </div>
           <aside class="vb-side">
             <div class="con-cell">
@@ -156,7 +196,7 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
   </section>
 
   <!-- ════ CONSOLE 3 — PLANE (the selected plane's 22 sats + ISL ring) ════════ -->
-  <section class="sc-panel">
+  <section class="sc-panel" id="lens-3">
     <div class="talos-console sc-console">
       <div class="console-rail con-rail">
         <span class="console-rail__brand"><talos-led id="c-led" state="ok" live size="9"></talos-led> SYS://PLANE-<span id="c-plane-id">00</span></span>
@@ -169,6 +209,10 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
           <div class="vc-ring">
             <talos-plane id="c-ring" slots="22" plane-label="P00"></talos-plane>
             <span class="con-sub" style="text-align:center;margin-top:.5rem">Click a satellite to focus it · fore/aft = in-plane ISL · radial stubs = cross-plane links</span>
+          </div>
+          <div class="vc-slots-col">
+            <span class="con-k">Slot roster · 22 sats</span>
+            <div class="vc-slots" id="c-slots"><!-- rows bound from the plane ring[] each frame --></div>
           </div>
           <aside class="vc-side">
             <span class="con-k">Plane <b class="con-k--accent" id="c-plane-id2">P00</b> · health</span>
@@ -196,7 +240,7 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
   </section>
 
   <!-- ════ CONSOLE 4 — SATELLITE (focus + locator) ════════════════════════════ -->
-  <section class="sc-panel">
+  <section class="sc-panel" id="lens-4">
     <div class="talos-console sc-console">
       <div class="console-rail con-rail">
         <span class="console-rail__brand"><talos-led id="d-led" state="ok" live size="9"></talos-led> SYS://SAT-<span id="d-name">P00-S00</span></span>
@@ -207,10 +251,15 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
       <div class="console-scope con-scope">
         <div class="view-d">
           <div class="vd-left">
-            <span class="con-k">Locator · where in the shell</span>
-            <talos-matrix id="d-loc" cols="72" rows="22" warn="70" crit="88" gap="1" style="--talos-success:hsl(140 30% 28%);--talos-warning:hsl(38 40% 30%);--talos-danger:hsl(0 45% 32%)"></talos-matrix>
-            <div class="vd-orbital">
-              <talos-orbital id="d-orb" rings="2" warn="70" crit="88" core-label="SAT" core-sub="ISL NEIGHBOURHOOD" size="300"></talos-orbital>
+            <div class="vd-loc-cell">
+              <span class="con-k">Locator · where in the shell</span>
+              <talos-matrix id="d-loc" cols="72" rows="22" warn="70" crit="88" gap="1" style="--talos-success:hsl(140 30% 28%);--talos-warning:hsl(38 40% 30%);--talos-danger:hsl(0 45% 32%)"></talos-matrix>
+            </div>
+            <div class="vd-orbital-cell">
+              <span class="con-k">ISL neighbourhood</span>
+              <div class="vd-orbital">
+                <talos-orbital id="d-orb" rings="2" warn="70" crit="88" core-label="SAT" core-sub="ISL NEIGHBOURHOOD" size="300"></talos-orbital>
+              </div>
             </div>
           </div>
           <aside class="vd-side">
@@ -240,13 +289,74 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
     </div>
   </section>
 
+  <!-- ════ CONSOLE 5 — ANATOMY (the selected sat as 3D geometry) ═══════════════ -->
+  <section class="sc-panel" id="lens-5">
+    <div class="talos-console sc-console">
+      <div class="console-rail con-rail">
+        <span class="console-rail__brand"><talos-led id="e-led" state="ok" live size="9"></talos-led> SYS://ANATOMY-<span id="e-name">P00-S00</span></span>
+        <span class="console-rail__spacer"></span>
+        <span class="con-rail-meta"><span>7 subsystems</span><span id="e-worst">NOMINAL</span></span>
+      </div>
+
+      <div class="console-scope con-scope">
+        <div class="view-e">
+          <div class="ve-stage">
+            <talos-spacecraft-3d id="e-craft"></talos-spacecraft-3d>
+            <span class="con-sub" style="text-align:center;margin-top:.5rem">Hover or click a subsystem · each part's glow is its live health band · slow auto-orbit</span>
+          </div>
+          <aside class="ve-side">
+            <div class="ve-focus" id="e-focus" data-empty>
+              <div class="ve-focus__head">
+                <span class="ve-focus__name" id="e-fname">SELECT A SUBSYSTEM</span>
+                <span class="ve-focus__band" id="e-fband">—</span>
+              </div>
+              <p class="ve-focus__role" id="e-frole">Click a part on the model to lock its live telemetry here.</p>
+              <div class="ve-focus__metric">
+                <span class="ve-focus__val num" id="e-fval">—</span>
+                <span class="ve-focus__unit" id="e-funit"></span>
+              </div>
+              <talos-meter id="e-fmeter" value="0" min="0" max="100" style="width:100%"></talos-meter>
+            </div>
+            <span class="con-k" style="margin-top:1.25rem">All subsystems</span>
+            <div class="con-detail" id="e-parts">
+              <div class="con-detail__row" data-part="bus"><span>Bus</span><span class="con-detail__v" id="e-bus">—</span></div>
+              <div class="con-detail__row" data-part="gpu"><span>GPU / compute</span><span class="con-detail__v" id="e-gpu">—</span></div>
+              <div class="con-detail__row" data-part="solarL"><span>Solar wing L</span><span class="con-detail__v" id="e-solarL">—</span></div>
+              <div class="con-detail__row" data-part="solarR"><span>Solar wing R</span><span class="con-detail__v" id="e-solarR">—</span></div>
+              <div class="con-detail__row" data-part="radL"><span>Radiator L</span><span class="con-detail__v" id="e-radL">—</span></div>
+              <div class="con-detail__row" data-part="radR"><span>Radiator R</span><span class="con-detail__v" id="e-radR">—</span></div>
+              <div class="con-detail__row" data-part="antenna"><span>Downlink antenna</span><span class="con-detail__v" id="e-antenna">—</span></div>
+            </div>
+            <div class="ve-legend">
+              <span class="con-k">Band · colour is the state</span>
+              <div class="ve-legend__row"><span class="ve-dot" style="--c:var(--talos-success)"></span> Nominal — within limits</div>
+              <div class="ve-legend__row"><span class="ve-dot" style="--c:var(--talos-warning)"></span> Warning — approaching a threshold</div>
+              <div class="ve-legend__row"><span class="ve-dot" style="--c:var(--talos-danger)"></span> Critical — past the limit</div>
+              <p class="con-sub" style="margin-top:.75rem">Each subsystem's glow on the model is its live band, derived from the same fleet signals driving every console above. Click a part to lock the readout.</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <div class="console-status">
+        <span class="console-status__stat">render <b>WebGL · procedural</b></span>
+        <span class="console-status__stat">bind <b>.parts → emissive band</b></span>
+        <span class="console-status__spacer"></span>
+        <span class="console-status__stat">CONSOLE 5 · ANATOMY (3D)</span>
+      </div>
+    </div>
+  </section>
+    </div><!-- /.ops-content -->
+  </div><!-- /.ops-wall -->
+
   <p class="talos-muted sc-note">
-    One zoom, four consoles, real shell scale — the selection threads fleet → plane
-    → satellite while everything stays live. New instruments built for this:
-    <b>talos-matrix</b> (1,584-cell grid, clickable + terminator), <b>talos-plane</b>
-    (a plane's 22 sats + ISL links), <b>talos-groundtrack</b> (sub-satellite map),
-    <b>talos-histogram</b> (fleet distributions) — alongside gauge, meter, trend,
-    orbital, readout and the status rollup. Every value is bound to the model.
+    One continuous zoom, five lenses, real shell scale — the selection threads
+    fleet → plane → satellite → anatomy down the spine while everything stays live.
+    New instruments built for this: <b>talos-matrix</b> (1,584-cell grid, clickable +
+    terminator), <b>talos-plane</b> (a plane's 22 sats + ISL links),
+    <b>talos-groundtrack</b> (sub-satellite map), <b>talos-histogram</b> (fleet
+    distributions), and a procedural <b>3D anatomy</b> — alongside gauge, meter,
+    trend, orbital, readout and the status rollup. Every value is bound to the model.
   </p>
 
   <footer class="sc-footer talos-row" style="justify-content:space-between;align-items:center;border-top:1px solid var(--talos-border);padding-top:1.5rem">
@@ -255,10 +365,80 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
   </footer>
 
   <style>
-    .sc-intro { margin-bottom: 2.5rem; }
+    .sc-intro { margin-bottom: 1.5rem; }
     .sc-intro b { color: var(--talos-foreground); }
-    .sc-panel { margin-bottom: 1.5rem; }
+    /* Clear BOTH sticky bars (nav + the mission spine) when an anchor jump lands
+       on a console, so the targeted console never hides under the spine. */
+    .sc-panel { margin-bottom: 1.5rem; scroll-margin-top: calc(var(--site-nav-h) + 5rem); }
+
+    /* ── Ops wall: a left connector rail threads the five consoles together. ── */
+    .ops-wall {
+      --sel-accent: var(--talos-accent, hsl(140 90% 60%));
+      display: grid; grid-template-columns: 92px minmax(0, 1fr); column-gap: 2rem;
+    }
+    .ops-rail { position: relative; }
+    .ops-rail::before {
+      content: ""; position: absolute; left: 14px; top: 12px; bottom: 12px; width: 1px;
+      background: linear-gradient(var(--talos-hud-edge, hsl(0 0% 100% / 0.18)), transparent 96%);
+    }
+    .ops-nodes { position: sticky; top: calc(var(--site-nav-h) + 4.2rem); display: flex; flex-direction: column; gap: 1rem; }
+    .ops-node {
+      position: relative; display: block; padding-left: 1.7rem; text-decoration: none;
+      font-family: var(--talos-font-display); font-size: 0.5rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--talos-muted-foreground); line-height: 1.3;
+      transition: color 160ms ease;
+    }
+    .ops-node::before {
+      content: ""; position: absolute; left: 10px; top: 2px; width: 9px; height: 9px;
+      border: 1px solid var(--talos-muted-foreground); border-radius: 50%;
+      background: var(--talos-background); transition: all 180ms ease;
+    }
+    .ops-node b { display: block; color: var(--talos-foreground); font-size: 0.56rem; font-weight: 500; }
+    .ops-node[data-active] { color: var(--talos-foreground); }
+    .ops-node[data-active]::before {
+      border-color: var(--sel-accent); background: var(--sel-accent);
+      box-shadow: 0 0 8px var(--sel-accent);
+    }
+    .ops-node:hover { color: var(--talos-foreground); }
+
+    /* ── Sticky mission spine: the live drill-down path + selected-sat status. ── */
+    /* Stays a SINGLE ROW wherever the left rail is visible (>720px), so the rail's
+       fixed sticky offset never has to chase a wrapping spine. Below 720px the rail
+       is hidden, so the spine may wrap freely. */
+    .ops-spine {
+      position: sticky; top: var(--site-nav-h); z-index: 5;
+      display: flex; align-items: center; gap: 1rem 1.25rem; flex-wrap: nowrap;
+      padding: 0.55rem 1rem; margin-bottom: 1.5rem;
+      border: 1px solid var(--talos-hud-edge, hsl(0 0% 100% / 0.18));
+      background: hsl(0 0% 4% / 0.92); backdrop-filter: blur(8px); border-radius: 4px;
+    }
+    .ops-spine #sc-rollup { flex: 0 1 auto; min-width: 0; }
+    .spine-crumb, .spine-lens, .spine-status { white-space: nowrap; }
+    .spine-crumb { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--talos-font-display); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    .spine-crumb a { color: var(--talos-muted-foreground); text-decoration: none; transition: color 140ms ease; }
+    .spine-crumb a:hover { color: var(--talos-foreground); }
+    .spine-crumb .sep { color: var(--talos-muted-foreground); opacity: 0.5; }
+    .spine-crumb b { color: var(--sel-accent); font-weight: 500; font-variant-numeric: tabular-nums; }
+    .spine-lens { font-family: var(--talos-font-display); font-size: 0.56rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--talos-muted-foreground); }
+    .spine-lens b { color: var(--talos-foreground); font-weight: 500; }
+    .spine-spacer { flex: 1 1 auto; }
+    .spine-status { display: inline-flex; align-items: center; gap: 1rem; font-family: var(--talos-font-display); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--talos-muted-foreground); }
+    .spine-status b { color: var(--talos-foreground); font-weight: 500; font-variant-numeric: tabular-nums; }
+    @media (max-width: 720px) {
+      .ops-wall { grid-template-columns: 1fr; }
+      .ops-rail { display: none; }
+      .ops-spine { flex-wrap: wrap; }
+      .spine-status { display: none; } /* keep the breadcrumb + rollup; drop the temp/batt cluster */
+    }
     .sc-console { height: auto; border: 1px solid var(--talos-hud-edge, hsl(0 0% 100% / 0.18)); border-radius: 4px; overflow: hidden; }
+    /* The pack console reserves a right "aside" grid column we don't use — every
+       console drives its own internal view-* grid inside the scope. Collapse the
+       console to a single full-width column so the scope fills the card (no dead
+       right third) and rail/status span the full width. */
+    .sc-console {
+      grid-template-areas: "rail" "scope" "status";
+      grid-template-columns: minmax(0, 1fr);
+    }
     .sc-console .console-scope { min-height: 0; }
 
     .con-rail { gap: 1rem; }
@@ -272,38 +452,99 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
     .con-sub { font-size: 0.62rem; color: var(--talos-muted-foreground); letter-spacing: 0.03em; display: block; }
     .con-scope { padding: 1.5rem; }
 
-    .view-a { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px); gap: 1.75rem; align-items: start; }
+    .view-a { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(280px, 1fr); gap: 1.75rem; align-items: start; }
     .va-main { min-width: 0; }
     .va-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; gap: 1rem; }
     #a-matrix, #a-track { width: 100%; }
-    .va-side { display: flex; flex-direction: column; gap: 1.25rem; }
+    /* FLEET aside fills its width: a 2-col grid; wide cells span both columns,
+       the stats + the selected-plane mini-rollup sit side by side. */
+    .va-side { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem 1.25rem; align-content: start; }
+    .va-side .span2 { grid-column: 1 / -1; }
     .va-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 1rem; }
     .va-stats--col { grid-template-columns: 1fr; }
     .va-stat { display: flex; flex-direction: column; gap: 0.15rem; }
     .va-stat__k { font-family: var(--talos-font-display); font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--talos-muted-foreground); }
     .va-stat__v { font-size: 1.1rem; color: var(--talos-foreground); }
 
-    .view-b { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(220px, 300px); gap: 1.75rem; align-items: start; }
-    .vb-col { min-width: 0; }
+    .view-b { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(240px, 1fr); gap: 1.75rem; align-items: start; }
+    .vb-col { min-width: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-content: start; }
+    .vb-col .vb-hist { min-width: 0; }
     .vb-side { display: flex; flex-direction: column; gap: 1.25rem; }
 
-    .view-c { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px); gap: 1.75rem; align-items: start; }
+    /* PLANE: ring | per-slot strip | health+trend. */
+    .view-c { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 0.7fr) minmax(220px, 1fr); gap: 1.5rem; align-items: start; }
     .vc-ring { display: flex; flex-direction: column; align-items: center; min-width: 0; }
-    .vc-ring talos-plane { width: 100%; max-width: 380px; }
+    .vc-ring talos-plane { width: 100%; max-width: 340px; }
     .vc-side { display: flex; flex-direction: column; gap: 1.25rem; }
+    /* per-slot strip — 22 rows bound from the plane ring[] each frame. */
+    .vc-slots { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+    .vc-slot {
+      display: flex; align-items: center; gap: 0.5rem; padding: 0.16rem 0.4rem;
+      font-family: var(--talos-font-display); font-size: 0.56rem; letter-spacing: 0.06em;
+      color: var(--talos-muted-foreground); border-left: 2px solid transparent; cursor: pointer;
+    }
+    .vc-slot:hover { background: hsl(0 0% 100% / 0.03); }
+    .vc-slot[data-sel] { border-left-color: var(--sel-accent); color: var(--talos-foreground); background: hsl(0 0% 100% / 0.04); }
+    .vc-slot__dot { width: 6px; height: 6px; border-radius: 50%; flex: 0 0 auto; background: var(--c, var(--talos-success)); }
+    .vc-slot__id { min-width: 3ch; }
+    .vc-slot__b { margin-left: auto; opacity: 0.8; }
 
-    .view-d { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 320px); gap: 1.75rem; align-items: start; }
-    .vd-left { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+    .view-d { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(240px, 1fr); gap: 1.75rem; align-items: start; }
+    .view-e { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 320px); gap: 1.75rem; align-items: start; }
+    .ve-stage { display: flex; flex-direction: column; min-width: 0; }
+    .ve-stage talos-spacecraft-3d {
+      display: block; width: 100%; height: 420px;
+      border: 1px solid var(--talos-glass-border, hsl(0 0% 100% / 0.12));
+      background: radial-gradient(ellipse at 50% 40%, hsl(0 0% 6%) 0%, hsl(0 0% 0%) 70%);
+    }
+    .ve-side { display: flex; flex-direction: column; gap: 0.5rem; }
+    .ve-side .con-detail__row[data-part] { transition: color 120ms ease; }
+    .ve-legend { margin-top: 1.5rem; border-top: 1px solid var(--talos-glass-border, hsl(0 0% 100% / 0.12)); padding-top: 1rem; }
+    .ve-legend__row {
+      display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem;
+      font-size: 0.72rem; color: var(--talos-muted-foreground, hsl(0 0% 60%));
+    }
+    .ve-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto;
+      background: var(--c); box-shadow: 0 0 8px var(--c);
+    }
+    .ve-focus {
+      border: 1px solid var(--talos-glass-border, hsl(0 0% 100% / 0.12));
+      background: hsl(0 0% 100% / 0.02); padding: 0.9rem 1rem;
+      --_fc: var(--talos-foreground);
+    }
+    .ve-focus[data-empty] { opacity: 0.55; }
+    .ve-focus__head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
+    .ve-focus__name {
+      font-family: var(--talos-font-display); font-size: 0.78rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--talos-foreground);
+    }
+    .ve-focus__band {
+      font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--_fc); border: 1px solid var(--_fc); padding: 0.1rem 0.4rem; border-radius: 0;
+    }
+    .ve-focus__role { font-size: 0.72rem; line-height: 1.5; color: var(--talos-muted-foreground); margin: 0.5rem 0 0.75rem; min-height: 2.1em; }
+    .ve-focus__metric { display: flex; align-items: baseline; gap: 0.3rem; margin-bottom: 0.6rem; }
+    .ve-focus__val { font-size: 1.8rem; font-weight: 300; line-height: 1; color: var(--_fc); font-variant-numeric: tabular-nums; }
+    .ve-focus__unit { font-size: 0.7rem; color: var(--talos-muted-foreground); text-transform: uppercase; letter-spacing: 0.1em; }
+    .vd-left { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; min-width: 0; align-items: start; }
+    .vd-left .vd-loc-cell { min-width: 0; }
     #d-loc { width: 100%; }
     .vd-orbital { display: flex; align-items: center; justify-content: center; }
     .vd-orbital talos-orbital { width: 100%; max-width: 320px; }
     .vd-side { display: flex; flex-direction: column; gap: 0.75rem; }
+    /* satellite detail rows in 2 columns to fill the wider aside. */
+    .vd-side .con-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.25rem; }
 
     .con-cell { display: flex; flex-direction: column; gap: 0.5rem; }
     .con-cell__row { display: flex; align-items: center; gap: 1rem; }
     .con-cell__side { display: flex; flex-direction: column; gap: 0.3rem; }
     .con-cell talos-meter { display: block; width: 100% !important; }
     .con-cell--trend talos-trend { display: block; width: 100% !important; }
+    /* talos-readout is a small scramble-decode widget; where the showcase uses it
+       as a headline figure (fleet draw / dump), scale the host so its value reads
+       as a metric, not body text. */
+    #a-kw, #b-rad { font-size: 1.5rem; line-height: 1; }
 
     .con-detail__row { display: flex; justify-content: space-between; font-family: var(--talos-font-display); font-size: 0.66rem; letter-spacing: 0.03em; color: var(--talos-muted-foreground); padding: 0.3rem 0; border-bottom: 1px solid hsl(0 0% 100% / 0.06); }
     .con-detail__v { color: var(--talos-foreground); }
@@ -312,12 +553,17 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
     .sc-note b { color: var(--talos-foreground); font-weight: 500; }
 
     @media (max-width: 900px) {
-      .view-a, .view-b, .view-c, .view-d { grid-template-columns: 1fr; }
+      .view-a, .view-b, .view-c, .view-d, .view-e { grid-template-columns: 1fr; }
+      .vb-col { grid-template-columns: 1fr; }
+      .vd-left { grid-template-columns: 1fr; }
     }
   </style>
 
   <script>
     import type { TalosMatrix, TalosGroundtrack, TalosHistogram, TalosPlane, OrbitalNode } from "@j_shelfwood/talos-ui/wc";
+    // Showcase-local 3D anatomy console (CONSOLE 5). Self-registers
+    // <talos-spacecraft-3d>; consumes Three.js, so it lives in the site, not the pack.
+    import { TalosSpacecraft3D } from "../components/spacecraft-3d/talos-spacecraft-3d";
 
     // ════ ONE CONSTELLATION MODEL · one selection threads through it ══════════
     const PLANES = 72, SLOTS = 22, N = PLANES * SLOTS, INCL = 53;
@@ -398,6 +644,62 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
     const dLoc = $("d-loc") as TalosMatrix | null, dOrb = $("d-orb") as (HTMLElement & { nodes: OrbitalNode[] }) | null;
     const dLed = $("d-led"), dName = $("d-name"), dState = $("d-state"), dTrend = $("d-trend");
     const dPhase = $("d-phase"), dCpu = $("d-cpu"), dTempEl = $("d-temp"), dBatt = $("d-batt"), dLocId = $("d-loc-id"), dNb = $("d-nb"), dNext = $("d-next");
+    // Sticky mission spine + FLEET selected-plane rollup + Console-3 slot strip.
+    const spinePlane = $("spine-plane"), spineSlot = $("spine-slot"), spineLens = $("spine-lens"), spineState = $("spine-state"), spineTemp = $("spine-temp"), spineBatt = $("spine-batt");
+    const aPlId = $("a-pl-id"), aPlSoc = $("a-pl-soc"), aPlTemp = $("a-pl-temp");
+    const cSlots = $("c-slots");
+    // Build the 22 slot rows once; the loop updates their band dot + selected state.
+    const slotRows: HTMLElement[] = [];
+    if (cSlots) {
+      for (let s = 0; s < SLOTS; s++) {
+        const row = document.createElement("div");
+        row.className = "vc-slot";
+        row.innerHTML = `<span class="vc-slot__dot"></span><span class="vc-slot__id">S${pad2(s)}</span><span class="vc-slot__b">—</span>`;
+        row.addEventListener("click", () => setSelection(selPlane, s));
+        cSlots.appendChild(row);
+        slotRows.push(row);
+      }
+    }
+    // Console 5: 3D anatomy.
+    const eCraft = $("e-craft") as (HTMLElement & { parts: Record<string, { band?: number }> }) | null;
+    const eLed = $("e-led"), eName = $("e-name"), eWorst = $("e-worst");
+    const eFocus = $("e-focus"), eFname = $("e-fname"), eFband = $("e-fband"), eFrole = $("e-frole"), eFval = $("e-fval"), eFunit = $("e-funit"), eFmeter = $("e-fmeter");
+    const PART_LABEL: Record<string, string> = { bus: "Bus", gpu: "GPU / compute", solarL: "Solar wing L", solarR: "Solar wing R", radL: "Radiator L", radR: "Radiator R", antenna: "Downlink antenna" };
+    const bandWord = (b: number) => (b === 2 ? "CRITICAL" : b === 1 ? "WARNING" : "NOMINAL");
+    const bandColor = (b: number) => (b === 2 ? "var(--talos-danger)" : b === 1 ? "var(--talos-warning)" : "var(--talos-success)");
+    // Per-subsystem telemetry: what each part actually reads, pulled live from the
+    // selected sat's signals. role = what it does; pick = its current value + unit.
+    type PartTele = { role: string; unit: string; max: number; pick: (i: number) => number; band: (i: number) => number };
+    const TELE: Record<string, PartTele> = {
+      bus:     { role: "Spacecraft bus — power & avionics backbone. Band tracks compute draw.", unit: "kW", max: 150, pick: (i) => computeArr[i] + 8, band: (i) => (computeArr[i] >= 146 ? 2 : computeArr[i] >= 138 ? 1 : 0) },
+      gpu:     { role: "AI compute payload. The hot, busy heart — band is sustained compute load.", unit: "kW", max: 150, pick: (i) => computeArr[i], band: (i) => (computeArr[i] >= 146 ? 2 : computeArr[i] >= 138 ? 1 : 0) },
+      solarL:  { role: "Port solar wing. Makes no power in eclipse — band reflects supply margin.", unit: "%", max: 100, pick: (i) => (eclArr[i] ? 0 : clamp((computeArr[i] / 150) * 110, 0, 100)), band: (i) => (eclArr[i] ? Math.max(1, batt[i] <= 28 ? 2 : 1) : 0) },
+      solarR:  { role: "Starboard solar wing. Mirror of port; both feed the bus + battery.", unit: "%", max: 100, pick: (i) => (eclArr[i] ? 0 : clamp((computeArr[i] / 150) * 110, 0, 100)), band: (i) => (eclArr[i] ? Math.max(1, batt[i] <= 28 ? 2 : 1) : 0) },
+      radL:    { role: "Port radiator. Dumps waste heat — band is core temperature.", unit: "°C", max: 45, pick: (i) => tempArr[i], band: (i) => (tempArr[i] >= 34 ? 2 : tempArr[i] >= 29 ? 1 : 0) },
+      radR:    { role: "Starboard radiator. Thermal pair to port — band is core temperature.", unit: "°C", max: 45, pick: (i) => tempArr[i], band: (i) => (tempArr[i] >= 34 ? 2 : tempArr[i] >= 29 ? 1 : 0) },
+      antenna: { role: "Downlink antenna. Ground/ISL contact — band is link quality.", unit: "%", max: 100, pick: (i) => linkArr[i] * 100, band: (i) => (linkArr[i] <= 0.3 ? 2 : linkArr[i] <= 0.5 ? 1 : 0) },
+    };
+    let focusedPart: string | null = null;
+    // Selecting a subsystem LOCKS its live telemetry into the focus panel;
+    // clicking it again (part:null) clears the lock.
+    eCraft?.addEventListener("talos:part", (e) => {
+      const part = (e as CustomEvent).detail.part as string | null;
+      focusedPart = part;
+      if (!part) {
+        eFocus?.setAttribute("data-empty", "");
+        txt(eFname, "SELECT A SUBSYSTEM");
+        if (eFrole) eFrole.textContent = "Click a part on the model to lock its live telemetry here.";
+        txt(eFval, "—"); txt(eFband, "—"); if (eFunit) eFunit.textContent = "";
+        if (eFocus) (eFocus as HTMLElement).style.removeProperty("--_fc");
+        return;
+      }
+      eFocus?.removeAttribute("data-empty");
+      const t = TELE[part];
+      txt(eFname, PART_LABEL[part] ?? part);
+      if (eFrole) eFrole.textContent = t?.role ?? "";
+      if (eFunit) eFunit.textContent = t?.unit ?? "";
+      if (eFmeter && t) eFmeter.setAttribute("max", String(t.max));
+    });
 
     // ── Selection wiring: fleet matrix → plane; plane ring → sat. ─────────────
     function setSelection(plane: number, slot: number) {
@@ -408,7 +710,14 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
       txt(bPlane, `P${pad2(selPlane)}`);
       txt(cPlaneId, pad2(selPlane)); txt(cPlaneId2, `P${pad2(selPlane)}`);
       txt(dName, `P${pad2(selPlane)}-S${pad2(selSlot)}`);
+      txt(eName, `P${pad2(selPlane)}-S${pad2(selSlot)}`);
       txt(dLocId, `${pad2(selPlane)} / ${pad2(selSlot)}`);
+      // Spine breadcrumb + FLEET selected-plane rollup id.
+      txt(spinePlane, pad2(selPlane));
+      txt(spineSlot, pad2(selSlot));
+      txt(aPlId, `P${pad2(selPlane)}`);
+      // Slot strip: mark the selected row.
+      slotRows.forEach((r, s) => r.toggleAttribute("data-sel", s === selSlot));
       if (aMatrix) aMatrix.highlight = { col: selPlane };
       if (dLoc) dLoc.highlight = { index: idxOf(selPlane, selSlot) };
       if (cRing) cRing.setAttribute("plane-label", `P${pad2(selPlane)}`);
@@ -477,6 +786,8 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
       let pSoc = 0, pTemp = 0;
       for (let s = 0; s < SLOTS; s++) { const i = idxOf(selPlane, s); pSoc += battArr[i]; pTemp += tempArr[i]; }
       txt(bPsoc, `${(pSoc / SLOTS).toFixed(0)}%`); txt(bPtemp, `${(pTemp / SLOTS).toFixed(0)}°C`);
+      // FLEET selected-plane mini-rollup (same sums).
+      txt(aPlSoc, `${(pSoc / SLOTS).toFixed(0)}%`); txt(aPlTemp, `${(pTemp / SLOTS).toFixed(0)}°C`);
 
       // ── Console 3: PLANE (the selected plane's 22 sats) ──
       if (cRing) {
@@ -486,6 +797,15 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
           const i = idxOf(selPlane, s);
           ring.push({ band: bandArr[i], eclipse: !!eclArr[i], selected: s === selSlot });
           if (bandArr[i] === 0) nom++; if (eclArr[i]) ecl++; dl += linkArr[i]; pmSoc += battArr[i];
+          // per-slot strip row: band dot colour + word + eclipse hint.
+          const row = slotRows[s];
+          if (row) {
+            const dot = row.querySelector(".vc-slot__dot") as HTMLElement;
+            const bw = row.querySelector(".vc-slot__b") as HTMLElement;
+            const c = bandArr[i] === 2 ? "var(--talos-danger)" : bandArr[i] === 1 ? "var(--talos-warning)" : "var(--talos-success)";
+            if (dot) dot.style.setProperty("--c", c);
+            if (bw) bw.textContent = eclArr[i] ? "ECL" : bandArr[i] === 2 ? "CRIT" : bandArr[i] === 1 ? "WARN" : "OK";
+          }
         }
         cRing.sats = ring;
         // Eclipse arc on the ring: the shadow occupies the tail of the orbit;
@@ -525,9 +845,81 @@ import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
       txt(dNb, "2 in-plane · 2 cross-plane");
       txt(dNext, eclipse ? `${((1 - ph) * 95).toFixed(0)} min` : "in sunlight");
       set(dTrend, "value", tempArr[fi].toFixed(1));
+      // Sticky spine status: the selected sat, live.
+      txt(spineState, eclipse ? "ECLIPSE" : "SUNLIT");
+      txt(spineTemp, `${tempArr[fi].toFixed(0)}°C`);
+      txt(spineBatt, `${batt[fi].toFixed(0)}%`);
+
+      // ── Console 5: ANATOMY (3D) — derive a per-subsystem band from the same
+      //    selected-sat signals, then bind it to the 3D craft's emissive parts. ──
+      const computeBand = computeArr[fi] >= 146 ? 2 : computeArr[fi] >= 138 ? 1 : 0;
+      const thermBand = tempArr[fi] >= 34 ? 2 : tempArr[fi] >= 29 ? 1 : 0;
+      const battBand = batt[fi] <= 28 ? 2 : batt[fi] <= 42 ? 1 : 0;
+      const linkBand = linkArr[fi] <= 0.3 ? 2 : linkArr[fi] <= 0.5 ? 1 : 0;
+      // solar wings: stressed when eclipsed AND battery is draining low.
+      const solarBand = eclipse ? Math.max(1, battBand) : 0;
+      const parts: Record<string, { band: number }> = {
+        bus: { band: computeBand },
+        gpu: { band: computeBand },
+        solarL: { band: solarBand },
+        solarR: { band: solarBand },
+        radL: { band: thermBand },
+        radR: { band: thermBand },
+        antenna: { band: linkBand },
+      };
+      if (eCraft) {
+        eCraft.parts = parts;
+        eCraft.toggleAttribute("eclipse", eclipse);
+      }
+      // worst-band rail indicator + per-row band words.
+      const worst = Math.max(computeBand, thermBand, solarBand, linkBand);
+      set(eLed, "state", worst === 2 ? "crit" : worst === 1 ? "warn" : "ok");
+      txt(eWorst, bandWord(worst));
+      for (const id of Object.keys(parts)) {
+        const el = $(`e-${id}`);
+        if (el) {
+          el.textContent = bandWord(parts[id].band);
+          el.style.color =
+            parts[id].band === 2 ? "var(--talos-danger)" : parts[id].band === 1 ? "var(--talos-warning)" : "var(--talos-muted-foreground)";
+        }
+      }
+      // Locked focus panel: keep the selected subsystem's value live each frame.
+      if (focusedPart && TELE[focusedPart]) {
+        const t = TELE[focusedPart];
+        const val = t.pick(fi), b = t.band(fi);
+        txt(eFval, t.unit === "%" || t.unit === "°C" ? val.toFixed(0) : val.toFixed(0));
+        txt(eFband, bandWord(b));
+        if (eFocus) (eFocus as HTMLElement).style.setProperty("--_fc", bandColor(b));
+        if (eFmeter) {
+          eFmeter.setAttribute("value", String(val.toFixed(1)));
+          // colour the meter band via warn/crit at the part's thresholds
+          if (focusedPart === "radL" || focusedPart === "radR") { eFmeter.setAttribute("warn", "29"); eFmeter.setAttribute("crit", "34"); }
+          else if (focusedPart === "antenna") { eFmeter.setAttribute("warn", "50"); eFmeter.setAttribute("crit", "30"); eFmeter.setAttribute("invert", ""); }
+          else if (focusedPart === "bus" || focusedPart === "gpu") { eFmeter.setAttribute("warn", "138"); eFmeter.setAttribute("crit", "146"); }
+        }
+      }
 
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
+
+    // ── "You are here": light the rail node + spine lens for the console in view.
+    //    Read-only; never touches the model or the selection.
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>(".ops-node"));
+    const lenses = Array.from(document.querySelectorAll<HTMLElement>("[id^=lens-]"));
+    if (nodes.length && lenses.length && "IntersectionObserver" in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            const n = e.target.id.split("-")[1]; // "lens-3" → "3"
+            nodes.forEach((node) => node.toggleAttribute("data-active", node.dataset.lens === n));
+            txt(spineLens, n);
+          }
+        },
+        { rootMargin: "-120px 0px -55% 0px" },
+      );
+      lenses.forEach((l) => io.observe(l));
+    }
   </script>
 </Landing>

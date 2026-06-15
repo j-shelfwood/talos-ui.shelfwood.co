@@ -9,6 +9,7 @@
 // reusable instrument-library surface. The pack dropped its prose/marketing
 // module (talos-blog) to match the manifesto — see talos-ui PHILOSOPHY.md.
 import GlassPanel from "@j_shelfwood/talos-ui/astro/GlassPanel.astro";
+import BrandMark from "@j_shelfwood/talos-ui/astro/BrandMark.astro";
 
 interface Props {
   /** Collection id / route key of the current page, for active state. */
@@ -33,8 +34,7 @@ const isActive = (l: (typeof links)[number]) =>
   <GlassPanel class="talos-navbar-pill glass-panel--navbar-dense" style="overflow:visible">
     <div class="talos-navbar-inner">
       <a class="talos-nav-link talos-nav-brand" href="/" aria-label="Home">
-        <span class="talos-dot"></span>
-        <span class="nav-brand-label">Talos&nbsp;UI</span>
+        <BrandMark />
       </a>
       <span class="talos-navbar-sep" aria-hidden="true"></span>
       <nav class="site-nav-links">
@@ -70,6 +70,10 @@ const isActive = (l: (typeof links)[number]) =>
     display: inline-flex;
     align-items: center;
     gap: 1.5rem;
+    /* Collapses to a zero-width track in compact (see is:global rule below) —
+       max-width animates so the pill reclaims the space, not just hides it. */
+    overflow: hidden;
+    transition: max-width 0.4s var(--talos-ease-out);
   }
   .talos-nav-link[data-active="true"] {
     color: var(--talos-foreground);
@@ -96,6 +100,32 @@ const isActive = (l: (typeof links)[number]) =>
     padding: 0.6rem 1.5rem;
     transition: padding 0.35s var(--talos-ease-out);
   }
+  /* HUD notch in the pill's top edge — a centered trapezoidal bite, the
+     <talos-notch> motif applied to the container (distinct from the logomark's
+     chamfer). Overrides GlassPanel's chamfer clip-path on BOTH layers (host
+     outline + ::before fill) with one shared 8-point polygon: the two chamfer
+     corners PLUS the top-centre notch. --_ch is the corner chamfer; --_nw/--_nd
+     the notch half-width / depth. */
+  .talos-navbar-pill {
+    --_ch: 14px;
+    --_nw: 22px;
+    --_nd: 7px;
+    --_notch-poly:
+      0 0,
+      calc(50% - var(--_nw)) 0,
+      calc(50% - var(--_nw) + var(--_nd)) var(--_nd),
+      calc(50% + var(--_nw) - var(--_nd)) var(--_nd),
+      calc(50% + var(--_nw)) 0,
+      calc(100% - var(--_ch)) 0,
+      100% var(--_ch),
+      100% 100%,
+      var(--_ch) 100%,
+      0 calc(100% - var(--_ch));
+    clip-path: polygon(var(--_notch-poly));
+  }
+  .talos-navbar-pill::before {
+    clip-path: polygon(var(--_notch-poly)) !important;
+  }
   /* Single dense row: brand · hairline separator · links. No flex:1 spread —
      contents sit close together, the pill is only as wide as it needs to be. */
   .talos-navbar-inner {
@@ -105,6 +135,7 @@ const isActive = (l: (typeof links)[number]) =>
     align-items: center;
     gap: 1.5rem;
     height: 2.5rem;
+    transition: gap 0.4s var(--talos-ease-out);
   }
   /* A hairline tick between brand and nav — HUD divider, not dead space. */
   .talos-navbar-sep {
@@ -112,6 +143,7 @@ const isActive = (l: (typeof links)[number]) =>
     align-self: stretch;
     margin: 0.4rem 0;
     background: var(--talos-edge-default, hsl(0 0% 100% / 0.18));
+    transition: width 0.4s var(--talos-ease-out), opacity 0.35s var(--talos-ease-out);
   }
   .talos-nav-brand { font-weight: 500; color: var(--talos-foreground); }
 
@@ -121,9 +153,24 @@ const isActive = (l: (typeof links)[number]) =>
     padding: 0.5rem 1.1rem;
   }
   /* When links collapse, drop the separator too so the compact pill is just the
-     brand — no orphan tick floating beside it. */
+     brand — no orphan tick floating beside it. Collapse its WIDTH + margins (not
+     just opacity): an opacity:0 tick still reserves its 1px flex track, which —
+     with the inner gap on both sides — left ~145px of dead space to the brand's
+     right and made the pill read as left-weighted. */
   .talos-navbar[data-compact="true"]:not(.toc-expanded) .talos-navbar-sep {
     opacity: 0;
+    width: 0;
+    margin-inline: 0;
+  }
+  /* Brand is the only visible child once links + separator collapse — zero the
+     inner gap so no phantom 1.5rem track trails the brand. */
+  .talos-navbar[data-compact="true"]:not(.toc-expanded) .talos-navbar-inner {
+    gap: 0;
+  }
+  /* Collapse the nav-links track itself, not just its text: max-width:0 reclaims
+     the ~48px the dot-gaps + inter-link gap held even with labels hidden. */
+  .talos-navbar[data-compact="true"]:not(.toc-expanded) .site-nav-links {
+    max-width: 0;
   }
   .talos-nav-text {
     white-space: nowrap;
@@ -134,12 +181,32 @@ const isActive = (l: (typeof links)[number]) =>
      collapsed pill is never an empty box. (Earlier attempts to exempt it via a
      :not() or a re-show rule were silently dropped by the CSS minifier; keeping
      the brand out of the collapsed class entirely needs no exemption rule.) */
-  .nav-brand-label { white-space: nowrap; }
   /* Compact: collapse the nav-LINK labels only. */
   .talos-navbar[data-compact="true"]:not(.toc-expanded) .talos-nav-text {
     opacity: 0;
     max-width: 0;
     overflow: hidden;
+  }
+  /* Compact brand: drop the wordmark to the Notch-T mark alone — the two-size
+     lockup (full wordmark expanded, mark-only collapsed). The mark always
+     persists so the pill never empties. */
+  .talos-brand-word {
+    transition: opacity 0.4s var(--talos-ease-out), max-width 0.4s var(--talos-ease-out);
+  }
+  .talos-navbar[data-compact="true"]:not(.toc-expanded) .talos-brand-word {
+    opacity: 0;
+    max-width: 0;
+    margin-right: 0;
+    overflow: hidden;
+  }
+  /* Zero the lockup's own mark↔word gap in compact, else the collapsed (zero-
+     width) wordmark still leaves its 0.55rem track and the pill won't hug the
+     lone mark — same flex-track trap as the nav-links collapse above. */
+  .talos-brand {
+    transition: gap 0.4s var(--talos-ease-out);
+  }
+  .talos-navbar[data-compact="true"]:not(.toc-expanded) .talos-brand {
+    gap: 0;
   }
   .talos-nav-link {
     display: inline-flex;
