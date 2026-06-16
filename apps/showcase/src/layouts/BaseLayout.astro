@@ -2,7 +2,7 @@
 // BaseLayout — the single document shell for every non-hero page. Owns the
 // doctype, <head> (+ Meta), the ambient overlay, the shared client script
 // (WC registration + cursor tracking + interactive-panel sheen), the fixed
-// SiteNav, and the global shell CSS. Landing and DocsShell are thin wrappers
+// the Navbar, and the global shell CSS. Landing and DocsShell are thin wrappers
 // over this — previously each hand-rolled its own near-identical copy.
 //
 // The 3D hero (index.astro) deliberately does NOT use this; it owns its own
@@ -14,8 +14,18 @@
 //   • `main`             — wraps the slot in a centered <main> already offset
 //                          below the nav. Reach for this for simple pages.
 import "@j_shelfwood/talos-ui/all.css";
+import "@j_shelfwood/talos-ui/talos-marketing.css";
 import Meta from "../components/Meta.astro";
-import SiteNav from "../components/SiteNav.astro";
+import Navbar from "@j_shelfwood/talos-ui/astro/Navbar.astro";
+
+// Dogfood: the package Navbar (modeled on this app's former SiteNav) now owns
+// the marketing pill. Routes + active state are passed as data; the brand mark,
+// notch, and compact-on-scroll behaviour ship in the package.
+const navLinks = [
+  { label: "Showcase", href: "/showcase/", key: "showcase" },
+  { label: "Gallery", href: "/gallery/", key: "gallery" },
+  { label: "Docs", href: "/docs/getting-started/", key: "docs" },
+];
 
 interface Props {
   title?: string;
@@ -45,7 +55,7 @@ const pageTitle = title === "Talos UI" ? title : `${title} — Talos UI`;
   </head>
   <body>
     <div class="ambient-overlay"></div>
-    <SiteNav active={navActive} />
+    <Navbar links={navLinks} active={navActive} homeHref="/" />
 
     {
       frame === "main" ? (

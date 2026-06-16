@@ -5,6 +5,13 @@
  * Pure class-based markup; no JS wiring beyond what Landing already provides.
  */
 import Landing from "../layouts/Landing.astro";
+// Astro wrappers + the opt-in decorative motion layer (stagger + brackets).
+import "@j_shelfwood/talos-ui/talos-motion.css";
+import GlassPanel from "@j_shelfwood/talos-ui/astro/GlassPanel.astro";
+import BentoGrid from "@j_shelfwood/talos-ui/astro/BentoGrid.astro";
+import LinkCard from "@j_shelfwood/talos-ui/astro/LinkCard.astro";
+import Tag from "@j_shelfwood/talos-ui/astro/Tag.astro";
+import BackButton from "@j_shelfwood/talos-ui/astro/BackButton.astro";
 
 const rows = [
   { id: "TX-9043", node: "atlas-01", load: "62.4", status: "online" },
@@ -334,5 +341,53 @@ const rows = [
       <label class="talos-check-row"><input class="talos-radio" type="radio" name="mode" /> Compact density</label>
       <label class="talos-check-row"><input class="talos-switch" type="checkbox" checked /> Live telemetry</label>
     </fieldset>
+  </section>
+
+  <!-- ===================== ASTRO WRAPPERS ===================== -->
+  <section>
+    <h2 style="font-size:1rem"><span class="talos-muted">05</span> &nbsp;Astro wrappers</h2>
+    <hr class="talos-rule" style="margin:1rem 0 2rem" />
+
+    <div class="talos-row" style="gap:1rem;flex-wrap:wrap;margin-bottom:2rem">
+      <Tag><span slot="icon">◆</span>Design system</Tag>
+      <Tag size="sm">v0.4.0</Tag>
+      <BackButton variant="ghost" href="/showcase/" text="Back to showcase" />
+    </div>
+
+    <BentoGrid stagger>
+      <GlassPanel brackets class="talos-pad col-span-4 lg:col-span-4">
+        <h3 style="margin:0">Brackets + stagger</h3>
+        <p class="talos-muted" style="margin-top:0.5rem">
+          GlassPanel with <code>brackets</code>; grid with <code>stagger</code>.
+          Hover for the viewfinder ticks.
+        </p>
+      </GlassPanel>
+
+      <LinkCard
+        href="/docs/getting-started/"
+        title="Navigation"
+        eyebrow="Tabs · sidebar · menu"
+        class="col-span-4 lg:col-span-4 talos-pad"
+      >
+        <span slot="icon">◈</span>
+      </LinkCard>
+
+      <LinkCard
+        href="/showcase/"
+        title="Preview"
+        items={["Chamfered panels", "Live instruments", "Ambient grid"]}
+        class="col-span-4 lg:col-span-4 talos-pad"
+      >
+        <span slot="icon">▤</span>
+      </LinkCard>
+
+      <BackButton
+        variant="card"
+        href="/"
+        text="Home"
+        subtitle="Return to landing"
+        class="talos-pad col-span-4 lg:col-span-6"
+      />
+    </BentoGrid>
   </section>
 </Landing>
