@@ -17,6 +17,6 @@
     "@j_shelfwood/talos-ui"
   ],
   "dependencies": {
-    "@j_shelfwood/talos-ui": "^0.5.2"
+    "@j_shelfwood/talos-ui": "^0.5.3"
   }
 }
