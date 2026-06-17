@@ -15,5 +15,8 @@
   },
   "trustedDependencies": [
     "@j_shelfwood/talos-ui"
-  ]
+  ],
+  "dependencies": {
+    "@j_shelfwood/talos-ui": "^0.5.1"
+  }
 }
