@@ -4,7 +4,7 @@
     "": {
       "name": "talos-ui-site",
       "dependencies": {
-        "@j_shelfwood/talos-ui": "^0.5.4",
+        "@j_shelfwood/talos-ui": "^0.5.5",
       },
     },
     "apps/showcase": {
@@ -180,7 +180,7 @@
 
     "@img/sharp-win32-x64": ["@img/sharp-win32-x64@0.33.5", "", { "os": "win32", "cpu": "x64" }, "sha512-MpY/o8/8kj+EcnxwvrP4aTJSWw/aZ7JIGR4aBeZkZw5B7/Jn+tY9/VNwtcoGmdT7GfggGIU4kygOMSbYnOrAbg=="],
 
-    "@j_shelfwood/talos-ui": ["@j_shelfwood/talos-ui@0.5.4", "", { "peerDependencies": { "astro": ">=5" }, "optionalPeers": ["astro"] }, "sha512-b1br7evDMNrzuSMs1pM2Erv9WETXcaRVc5WEqRcbKj5zmXqvu/mbKpLkhYN07Kqg4dsYmIAncrq2Z1HrgWZ5DA=="],
+    "@j_shelfwood/talos-ui": ["@j_shelfwood/talos-ui@0.5.5", "", { "peerDependencies": { "astro": ">=5" }, "optionalPeers": ["astro"] }, "sha512-3B2OLjBt0cbC0u7N4NV217NnHAuJ/eTIqIo7ehL0D0lTTfyWquOBR/XIss1V+ic+O/dCcRv0iR9r7OMobMFMCw=="],
 
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.5", "", {}, "sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og=="],
 
