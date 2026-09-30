@@ -6,9 +6,9 @@ description: Chamfered status callout — a 1px hairline edge plus a 2px status 
 import Demo from "../../../../components/Demo.astro";
 
 `.talos-alert` is the inline status callout. It's a 3-column grid (icon ·
-title+body · close) wrapped in a chamfered cut: the host paints the edge colour,
-a `::before` insets 1px with the fill, and a `::after` lays a 2px status bar down
-the inner-left. The status modifier rebinds one channel (`--_status-hsl`) and the
+title+body · close) on the [chamfer engine](/docs/components/chamfer/): a 1px
+border in the status colour, a cut top-right and bottom-left, and a 2px status
+bar down the inner-left (`::after`). The status modifier rebinds one channel (`--_status-hsl`) and the
 icon, title, edge, and bar all recolour from it — form encodes function.
 
 ## Default (neutral)
@@ -91,8 +91,8 @@ and the title all read that one channel.
 </div>
 ```
 
-`--bare` drops the `clip-path` and the two pseudo-element layers, leaving a flat
-surface with a 2px left status border. Cheaper to render and good for dense
+`--bare` drops the chamfer (border, `clip-path`, cut diagonals) and the status
+bar, leaving a flat surface with a 2px left status border. Cheaper to render and good for dense
 stacks.
 
 ## Classes

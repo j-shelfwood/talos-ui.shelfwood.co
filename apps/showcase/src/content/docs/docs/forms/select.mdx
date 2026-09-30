@@ -1,16 +1,15 @@
 ---
 title: Select
-description: Native select restyled to match the inputs, with a hairline border and a background-drawn chevron that the state colour rides.
+description: Native select restyled to match the inputs — chamfered, with a background-drawn chevron — and the state colour rides the edge.
 ---
 
 import Demo from "../../../../components/Demo.astro";
 
 `.talos-select` is a native `<select>` flattened with `appearance: none` so form
-semantics and the OS option list survive, then redressed in HUD chrome: a 1px
-hairline border and a chevron painted as a background SVG. Unlike the text
-inputs (whose outline lives in an SVG chamfer), the select keeps a real border —
-so `--error` / `--success` recolour *that border*, and the state reads off the
-outline, not the text beside it.
+semantics and the OS option list survive, then redressed in HUD chrome: the same
+[chamfer engine](/docs/components/chamfer/) cut as the text inputs (bottom-right)
+and a chevron painted as a background SVG. `--error` / `--success` recolour the
+edge, so the state reads off the outline, not the text beside it.
 
 ## Default
 
@@ -30,8 +29,8 @@ outline, not the text beside it.
 </select>
 ```
 
-Body-font, light weight. `:hover` and `:focus` brighten the border to
-`--talos-edge-strong`; focus also adds a 1px ring. The chevron sits 1rem in from
+Body-font, light weight. `:hover` and `:focus` brighten the edge to
+`--talos-edge-strong`; focus brightens it further. The chevron sits 1rem in from
 the right edge.
 
 ## State — error & success
@@ -56,7 +55,7 @@ the right edge.
 </select>
 ```
 
-`--error` paints the border in `--talos-danger`; `--success` in
+`--error` paints the edge in `--talos-danger`; `--success` in
 `--talos-success`. Nesting the select in a [`.talos-field--error`](/docs/forms/field/)
 / `--success` recolours it the same way without the modifier.
 
@@ -80,10 +79,10 @@ the right edge.
 
 | Class | Effect |
 | --- | --- |
-| `.talos-select` | native `<select>` with hairline border + chevron SVG |
-| `.talos-select--error` | recolours the border to `--talos-danger` |
-| `.talos-select--success` | recolours the border to `--talos-success` |
-| `:hover` / `:focus` | brightens border to `--talos-edge-strong` (focus adds a 1px ring) |
+| `.talos-select` | native chamfered `<select>` with chevron SVG |
+| `.talos-select--error` | recolours the edge to `--talos-danger` |
+| `.talos-select--success` | recolours the edge to `--talos-success` |
+| `:hover` / `:focus` | brightens the edge (focus brightens it further) |
 | `:disabled` | dims to 0.5, blocks pointer |
 
 Wrap in a [`.talos-field`](/docs/forms/field/) to pair with a label and a

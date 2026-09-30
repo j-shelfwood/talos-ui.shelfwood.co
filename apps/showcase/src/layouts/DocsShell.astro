@@ -122,12 +122,14 @@ const { title, description, slug } = Astro.props;
         border-bottom: 1px solid var(--talos-edge-subtle);
       }
       .docs-prose h3 { font-size: 1rem; }
-      .docs-prose a {
+      /* Prose links only — links inside live demos (.not-content) keep their own
+         component styling, e.g. a .talos-button keeps its border and colour. */
+      .docs-prose a:not(.not-content *) {
         color: var(--talos-accent);
         text-decoration: none;
         border-bottom: 1px solid hsl(var(--talos-accent-hsl) / 0.35);
       }
-      .docs-prose a:hover { border-bottom-color: var(--talos-accent); }
+      .docs-prose a:not(.not-content *):hover { border-bottom-color: var(--talos-accent); }
       .docs-prose strong { color: var(--talos-text-primary); font-weight: 400; }
 
       /* Inline code */
@@ -143,13 +145,12 @@ const { title, description, slug } = Astro.props;
 
       /* Shiki css-variables theme → Talos palette. Restrained monochrome with
          green accent for strings/values; comments dim; keywords/punctuation in
-         foreground tones. Background is transparent so the chamfer fill shows. */
+         foreground tones. */
       .docs-prose {
-        /* shiki sets the pre's inline background from --astro-code-background;
-           that inline style wins over our stylesheet, so we point it AT the
-           edge colour — it becomes the chamfer hairline layer, with the
-           ::before fill covering the interior 1px in. */
-        --astro-code-background: var(--talos-edge-default);
+        /* shiki sets the pre's inline background-color from
+           --astro-code-background; that inline style wins over the stylesheet,
+           so it carries the chamfer fill (same value as --_fill below). */
+        --astro-code-background: var(--talos-surface-1);
         --astro-code-foreground: hsl(var(--talos-foreground-hsl) / 0.9);
         --astro-code-token-comment: var(--talos-text-tertiary);
         --astro-code-token-keyword: hsl(var(--talos-foreground-hsl) / 0.6);
@@ -171,36 +172,18 @@ const { title, description, slug } = Astro.props;
         line-height: inherit;
         color: inherit;
       }
-      .docs-prose .not-content :where(a) {
-        color: inherit;
-        border-bottom: 0;
-      }
       .docs-prose .not-content > * + * { margin-top: 0; }
 
-      /* Fenced code blocks — chamfered HUD frame echoing .talos-code.
-         Two-layer chamfer: the host carries the edge colour + clip-path, a
-         1px-inset ::before carries the fill. A plain `border` would be sliced
-         off the diagonal by clip-path (the chopped-corner defect) — this keeps
-         the hairline on the bottom-right cut. */
+      /* Fenced code blocks — chamfered HUD frame on the talos chamfer engine.
+         astro.config.mjs adds `talos-chamfer talos-chamfer--btn` (bottom-right
+         cut) to every <pre>; only the fill and box metrics are set here. */
       .docs-prose pre {
-        position: relative;
-        isolation: isolate;
+        --_fill: var(--talos-surface-1);
         font-family: var(--talos-font-mono, ui-monospace, monospace);
         font-size: 0.85rem;
         line-height: 1.6;
         padding: 1.1rem 1.25rem;
-        background: var(--talos-edge-default); /* edge colour shows as the hairline */
-        border-radius: 0;
         overflow-x: auto;
-        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
-      }
-      .docs-prose pre::before {
-        content: "";
-        position: absolute;
-        inset: 1px;
-        z-index: -1;
-        background: var(--talos-surface-1);
-        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%);
       }
       .docs-prose pre > code {
         position: relative;

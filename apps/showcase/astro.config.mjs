@@ -19,8 +19,17 @@ export default defineConfig({
   markdown: {
     // css-variables theme: shiki emits var(--astro-code-*) instead of inline
     // hex colors, so code tokens track the Talos palette (defined in
-    // DocsShell). It also drops the inline background-color on <pre>, letting
-    // the two-layer chamfer fill show through.
-    shikiConfig: { theme: "css-variables" },
+    // DocsShell). The transformer puts the chamfer engine classes on every
+    // fenced <pre>, so code blocks draw their cut like any other talos surface.
+    shikiConfig: {
+      theme: "css-variables",
+      transformers: [
+        {
+          pre(node) {
+            this.addClassToHast(node, "talos-chamfer talos-chamfer--btn");
+          },
+        },
+      ],
+    },
   },
 });

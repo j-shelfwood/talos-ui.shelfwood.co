@@ -6,7 +6,7 @@ description: Bordered control wrappers that fuse addons or a search icon to an i
 import Demo from "../../../../components/Demo.astro";
 
 `.talos-input-group` and `.talos-search` are wrappers, not controls. The group
-owns the visible border and goes borderless on the inner `.talos-input`, so a
+owns the visible chamfered border (the [chamfer engine](/docs/components/chamfer/)) and goes borderless on the inner `.talos-input`, so a
 `$`-prefix or `/mo`-suffix reads as one continuous part rather than three boxes.
 `.talos-search` does the same trick for a magnifier and an optional clear button.
 
@@ -28,7 +28,7 @@ owns the visible border and goes borderless on the inner `.talos-input`, so a
 </div>
 ```
 
-The group draws the 1px border; the inner input drops its own border and
+The group draws the border and the cut; the inner input drops its own border and
 chamfer (`background: none`) so the three cells fuse. `--leading` sits before the
 input with a right divider, `--trailing` after with a left divider. Either is
 optional — use one, both, or neither.

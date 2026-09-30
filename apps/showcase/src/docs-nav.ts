@@ -35,6 +35,7 @@ export const docsNav: DocsNavGroup[] = [
     items: [
       { label: "Glass panel", slug: "docs/components/glass-panel" },
       { label: "Button", slug: "docs/components/button" },
+      { label: "Chamfer & flag", slug: "docs/components/chamfer" },
       { label: "Notched panel", slug: "docs/components/notched-panel" },
       { label: "Console shell", slug: "docs/components/console" },
     ],

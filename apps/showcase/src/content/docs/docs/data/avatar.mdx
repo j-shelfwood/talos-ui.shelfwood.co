@@ -6,9 +6,10 @@ description: Chamfered identity tile carrying initials or an image, with an opti
 import Demo from "../../../../components/Demo.astro";
 
 `.talos-avatar` is a square identity tile with a single top-right chamfer — the
-HUD's square-with-a-cut house silhouette. The edge colour rides the clip-path
-(host edge + 1px-inset fill) so the hairline follows the diagonal instead of
-being sliced off, and the optional `__status` dot encodes presence in colour
+HUD's square-with-a-cut house silhouette. It rides the
+[chamfer engine](/docs/components/chamfer/) (1px border, clip-path, and a 1px
+diagonal along the cut), so the hairline follows the diagonal instead of being
+sliced off, and the optional `__status` dot encodes presence in colour
 alone.
 
 ## Default
@@ -24,7 +25,7 @@ alone.
 ```
 
 Holds uppercase initials (display font, tight tracking) or an `<img>` that
-object-fits inside the inset. Background is `--surface-2`, edge `--edge-default`.
+object-fits inside the border. Background is `--surface-2`, edge `--edge-default`.
 
 ## Sizes
 

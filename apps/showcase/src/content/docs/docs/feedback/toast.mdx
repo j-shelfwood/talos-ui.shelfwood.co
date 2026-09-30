@@ -5,8 +5,8 @@ description: Chamfered transient notification that slides in from the edge; stat
 
 import Demo from "../../../../components/Demo.astro";
 
-`.talos-toast` is the transient notification. It shares the alert's two-layer
-chamfer hairline and 2px left status bar, but lives in a fixed
+`.talos-toast` is the transient notification. It shares the alert's chamfer
+(the [chamfer engine](/docs/components/chamfer/)) and 2px left status bar, but lives in a fixed
 `.talos-toast-region` and enters on a pure-CSS keyframe — you add or remove the
 node, CSS slides + fades it in. The status colour is the only chroma: it paints
 the chamfered edge, the icon, the title, and the left bar at once.

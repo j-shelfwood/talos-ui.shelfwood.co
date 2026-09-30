@@ -1,13 +1,14 @@
 ---
 title: Glass panel
-description: Two-layer chamfered chrome whose lift, sheen, and edge brighten encode that it is reachable — not decoration.
+description: Chamfered chrome whose lift, sheen, and edge brighten encode that it is reachable — not decoration.
 ---
 
 import Demo from "../../../../components/Demo.astro";
 
-`.glass-panel` is the base HUD surface: a `clip-path` polygon cuts the
-top-right + bottom-left corners, the host paints the edge colour, and a 1px-inset
-`::before` paints the fill — so the hairline rides every edge including the cuts.
+`.glass-panel` is the base HUD surface on the [chamfer engine](/docs/components/chamfer/):
+a 1px border and a `clip-path` polygon cut the top-right + bottom-left corners,
+and a 1px diagonal is drawn along each cut — so the hairline rides every edge
+including the cuts. The fill is the panel's own background.
 Add `.interactive-panel` and the lift + cursor sheen + edge brighten only fire
 where the panel is actually reachable; a static panel stays still and reads as
 just a container.
@@ -29,9 +30,9 @@ just a container.
 </div>
 ```
 
-The host clips the chamfered silhouette; the `::before` fill insets 1px to leave
-the hairline. Always nest a `.glass-panel-content` — it stacks above the fill +
-sheen layers and lays out as a full-width column.
+The host clips the chamfered silhouette and owns the border and fill. Always
+nest a `.glass-panel-content` — it stacks above the sheen (`::after`) and lays
+out as a full-width column.
 
 ## Interactive
 
@@ -51,7 +52,7 @@ sheen layers and lays out as a full-width column.
 ```
 
 `:hover` lifts the panel `-3px`, raises `--talos-sheen` to `1` (a cursor-tracked
-white spotlight via `::after`), and swaps the edge to `--talos-hud-edge-hot`.
+white spotlight via `::after`), and brightens the edge (`--_edge`) to `--talos-hud-edge-hot`.
 `:active` settles the lift to `-1px`. The motion is the affordance — only add it
 where the panel does something.
 
@@ -120,8 +121,8 @@ padding for article-width content containers.
 
 | Class | Effect |
 | --- | --- |
-| `.glass-panel` | base chamfered surface — host edge + 1px-inset fill, cuts top-right & bottom-left |
-| `.glass-panel-content` | required content wrapper — stacks above fill/sheen, full-width column |
+| `.glass-panel` | base chamfered surface — border + clip-path + cut diagonals, cuts top-right & bottom-left |
+| `.glass-panel-content` | required content wrapper — stacks above the sheen, full-width column |
 | `.interactive-panel` | adds hover lift (`-3px`), cursor sheen, hot edge; `:active` settles to `-1px` |
 | `.glass-panel--navbar-dense` | darker fill + brighter edge for compact nav / bars |
 | `.glass-panel--reading` | wider 24px chamfer, darker fill, generous padding for content |

@@ -7,8 +7,9 @@ import Demo from "../../../../components/Demo.astro";
 
 `.talos-tabs` is the in-console section switcher. The active tab carries an accent
 underline tick that rides the row's shared bottom border — selection is a bright
-hairline edge, never a heavy fill. State lives entirely on `aria-selected`: the
-markup encodes which tab is current, and the tick follows it.
+hairline edge, never a heavy fill. State lives on ARIA: `aria-selected="true"` for tablists, `aria-current` for
+tabs that are links. The markup encodes which tab is current, and the tick
+follows it.
 
 ## Default
 
@@ -50,9 +51,32 @@ text; hover brightens an unselected label. Toggle `aria-selected` in JS to switc
 </div>
 ```
 
-`--segmented` boxes the tabs into one bordered control with hairline dividers.
+`--segmented` boxes the tabs into one control on the
+[chamfer engine](/docs/components/chamfer/) (top-right cut) with hairline dividers.
 The underline tick is dropped; the active segment fills to `--talos-surface-3`
 instead. Inline-flex, so it shrinks to its contents.
+
+## Link tabs with counts
+
+<Demo>
+  <nav class="talos-tabs">
+    <a class="talos-tab" style="text-decoration:none" href="#" aria-current="page">Open <span class="talos-tab__count">12</span></a>
+    <a class="talos-tab" style="text-decoration:none" href="#">Closed <span class="talos-tab__count">48</span></a>
+    <a class="talos-tab" style="text-decoration:none" href="#">Drafts <span class="talos-tab__count">3</span></a>
+  </nav>
+</Demo>
+
+```html
+<nav class="talos-tabs">
+  <a class="talos-tab" style="text-decoration:none" href="/open" aria-current="page">Open <span class="talos-tab__count">12</span></a>
+  <a class="talos-tab" style="text-decoration:none" href="/closed">Closed <span class="talos-tab__count">48</span></a>
+</nav>
+```
+
+For navigation between pages, render `<a>` tabs and mark the current one with
+`aria-current="page"`; it shows the active state exactly as `aria-selected`
+does. Anchors keep the browser underline unless you clear it
+(`text-decoration: none`). `.talos-tab__count` adds a trailing tabular count.
 
 ## With panel
 
@@ -85,4 +109,6 @@ in step with the `aria-selected` toggle.
 | `.talos-tabs--segmented` | boxed inline-flex control with hairline dividers, filled active segment, no underline |
 | `.talos-tab` | a single tab button (display font, uppercase, light) |
 | `.talos-tabpanel` | padded content region below the tab row |
+| `[aria-current]` | marks the active tab for link navigation (anything but `"false"`); same look as `aria-selected` |
+| `.talos-tab__count` | trailing count inside a tab — tabular, dimmed, tight to the label |
 | `[aria-selected="true"]` | marks the active tab — scales in the accent underline (or fills the segment) and lifts the label to primary |

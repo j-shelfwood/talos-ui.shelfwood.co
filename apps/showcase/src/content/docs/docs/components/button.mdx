@@ -1,13 +1,14 @@
 ---
 title: Button
-description: Chamfered HUD action whose bottom-right cut is drawn as one SVG path; variants shift emphasis through edge + fill, not colour.
+description: Chamfered HUD action with a bottom-right cut; variants shift emphasis through edge + fill, not colour.
 ---
 
 import Demo from "../../../../components/Demo.astro";
 
-`.talos-button` is the chamfered call-to-action. The bottom-right cut is drawn
-as a single SVG `<path>` (fill + 1px non-scaling stroke), so the diagonal gets a
-clean uniform border with no doubled edge and no chopped corner. Emphasis is
+`.talos-button` is the chamfered call-to-action. It rides the
+[chamfer engine](/docs/components/chamfer/): a real 1px border, a `clip-path`
+that cuts the bottom-right corner, and a 1px diagonal drawn along the cut, so the
+hairline is continuous round the corner at any width. Emphasis is
 monochrome — variants move the edge brightness and fill, never the hue — so the
 button reads its weight from contrast, not colour. Render `<a>` when it links,
 `<button>` when it acts.
@@ -16,15 +17,12 @@ button reads its weight from contrast, not colour. Render `<a>` when it links,
 
 <Demo>
   <a class="talos-button" href="#">
-    <svg class="talos-button__shape" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0.5 0.5 H199.5 V29.5 L189.5 39.5 H0.5 Z" vector-effect="non-scaling-stroke" /></svg>
     <span class="talos-button__label">Primary</span>
   </a>
   <button class="talos-button talos-button--secondary">
-    <svg class="talos-button__shape" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0.5 0.5 H199.5 V29.5 L189.5 39.5 H0.5 Z" vector-effect="non-scaling-stroke" /></svg>
     <span class="talos-button__label">Secondary</span>
   </button>
   <button class="talos-button talos-button--ghost">
-    <svg class="talos-button__shape" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0.5 0.5 H199.5 V29.5 L189.5 39.5 H0.5 Z" vector-effect="non-scaling-stroke" /></svg>
     <span class="talos-button__label">Ghost</span>
   </button>
 </Demo>
@@ -33,36 +31,46 @@ button reads its weight from contrast, not colour. Render `<a>` when it links,
 <a class="talos-button" href="#">…</a>
 <button class="talos-button talos-button--secondary">…</button>
 <button class="talos-button talos-button--ghost">…</button>
+<button class="talos-button talos-button--solid">…</button>
 ```
 
 `.talos-button` alone is the primary (bright edge, solid fill). `--secondary`
 dims the edge for an alternative action; `--ghost` drops the fill to transparent
-for a tertiary, text-weight control that fills only on hover.
+for a tertiary, text-weight control that fills only on hover. `--solid` is the
+loud call to action: light fill, dark label.
+
+<Demo>
+  <button class="talos-button talos-button--solid">
+    <span class="talos-button__label">Solid</span>
+  </button>
+</Demo>
 
 ## Sizes
 
 <Demo>
+  <button class="talos-button talos-button--xs">
+    <span class="talos-button__label">Extra small</span>
+  </button>
   <button class="talos-button talos-button--sm">
-    <svg class="talos-button__shape" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0.5 0.5 H199.5 V29.5 L189.5 39.5 H0.5 Z" vector-effect="non-scaling-stroke" /></svg>
     <span class="talos-button__label">Small</span>
   </button>
   <button class="talos-button">
-    <svg class="talos-button__shape" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0.5 0.5 H199.5 V29.5 L189.5 39.5 H0.5 Z" vector-effect="non-scaling-stroke" /></svg>
     <span class="talos-button__label">Medium</span>
   </button>
   <button class="talos-button talos-button--lg">
-    <svg class="talos-button__shape" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0.5 0.5 H199.5 V29.5 L189.5 39.5 H0.5 Z" vector-effect="non-scaling-stroke" /></svg>
     <span class="talos-button__label">Large</span>
   </button>
 </Demo>
 
 ```html
+<button class="talos-button talos-button--xs">…</button>
 <button class="talos-button talos-button--sm">…</button>
 <button class="talos-button">…</button>
 <button class="talos-button talos-button--lg">…</button>
 ```
 
-Default (md) is `2.5rem` tall. `--sm` tightens height + padding for toolbars;
+Default (md) is `2.5rem` tall. `--xs` is `1.75rem`, the same height as a
+[`.talos-flag`](/docs/components/chamfer/#flag), for dense rows. `--sm` tightens height + padding for toolbars;
 `--lg` grows to `3rem` with wider padding for a hero CTA. Combine one variant
 with one optional size: `talos-button talos-button--ghost talos-button--sm`.
 
@@ -70,7 +78,6 @@ with one optional size: `talos-button talos-button--ghost talos-button--sm`.
 
 <Demo>
   <button class="talos-button" disabled>
-    <svg class="talos-button__shape" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0.5 0.5 H199.5 V29.5 L189.5 39.5 H0.5 Z" vector-effect="non-scaling-stroke" /></svg>
     <span class="talos-button__label">Locked</span>
   </button>
 </Demo>
@@ -81,10 +88,34 @@ with one optional size: `talos-button talos-button--ghost talos-button--sm`.
 
 `[disabled]` / `:disabled` dims to 0.5 and removes pointer events.
 
-## Markup — SVG path vs. bare fallback
+## Selected
 
-The chamfer needs the `.talos-button__shape` SVG child. The Astro `<Button>`
-emits it for you:
+<Demo>
+  <button class="talos-button talos-button--ghost" aria-pressed="true">
+    <span class="talos-button__label">Pressed</span>
+  </button>
+  <button class="talos-button talos-button--ghost" aria-pressed="false">
+    <span class="talos-button__label">Not pressed</span>
+  </button>
+  <a class="talos-button talos-button--ghost" href="#" aria-current="page">
+    <span class="talos-button__label">Current</span>
+  </a>
+</Demo>
+
+```html
+<button class="talos-button talos-button--ghost" aria-pressed="true">Pressed</button>
+<a class="talos-button talos-button--ghost" href="/docs/" aria-current="page">Current</a>
+```
+
+`aria-pressed="true"` (toggles) and `aria-current` other than `false`
+(current-location links) recolour the edge and label to `--talos-accent`. The
+state lives on the ARIA attribute, so the markup and the look cannot disagree.
+
+## Markup
+
+`.talos-button` needs no child element: a bare `<a>` or `<button>` carries the
+cut. The optional `.talos-button__label` wraps content that mixes text and icons.
+The Astro `<Button>` renders the same markup:
 
 ```astro
 ---
@@ -94,17 +125,8 @@ import { Button } from "@j_shelfwood/talos-ui/astro";
 ```
 
 ```html
-<button class="talos-button">
-  <svg class="talos-button__shape" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-    <path d="M0.5 0.5 H199.5 V29.5 L189.5 39.5 H0.5 Z" vector-effect="non-scaling-stroke" />
-  </svg>
-  <span class="talos-button__label">Launch</span>
-</button>
+<a class="talos-button" href="/launch">Launch</a>
 ```
-
-A bare `.talos-button` with no `.talos-button__shape` child (plain HTML / Blade)
-falls back to a square 1px border via `:not(:has(.talos-button__shape))` — still
-correct, just uncut.
 
 ## Classes
 
@@ -113,8 +135,10 @@ correct, just uncut.
 | `.talos-button` | base | primary — solid fill, bright edge, md size |
 | `.talos-button--secondary` | variant | dimmer edge, alternative action |
 | `.talos-button--ghost` | variant | transparent fill, fills on hover |
+| `.talos-button--solid` | variant | light fill, dark label — the loud call to action |
+| `.talos-button--xs` | size | dense — `1.75rem`, tight padding |
 | `.talos-button--sm` | size | compact — `2.25rem`, tighter padding |
 | `.talos-button--lg` | size | hero — `3rem`, wider padding |
-| `.talos-button__shape` | element | the SVG `<path>` that draws the chamfered outline |
-| `.talos-button__label` | element | content wrapper above the shape layer |
+| `.talos-button__label` | element | optional content wrapper (inline-flex, inherits the gap) |
+| `[aria-pressed="true"]` / `[aria-current]` | state | accent edge + label |
 | `[disabled]` / `:disabled` | state | dims to 0.5, blocks pointer events |

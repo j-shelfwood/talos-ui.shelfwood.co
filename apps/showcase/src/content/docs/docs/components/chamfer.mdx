@@ -1,0 +1,103 @@
+---
+title: Chamfer & flag
+description: The one engine behind every cut corner — a real 1px border, a clip-path, and a 1px diagonal per cut — plus the flag tag built on it.
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+Every chamfered talos surface (panel, button, flag, input, textarea, select,
+alert, toast, stat, readout, avatar) is drawn by one mechanism: a real 1px
+`border`, a `clip-path` polygon that cuts the corners, and one 1px diagonal per
+cut painted as a background gradient in that corner's own box. `clip-path` alone
+slices the border off the cut; the gradient draws the hairline the border cannot,
+so the edge is continuous round every cut. Each cut is an exact N px at any
+element size, the fill may be translucent, and no pseudo-element is spent.
+
+`.talos-chamfer` puts that engine on your own markup.
+
+## Chamfer
+
+<Demo>
+  <div class="talos-chamfer talos-pad" style="width:200px"><span class="talos-eyebrow">Default</span></div>
+  <div class="talos-chamfer talos-chamfer--md talos-pad" style="width:200px"><span class="talos-eyebrow">--md</span></div>
+  <div class="talos-chamfer talos-chamfer--sm talos-pad" style="width:200px"><span class="talos-eyebrow">--sm</span></div>
+  <div class="talos-chamfer talos-chamfer--btn talos-pad" style="width:200px"><span class="talos-eyebrow">--btn</span></div>
+  <div class="talos-chamfer talos-chamfer--flag talos-pad" style="width:200px"><span class="talos-eyebrow">--flag</span></div>
+</Demo>
+
+```html
+<div class="talos-chamfer">…</div>
+<div class="talos-chamfer talos-chamfer--md">…</div>
+<div class="talos-chamfer talos-chamfer--sm">…</div>
+<div class="talos-chamfer talos-chamfer--btn">…</div>
+<div class="talos-chamfer talos-chamfer--flag">…</div>
+```
+
+The default is the panel geometry: `--talos-chamfer` (14px) on top-right and
+bottom-left. The modifiers pick the other house shapes by role: `--md` and `--sm`
+cut the same two corners at 10px and 8px, `--btn` cuts bottom-right only (10px),
+`--flag` cuts top-right only (8px).
+
+## Custom cuts and colours
+
+<Demo>
+  <div class="talos-chamfer talos-pad" style="width:200px;--_tl:20px;--_tr:0px;--_br:20px;--_bl:0px;--_edge:var(--talos-accent);--_fill:hsl(var(--talos-accent-hsl) / 0.08)">
+    <span class="talos-eyebrow">Top-left + bottom-right</span>
+  </div>
+</Demo>
+
+```html
+<div class="talos-chamfer" style="--_tl: 20px; --_tr: 0px; --_br: 20px; --_bl: 0px;
+  --_edge: var(--talos-accent); --_fill: hsl(var(--talos-accent-hsl) / 0.08)">…</div>
+```
+
+The engine reads six custom properties. Set them on the element (or in your own
+class) and nothing else needs to move:
+
+| Property | Effect |
+| --- | --- |
+| `--_tl` `--_tr` `--_br` `--_bl` | cut size per corner; `0px` leaves the corner square |
+| `--_edge` | hairline colour (border and diagonals) |
+| `--_fill` | background colour; may be translucent |
+
+State changes rebind `--_edge` and `--_fill`. The engine has specificity 0, so
+any component rule or consumer class overrides it. An element that clips its own
+box cannot show an `outline`; give it a `:focus-visible` edge instead.
+
+## Flag
+
+<Demo>
+  <span class="talos-flag">Default</span>
+  <span class="talos-flag talos-flag--active">Active</span>
+  <span class="talos-flag talos-flag--muted">Muted</span>
+  <span class="talos-flag talos-flag--warning">Warning</span>
+  <span class="talos-flag talos-flag--danger">Danger</span>
+</Demo>
+
+```html
+<span class="talos-flag">Default</span>
+<span class="talos-flag talos-flag--active">Active</span>
+<span class="talos-flag talos-flag--muted">Muted</span>
+<span class="talos-flag talos-flag--warning">Warning</span>
+<span class="talos-flag talos-flag--danger">Danger</span>
+```
+
+`.talos-flag` is the HUD tag and status chip: a display-face uppercase label
+with a top-right cut. It is non-interactive and lines up with
+[`.talos-button--xs`](/docs/components/button/#sizes). The status modifiers
+rebind edge, fill, and text colour together.
+
+## Classes
+
+| Class | Effect |
+| --- | --- |
+| `.talos-chamfer` | engine on any element; top-right + bottom-left cut, 14px |
+| `.talos-chamfer--md` | same corners, 10px |
+| `.talos-chamfer--sm` | same corners, 8px |
+| `.talos-chamfer--btn` | bottom-right cut, 10px |
+| `.talos-chamfer--flag` | top-right cut, 8px |
+| `.talos-flag` | tag / status chip, top-right cut |
+| `.talos-flag--active` | brighter edge, light fill, foreground text |
+| `.talos-flag--muted` | tertiary text colour |
+| `.talos-flag--warning` | warning edge, fill, and text |
+| `.talos-flag--danger` | danger edge, fill, and text |

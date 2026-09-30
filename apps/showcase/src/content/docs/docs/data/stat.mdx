@@ -6,7 +6,7 @@ description: Chamfered KPI card whose delta arrow and colour read up/down at a g
 import Demo from "../../../../components/Demo.astro";
 
 `.talos-stat` is a single-metric KPI card. Its chamfered top-right + bottom-left
-cut is drawn as a two-layer hairline (host edge, 1px-inset fill), and the delta
+cut is drawn by the [chamfer engine](/docs/components/chamfer/) (1px border, clip-path, cut diagonals), and the delta
 row is the only chroma — `--up`/`--down` flip an ▲/▼ glyph and recolour to
 success/danger, so direction reads before the number does.
 
@@ -83,7 +83,7 @@ move has no good/bad polarity.
 
 | Class | Effect |
 | --- | --- |
-| `.talos-stat` | chamfered KPI card (two-layer hairline cut) |
+| `.talos-stat` | chamfered KPI card (engine cut, top-right + bottom-left) |
 | `.talos-stat__label` | uppercase HUD-tracked metric name |
 | `.talos-stat__value` | large light-weight value, tabular figures |
 | `.talos-stat__delta` | change row; neutral/tertiary by default |
