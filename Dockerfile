@@ -25,6 +25,7 @@ FROM nginx:1.27-alpine AS serve
 # gitignored/dockerignored and only exists inside the build stage after `bun run build`).
 COPY --from=build /app/apps/showcase/dist /usr/share/nginx/html
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
+COPY deploy/security-headers.conf /etc/nginx/snippets/security-headers.conf
 EXPOSE 80
 # NOTE: deliberately NO Dockerfile HEALTHCHECK — Coolify caches
 # custom_healthcheck_found and then wedges rolling updates on every later deploy
