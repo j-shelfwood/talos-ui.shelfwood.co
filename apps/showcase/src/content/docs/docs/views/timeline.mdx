@@ -1,0 +1,247 @@
+---
+title: Timeline
+description: "A swimlane timeline where a bar's fill says who started a run, a mark at its end says how it ended, and curves connect one run to the next."
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-timeline` draws runs of work on a shared time axis: one chamfered lane
+per group, bars whose **fill pattern** says what started them, a **mark** at the
+end of each bar for its result, curved edges between runs, and a side drawer for
+one item's detail. No hue carries a category; only the status marks use the
+status tokens. Lives in `talos-timeline.css` (in `all.css`); it needs `talos.css`
+for the chamfer engine and `talos-layout.css` for the pulse of the live mark.
+
+## Default — lanes, bars, marks, events
+
+<Demo>
+  <div class="talos-timeline" style="width:100%;--talos-timeline-label:9rem;--talos-timeline-width:760px;--talos-timeline-hour:120px;--talos-timeline-hour0:20px">
+    <div class="talos-timeline__heads">
+      <div class="talos-timeline__axis-head">Amsterdam</div>
+      <div class="talos-timeline__head" style="height:54px">
+        <span class="talos-timeline__title">operator</span><span class="talos-timeline__meta">3 runs</span>
+      </div>
+      <div class="talos-timeline__head" style="height:54px">
+        <span class="talos-timeline__title">fleet</span><span class="talos-timeline__meta">4 runs</span>
+      </div>
+      <div class="talos-timeline__head talos-timeline__head--events" style="height:36px">
+        <span class="talos-timeline__title">events</span><span class="talos-timeline__meta">4</span>
+      </div>
+    </div>
+    <div class="talos-timeline__viewport">
+      <div class="talos-timeline__tracks">
+        <div class="talos-timeline__axis">
+          <span class="talos-timeline__tick" style="--x:20px"><span>09:00</span></span>
+          <span class="talos-timeline__tick" style="--x:140px"><span>10:00</span></span>
+          <span class="talos-timeline__tick" style="--x:260px"><span>11:00</span></span>
+          <span class="talos-timeline__tick" style="--x:380px"><span>12:00</span></span>
+          <span class="talos-timeline__tick" style="--x:500px"><span>13:00</span></span>
+          <span class="talos-timeline__tick" style="--x:620px"><span>14:00</span></span>
+          <span class="talos-timeline__tick" style="--x:740px"><span>15:00</span></span>
+        </div>
+        <div class="talos-timeline__lane" style="height:54px">
+          <span class="talos-timeline__bar talos-timeline__bar--solid" style="--x:30px;--w:90px;--y:12px"><i class="talos-timeline__mark talos-timeline__mark--merged"></i></span>
+          <span class="talos-timeline__bar talos-timeline__bar--solid" style="--x:300px;--w:140px;--y:12px"><i class="talos-timeline__mark talos-timeline__mark--decision"></i></span>
+          <span class="talos-timeline__bar talos-timeline__bar--solid" style="--x:640px;--w:100px;--y:30px"><i class="talos-timeline__mark talos-timeline__mark--live"></i></span>
+        </div>
+        <div class="talos-timeline__lane" style="height:54px">
+          <span class="talos-timeline__bar talos-timeline__bar--outline" style="--x:140px;--w:120px;--y:12px"><i class="talos-timeline__mark talos-timeline__mark--opened"></i></span>
+          <span class="talos-timeline__bar talos-timeline__bar--hatched" style="--x:160px;--w:100px;--y:30px"><i class="talos-timeline__mark talos-timeline__mark--merged"></i></span>
+          <span class="talos-timeline__bar talos-timeline__bar--dotted" style="--x:460px;--w:80px;--y:12px"><i class="talos-timeline__mark talos-timeline__mark--failed"></i></span>
+          <span class="talos-timeline__bar talos-timeline__bar--muted" style="--x:580px;--w:50px;--y:30px"></span>
+        </div>
+        <div class="talos-timeline__lane talos-timeline__lane--events" style="height:36px">
+          <span class="talos-timeline__event" style="--x:125px;--y:18px"></span>
+          <span class="talos-timeline__event talos-timeline__event--solid" style="--x:290px;--y:18px"></span>
+          <span class="talos-timeline__event talos-timeline__event--faint" style="--x:455px;--y:18px"></span>
+          <span class="talos-timeline__event talos-timeline__mark talos-timeline__mark--posted" style="--x:650px;--y:18px"></span>
+        </div>
+        <svg class="talos-timeline__edges" aria-hidden="true">
+          <path d="M120,52 C130,52 130,112 140,112" />
+          <path d="M260,130 C280,130 280,52 300,52" />
+        </svg>
+      </div>
+    </div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-timeline" style="--talos-timeline-width:760px;--talos-timeline-hour:120px;--talos-timeline-hour0:20px">
+  <div class="talos-timeline__heads">
+    <div class="talos-timeline__axis-head">Amsterdam</div>
+    <div class="talos-timeline__head" style="height:54px">
+      <span class="talos-timeline__title">operator</span><span class="talos-timeline__meta">3 runs</span>
+    </div>
+  </div>
+  <div class="talos-timeline__viewport">
+    <div class="talos-timeline__tracks">
+      <div class="talos-timeline__axis">
+        <span class="talos-timeline__tick" style="--x:20px"><span>09:00</span></span>
+      </div>
+      <div class="talos-timeline__lane" style="height:54px">
+        <span class="talos-timeline__bar talos-timeline__bar--solid" style="--x:30px;--w:90px;--y:12px">
+          <i class="talos-timeline__mark talos-timeline__mark--merged"></i>
+        </span>
+      </div>
+      <svg class="talos-timeline__edges"><path d="M120,52 C130,52 130,112 140,112" /></svg>
+    </div>
+  </div>
+</div>
+```
+
+The caller computes every position in px and passes it as a custom property:
+`--x`, `--w`, `--y` on bars and events, `--x` on ticks, and
+`--talos-timeline-width`, `--talos-timeline-hour` (px per hour) and
+`--talos-timeline-hour0` (x of the first hour rule) on the root. The same numbers
+place the SVG edge paths, which live in the tracks' px space (axis and lane
+gaps included). A head and its lane share a height and read as one chamfered
+panel: the head carries the bottom-left cut, the lane the top-right cut. The
+label column scrolls with nothing; the tracks scroll horizontally inside
+`__viewport`.
+
+## Who started it — the fill
+
+<Demo>
+  <button class="talos-flag" aria-pressed="true" style="gap:.5rem"><span class="talos-timeline__swatch talos-timeline__bar--solid"></span>person</button>
+  <button class="talos-flag" aria-pressed="true" style="gap:.5rem"><span class="talos-timeline__swatch talos-timeline__bar--outline"></span>scheduler</button>
+  <button class="talos-flag" aria-pressed="true" style="gap:.5rem"><span class="talos-timeline__swatch talos-timeline__bar--hatched"></span>delegated</button>
+  <button class="talos-flag" aria-pressed="false" style="gap:.5rem"><span class="talos-timeline__swatch talos-timeline__bar--dotted"></span>background</button>
+  <button class="talos-flag" aria-pressed="true" style="gap:.5rem"><span class="talos-timeline__swatch talos-timeline__bar--muted"></span>no change</button>
+</Demo>
+
+```html
+<button class="talos-flag" aria-pressed="true">
+  <span class="talos-timeline__swatch talos-timeline__bar--hatched"></span>delegated
+</button>
+```
+
+The bar variants set paint only, never position, so the same class dresses a
+legend swatch. Put the swatches in toggle flags (`<button class="talos-flag"
+aria-pressed>`) and the legend doubles as the filter: a pressed flag shows its
+runs, an unpressed one is struck through.
+
+| Class | Encodes |
+| --- | --- |
+| `.talos-timeline__bar--solid` | started by a person |
+| `.talos-timeline__bar--outline` | started by a supervisor or scheduler (outline, half-tone fill) |
+| `.talos-timeline__bar--hatched` | delegated work (diagonal hatch) |
+| `.talos-timeline__bar--dotted` | background or other work (dotted outline) |
+| `.talos-timeline__bar--muted` | a run that changed nothing (25% opacity, dashed) |
+
+## How it ended — the mark
+
+<Demo>
+  <span class="talos-flag" style="gap:.5rem"><i class="talos-timeline__mark talos-timeline__mark--merged"></i>merged</span>
+  <span class="talos-flag" style="gap:.5rem"><i class="talos-timeline__mark talos-timeline__mark--opened"></i>opened</span>
+  <span class="talos-flag" style="gap:.5rem"><i class="talos-timeline__mark talos-timeline__mark--decision"></i>decision</span>
+  <span class="talos-flag" style="gap:.5rem"><i class="talos-timeline__mark talos-timeline__mark--failed"></i>failed</span>
+  <span class="talos-flag" style="gap:.5rem"><i class="talos-timeline__mark talos-timeline__mark--posted"></i>posted</span>
+  <span class="talos-flag" style="gap:.5rem"><i class="talos-timeline__mark talos-timeline__mark--live"></i>live</span>
+</Demo>
+
+| Class | Encodes |
+| --- | --- |
+| `.talos-timeline__mark--merged` / `--opened` | success-token filled / hollow square |
+| `.talos-timeline__mark--decision` / `--failed` | warning-token chevron / danger-token x |
+| `.talos-timeline__mark--posted` / `--live` | hollow dot / the accent pulse (still running) |
+| `.talos-timeline__event` (`--solid`, `--faint`) | a point in time: hollow, solid or faint diamond |
+
+A mark inside a bar sits just past its end. A mark placed as an event
+(`.talos-timeline__event.talos-timeline__mark--posted`) keeps its own shape
+instead of the diamond.
+
+## Tracing one chain
+
+<Demo>
+  <div class="talos-timeline is-tracing" style="width:100%;--talos-timeline-label:9rem;--talos-timeline-width:520px;--talos-timeline-hour:120px;--talos-timeline-hour0:20px">
+    <div class="talos-timeline__heads">
+      <div class="talos-timeline__axis-head">Trace</div>
+      <div class="talos-timeline__head" style="height:54px"><span class="talos-timeline__title">operator</span></div>
+      <div class="talos-timeline__head" style="height:54px"><span class="talos-timeline__title">fleet</span></div>
+    </div>
+    <div class="talos-timeline__viewport">
+      <div class="talos-timeline__tracks">
+        <div class="talos-timeline__axis">
+          <span class="talos-timeline__tick" style="--x:20px"><span>09:00</span></span>
+          <span class="talos-timeline__tick" style="--x:140px"><span>10:00</span></span>
+          <span class="talos-timeline__tick" style="--x:260px"><span>11:00</span></span>
+          <span class="talos-timeline__tick" style="--x:380px"><span>12:00</span></span>
+          <span class="talos-timeline__tick" style="--x:500px"><span>13:00</span></span>
+        </div>
+        <div class="talos-timeline__lane" style="height:54px">
+          <span class="talos-timeline__bar talos-timeline__bar--solid is-lit" style="--x:30px;--w:90px;--y:12px"><i class="talos-timeline__mark talos-timeline__mark--merged"></i></span>
+          <span class="talos-timeline__bar talos-timeline__bar--solid" style="--x:300px;--w:140px;--y:30px"><i class="talos-timeline__mark talos-timeline__mark--decision"></i></span>
+        </div>
+        <div class="talos-timeline__lane" style="height:54px">
+          <span class="talos-timeline__bar talos-timeline__bar--hatched is-lit" style="--x:140px;--w:120px;--y:12px"><i class="talos-timeline__mark talos-timeline__mark--opened"></i></span>
+          <span class="talos-timeline__bar talos-timeline__bar--outline" style="--x:160px;--w:100px;--y:30px"><i class="talos-timeline__mark talos-timeline__mark--merged"></i></span>
+          <span class="talos-timeline__bar talos-timeline__bar--outline is-lit" style="--x:300px;--w:100px;--y:12px"><i class="talos-timeline__mark talos-timeline__mark--merged"></i></span>
+        </div>
+        <svg class="talos-timeline__edges" aria-hidden="true">
+          <path class="is-lit" d="M120,52 C130,52 130,112 140,112" />
+          <path class="is-lit" d="M260,112 C280,112 280,112 300,112" />
+          <path d="M260,130 C280,130 280,130 300,130" />
+        </svg>
+      </div>
+    </div>
+  </div>
+</Demo>
+
+```html
+<div class="talos-timeline is-tracing">
+  …
+  <span class="talos-timeline__bar talos-timeline__bar--hatched is-lit" …></span>
+  <svg class="talos-timeline__edges"><path class="is-lit" d="…" /></svg>
+</div>
+```
+
+Add `.is-tracing` to the root and `.is-lit` to the bars, events and edge paths
+of one chain: everything else drops to `--talos-timeline-dim` (0.14) and the lit
+edges brighten.
+
+## Drawer
+
+<Demo>
+  <aside class="talos-drawer is-open" style="position:relative;inset:auto;width:22rem;box-shadow:none">
+    <div class="talos-drawer__head">
+      <span class="talos-hud talos-hud--tight" style="font-size:.7rem">Run · fleet</span>
+      <button class="talos-button talos-button--xs" type="button">Close</button>
+    </div>
+    <div class="talos-drawer__body">
+      <h2 class="talos-drawer__title">Bump talos-ui to 0.12.1</h2>
+      <p style="margin:0;font-size:.8rem;color:var(--talos-text-secondary)">Delegated 10:00, PR opened 11:00. Waiting on review.</p>
+    </div>
+  </aside>
+</Demo>
+
+```html
+<aside class="talos-drawer is-open">
+  <div class="talos-drawer__head">…<button class="talos-button talos-button--xs">Close</button></div>
+  <div class="talos-drawer__body">
+    <h2 class="talos-drawer__title">Bump talos-ui to 0.12.1</h2>
+  </div>
+</aside>
+```
+
+`.talos-drawer` is a chamfered side panel fixed to the right edge for the detail
+of one selected item. It is closed by default; `.is-open` (or `[data-open]`)
+slides it in. The demo above overrides `position` so it renders in place.
+
+## Classes
+
+| Class | Role |
+| --- | --- |
+| `.talos-timeline` | root; `--talos-timeline-label`, `-width`, `-hour`, `-hour0` |
+| `.talos-timeline__heads` | fixed label column |
+| `.talos-timeline__axis-head` / `__head` | axis label cell / one head per lane |
+| `.talos-timeline__head--events` / `__lane--events` | the darker event row |
+| `.talos-timeline__title` / `__meta` | head title / count line |
+| `.talos-timeline__viewport` / `__tracks` | horizontal scroller / px-wide track column |
+| `.talos-timeline__axis` / `__tick` | time axis / tick at `--x` |
+| `.talos-timeline__lane` | one lane, hour rules drawn in its background |
+| `.talos-timeline__bar` | a run at `--x`, `--w`, `--y` |
+| `.talos-timeline__event` | a point in time at `--x`, `--y` |
+| `.talos-timeline__edges` | SVG edge layer over the tracks |
+| `.talos-timeline__tip` | multi-line hover tip on `.talos-tooltip` chrome |
+| `.talos-timeline__swatch` | legend swatch, dressed by a bar variant |
+| `.talos-drawer` (`__head`, `__body`, `__title`) | detail side panel; `.is-open` / `[data-open]` |
