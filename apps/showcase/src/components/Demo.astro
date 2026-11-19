@@ -40,6 +40,11 @@ const label = Astro.props.label ?? (live ? "LIVE" : "PREVIEW");
      (the reset lives in DocsShell so it can override the .docs-prose rules). */
   .talos-demo {
     position: relative;
+    /* Entrance keyframes that start off to the side (talos-toast-in starts at
+       translateX(100% + gap) with fill both) leave Chrome counting that offset
+       as scrollable overflow after the animation ends; clip it to the demo so a
+       phone page does not scroll sideways. clip, not hidden: no scroll box. */
+    overflow-x: clip;
     margin: 1.25rem 0 1.75rem;
     border: 1px solid var(--talos-hud-edge, rgba(255, 255, 255, 0.14));
     border-radius: 4px;

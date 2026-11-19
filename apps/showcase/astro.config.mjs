@@ -3,6 +3,29 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import talosCodeTheme from "./talos-code-theme.mjs";
 
+// Wrap every markdown table in a horizontal scroll container, so a wide table
+// (nowrap inline code in cells) scrolls inside the column instead of
+// stretching the page on a phone. Tables written as JSX inside a <Demo> are
+// not markdown elements and are left alone.
+function rehypeScrollTables() {
+  const visit = (node) => {
+    if (!node.children) return;
+    node.children = node.children.map((child) => {
+      visit(child);
+      if (child.type === "element" && child.tagName === "table") {
+        return {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["docs-table-scroll"] },
+          children: [child],
+        };
+      }
+      return child;
+    });
+  };
+  return (tree) => visit(tree);
+}
+
 // https://astro.build
 // Docs are hand-built (DocsShell.astro + [...slug].astro) using the Talos
 // component library itself — no Starlight. MDX support is kept for the two
@@ -18,6 +41,7 @@ export default defineConfig({
   },
   integrations: [mdx(), sitemap()],
   markdown: {
+    rehypePlugins: [rehypeScrollTables],
     // talos theme: every token colour is a var(--talos-code-*) defined in
     // DocsShell, so code tracks the Talos palette. The transformer puts the
     // chamfer engine classes on every fenced <pre>, so code blocks draw their
