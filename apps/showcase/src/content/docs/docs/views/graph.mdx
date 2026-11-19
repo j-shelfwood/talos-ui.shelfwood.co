@@ -1,0 +1,161 @@
+---
+title: Graph canvas
+description: "The chrome of a pannable, zoomable node-graph view: the void with its world-space dot grid, toolbar, zoom cluster, minimap, time scrubber and fold-away panels."
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`.talos-graph` is the frame around a node graph, not the graph itself. It gives
+you the void with its ambient dot grid, a toolbar, a zoom cluster, a minimap, a
+time scrubber and collapsible side panels. You draw the nodes and edges on a
+`<canvas>` or `<svg>` in `.talos-graph__stage`, reading the talos tokens with
+`getComputedStyle` so the drawing stays on palette. Lives in `talos-graph.css`
+(in `all.css`); it needs `talos.css` and `talos-forms.css` (`.talos-range`,
+`.talos-input`).
+
+## Default — the full chrome
+
+<Demo>
+  <div class="talos-graph" style="width:100%;height:540px">
+    <svg class="talos-graph__stage" viewBox="0 0 600 540" preserveAspectRatio="xMinYMid meet" aria-label="Example graph: two runs feeding a delegated run that merged a pull request">
+      <g fill="none" stroke="var(--talos-edge-strong)" stroke-width="1">
+        <path d="M150,163 C170,163 170,238 190,238" />
+        <path d="M150,313 C170,313 170,238 190,238" />
+        <path d="M255,261 L255,330" />
+      </g>
+      <g font-family="var(--talos-font-display)" font-size="11" letter-spacing="1.5">
+        <rect x="30" y="140" width="120" height="46" fill="var(--talos-surface-1)" stroke="var(--talos-hud-edge)" />
+        <text x="42" y="160" fill="var(--talos-text-primary)">OPERATOR</text>
+        <text x="42" y="176" fill="var(--talos-text-tertiary)" font-size="9">09:00 · 1h 30m</text>
+        <rect x="30" y="290" width="120" height="46" fill="var(--talos-surface-1)" stroke="var(--talos-hud-edge)" stroke-dasharray="3 3" />
+        <text x="42" y="310" fill="var(--talos-text-primary)">SCHEDULER</text>
+        <text x="42" y="326" fill="var(--talos-text-tertiary)" font-size="9">10:00 · 2h</text>
+        <rect x="190" y="215" width="130" height="46" fill="var(--talos-surface-2)" stroke="var(--talos-hud-edge-hot)" />
+        <text x="202" y="235" fill="var(--talos-text-primary)">FLEET</text>
+        <text x="202" y="251" fill="var(--talos-text-tertiary)" font-size="9">11:00 · delegated</text>
+        <rect x="190" y="330" width="130" height="46" fill="var(--talos-surface-1)" stroke="var(--talos-success)" />
+        <text x="202" y="350" fill="var(--talos-text-primary)">PR #12</text>
+        <text x="202" y="366" fill="var(--talos-success)" font-size="9">MERGED</text>
+      </g>
+    </svg>
+    <div class="talos-graph__toolbar">
+      <input class="talos-input" type="search" placeholder="Find a node" style="width:12rem" />
+      <button class="talos-flag" type="button" aria-pressed="true">operator</button>
+      <button class="talos-flag" type="button" aria-pressed="true">fleet</button>
+      <button class="talos-flag" type="button" aria-pressed="false">background</button>
+    </div>
+    <div class="talos-graph__zoom">
+      <button class="talos-button talos-button--xs" type="button" aria-label="Zoom in">+</button>
+      <button class="talos-button talos-button--xs" type="button" aria-label="Zoom out">−</button>
+      <span class="talos-graph__readout">100%</span>
+    </div>
+    <div class="talos-graph__minimap">
+      <svg viewBox="0 0 600 540" style="display:block;width:100%;height:100%" aria-hidden="true">
+        <g fill="var(--talos-text-tertiary)">
+          <rect x="30" y="140" width="120" height="46" />
+          <rect x="30" y="290" width="120" height="46" />
+          <rect x="190" y="215" width="130" height="46" />
+          <rect x="190" y="330" width="130" height="46" />
+        </g>
+        <rect x="10" y="110" width="340" height="290" fill="none" stroke="var(--talos-foreground)" stroke-width="5" />
+      </svg>
+    </div>
+    <div class="talos-graph__scrubber">
+      <button class="talos-button talos-button--xs" type="button">Play</button>
+      <input class="talos-range" type="range" min="0" max="100" value="62" aria-label="Time" />
+      <span class="talos-graph__time">18-11 11:40</span>
+    </div>
+    <aside class="talos-graph__panel" style="width:13rem">
+      <button class="talos-graph__panel-head" type="button" aria-expanded="true">
+        <span class="talos-muted">//02</span><span class="talos-hud">Runs</span><span class="talos-flag">4</span>
+      </button>
+      <div class="talos-graph__panel-body" style="padding:.75rem 1rem;font-size:.75rem;color:var(--talos-text-secondary)">
+        <p style="margin:0 0 .4rem">operator · merged</p>
+        <p style="margin:0 0 .4rem">scheduler · opened</p>
+        <p style="margin:0 0 .4rem">fleet · delegated</p>
+        <p style="margin:0">PR #12 · merged</p>
+      </div>
+    </aside>
+    <aside class="talos-graph__panel talos-graph__panel--start" data-collapsed>
+      <button class="talos-graph__panel-head" type="button" aria-expanded="false">
+        <span class="talos-muted">//01</span><span class="talos-hud">Filters</span><span class="talos-flag">3</span>
+      </button>
+      <div class="talos-graph__panel-body">…</div>
+    </aside>
+  </div>
+</Demo>
+
+```html
+<main class="talos-graph" style="height:100vh">
+  <canvas class="talos-graph__stage"></canvas>
+  <div class="talos-graph__toolbar">
+    <input class="talos-input" type="search">
+    <button class="talos-flag" aria-pressed="true">operator</button>
+  </div>
+  <div class="talos-graph__zoom">
+    <button class="talos-button talos-button--xs">+</button>
+    <span class="talos-graph__readout">100%</span>
+  </div>
+  <div class="talos-graph__minimap"><canvas></canvas></div>
+  <div class="talos-graph__scrubber">
+    <button class="talos-button talos-button--xs">Play</button>
+    <input class="talos-range" type="range">
+    <span class="talos-graph__time">18-11 11:40</span>
+  </div>
+  <aside class="talos-graph__panel">
+    <button class="talos-graph__panel-head" aria-expanded="true">
+      <span class="talos-hud">Runs</span><span class="talos-flag">4</span>
+    </button>
+    <div class="talos-graph__panel-body">…</div>
+  </aside>
+  <aside class="talos-graph__panel talos-graph__panel--start" data-collapsed>…</aside>
+</main>
+```
+
+Give `.talos-graph` a height; every overlay is absolutely positioned inside it.
+The minimap, scrubber and panels ride the chamfer engine. The right panel sits
+below the toolbar and above the minimap; `.talos-graph__panel--start` docks a
+second one on the left edge, clear of the zoom cluster. The panel is
+`min(22rem, 40vw)` wide by default; the demo narrows it to fit this column.
+
+## Panels — fold to the head row
+
+`.talos-graph__panel-head` is the panel's fold button: a slug, a HUD title and a
+count flag. Set `[data-collapsed]` on the panel to fold it to that row (the body
+hides, the panel shrinks to its head) and keep `aria-expanded` on the button in
+step. In the demo above the left **Filters** panel is folded and the right
+**Runs** panel is open.
+
+## Camera — the grid stays in world space
+
+<Demo>
+  <div class="talos-graph" style="width:calc(50% - .5rem);height:180px"><span class="talos-graph__readout" style="position:absolute;left:.75rem;top:.75rem">zoom 1</span></div>
+  <div class="talos-graph" style="width:calc(50% - .5rem);height:180px;--talos-graph-zoom:2.4;--talos-graph-x:13px;--talos-graph-y:7px"><span class="talos-graph__readout" style="position:absolute;left:.75rem;top:.75rem">zoom 2.4, panned</span></div>
+</Demo>
+
+```js
+graph.style.setProperty("--talos-graph-zoom", camera.scale);
+graph.style.setProperty("--talos-graph-x", `${camera.x}px`);
+graph.style.setProperty("--talos-graph-y", `${camera.y}px`);
+```
+
+Set `--talos-graph-zoom` (the current scale) and `--talos-graph-x` /
+`--talos-graph-y` (the pan offset) on `.talos-graph` as the camera moves. The dot
+grid scales and shifts with them, so it reads as the floor the graph sits on
+rather than a texture on the screen. `.is-panning` and `.is-pointing` on the root
+set the grab and pointer cursors.
+
+## Classes
+
+| Class | Role |
+| --- | --- |
+| `.talos-graph` | root; `--talos-graph-zoom`, `--talos-graph-x`, `--talos-graph-y` |
+| `.talos-graph__stage` | the drawing surface (canvas or svg), inset 0 |
+| `.talos-graph__toolbar` | top overlay row (search, toggle flags) |
+| `.talos-graph__zoom` / `__readout` | vertical zoom buttons / scale readout |
+| `.talos-graph__minimap` | chamfered corner overview (holds a canvas) |
+| `.talos-graph__scrubber` / `__time` | bottom time bar with `.talos-range` / time readout |
+| `.talos-graph__panel` | right side panel; `[data-collapsed]` folds it |
+| `.talos-graph__panel--start` | the panel docked on the left edge |
+| `.talos-graph__panel-head` / `__panel-body` | fold button row / scrolling body |
+| `.is-panning` / `.is-pointing` | grab / pointer cursor on the stage |

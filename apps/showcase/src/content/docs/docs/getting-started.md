@@ -115,6 +115,8 @@ Import the whole surface with `all.css`, or pull only the modules you use:
 | `@j_shelfwood/talos-ui/talos-data.css` | tables, stats, code, log, avatar, meter |
 | `@j_shelfwood/talos-ui/talos-nav.css` | tabs, breadcrumbs, menu, sidebar, stepper |
 | `@j_shelfwood/talos-ui/talos-console.css` | zoned fixed-viewport shell |
+| `@j_shelfwood/talos-ui/talos-timeline.css` | swimlane timeline, side drawer |
+| `@j_shelfwood/talos-ui/talos-graph.css` | node-graph canvas chrome |
 
 `tokens.css` is pulled in by `talos.css`, so you never import it directly.
 

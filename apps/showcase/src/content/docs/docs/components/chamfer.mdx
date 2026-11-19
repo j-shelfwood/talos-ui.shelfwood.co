@@ -83,9 +83,27 @@ box cannot show an `outline`; give it a `:focus-visible` edge instead.
 ```
 
 `.talos-flag` is the HUD tag and status chip: a display-face uppercase label
-with a top-right cut. It is non-interactive and lines up with
+with a top-right cut. It lines up with
 [`.talos-button--xs`](/docs/components/button/#sizes). The status modifiers
 rebind edge, fill, and text colour together.
+
+## Toggle flag
+
+<Demo>
+  <button class="talos-flag" type="button" aria-pressed="true">Operator</button>
+  <button class="talos-flag" type="button" aria-pressed="true">Fleet</button>
+  <button class="talos-flag" type="button" aria-pressed="false">Background</button>
+</Demo>
+
+```html
+<button class="talos-flag" aria-pressed="true">Operator</button>
+<button class="talos-flag" aria-pressed="false">Background</button>
+```
+
+On a `<button>` with `aria-pressed`, the flag reads as on or off: pressed gets a
+strong edge and a light fill, unpressed is struck through in the disabled text
+colour. Use it for a legend that filters, as in the
+[timeline](/docs/views/timeline/) and the [graph canvas](/docs/views/graph/).
 
 ## Classes
 

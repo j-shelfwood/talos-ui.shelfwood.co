@@ -93,6 +93,13 @@ export const docsNav: DocsNavGroup[] = [
     ],
   },
   {
+    label: "Views",
+    items: [
+      { label: "Timeline", slug: "docs/views/timeline" },
+      { label: "Graph canvas", slug: "docs/views/graph" },
+    ],
+  },
+  {
     label: "Instruments",
     items: [
       { label: "Overview", slug: "docs/instruments/overview" },

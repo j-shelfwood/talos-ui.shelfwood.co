@@ -788,7 +788,7 @@ import "@j_shelfwood/talos-ui/all.css";
 
       // mouse parallax target (-1..1), eased in the loop so the lean is buttery
       const mouse = { x: 0, y: 0, ex: 0, ey: 0 };
-      addEventListener("pointermove", (e) => {
+      addEventListener("pointermove", (e: PointerEvent) => {
         mouse.x = (e.clientX / innerWidth - 0.5) * 2;
         mouse.y = (e.clientY / innerHeight - 0.5) * 2;
       }, { passive: true });

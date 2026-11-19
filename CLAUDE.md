@@ -4,12 +4,11 @@ This repo is the **showcase / documentation site** for the Talos UI design
 system. It is the live demo and docs — it is NOT the design system itself.
 
 The design system was split out on 2026-06-09 into its own repo. It is published
-to npm, but **this site consumes it as a git dependency** — it tracks the package
-repo's `main` branch directly, not a pinned npm version:
+to npm, and **this site consumes the published package at an exact version**:
 
 - **Package repo:** [`j-shelfwood/talos-ui`](https://github.com/j-shelfwood/talos-ui)
-- **npm package:** `@j_shelfwood/talos-ui` (user scope — underscore, NOT `@shelfwood`) — published, but not how this site pulls it
-- **Site dependency:** `github:j-shelfwood/talos-ui#main` in `apps/showcase/package.json` (lockfile-pinned to a commit)
+- **npm package:** `@j_shelfwood/talos-ui` (user scope — underscore, NOT `@shelfwood`)
+- **Site dependency:** an exact npm version in `apps/showcase/package.json`, the only manifest that declares it
 
 This repo does NOT contain `packages/` anymore. If you're looking for the
 components/CSS source, it's in the package repo. Don't re-vendor it here.
@@ -36,20 +35,22 @@ bun run build                # static build → apps/showcase/dist
 
 ## Updating the design system
 
-The site consumes the package as a **git dependency** pinned to the package
-repo's `main` branch (`github:j-shelfwood/talos-ui#main` in
-`apps/showcase/package.json`, resolved to a specific commit in `bun.lock`).
-There is no npm version to bump. To pull newer package work:
+The site pins an exact npm version of `@j_shelfwood/talos-ui` in
+`apps/showcase/package.json` (the root `package.json` does not declare it; a
+second pin there drifted before). The package is published to npm from its own
+repo via a tag-driven OIDC workflow (you don't publish from here); a release
+there changes nothing here until the pin is bumped:
 
 ```sh
-bun update @j_shelfwood/talos-ui   # re-resolve #main HEAD, rewrite the lockfile pin
+npm view @j_shelfwood/talos-ui version            # latest published
+cd apps/showcase && bun add @j_shelfwood/talos-ui@X.Y.Z --exact
 ```
 
-This couples the site's build output to whatever is on the package repo's
-`main` — a push there + a reinstall here changes what this site ships. The
-package is still published to npm from its own repo via a tag-driven OIDC
-workflow (you don't publish from here), but this site does not consume that
-published artifact.
+Before bumping, read the package's `CHANGELOG.md` for every version in between
+(local checkout `~/Projects/talos-ui`): pre-1.0, a minor version may remove
+classes or Astro components. Then `bun --filter showcase check` and
+`bun run build`. A new CSS module needs a docs page and a `docs-nav.ts` entry
+to show on the site; `BaseLayout.astro` loads it through `all.css` already.
 
 ## Deployment — Coolify (live Coolify state is the source of truth)
 
