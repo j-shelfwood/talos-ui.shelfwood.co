@@ -11,8 +11,8 @@ are pure developer-experience sugar on top.
 
 | Layer | Reach for it when | You add | Cost |
 | --- | --- | --- | --- |
-| **CSS** | You want chamfered panels, buttons, the grid and the ambient backdrop — styled with classes. | one `<link>` / `import` | ~12 KB gzip |
-| **+ Web components** | You need notched panels or the live instruments (gauge, meter, trend, flow, orbital, readout). | a `<script type="module">` | +18 KB gzip |
+| **CSS** | You want chamfered panels, buttons, the grid and the ambient backdrop — styled with classes. | one `<link>` / `import` | ~9 KB gzip (`talos.css` + tokens); ~27 KB for `all.css` |
+| **+ Web components** | You need notched panels or the live instruments (gauge, meter, trend, flow, orbital, readout). | a `<script type="module">` | +37 KB gzip (`wc` entry and its 32 chunks) |
 | **Astro wrappers** | You're on Astro and want `<GlassPanel>` / `<Button>` instead of raw markup. | a component import | 0 KB (DX only) |
 
 ## Install
@@ -130,13 +130,16 @@ the copy fresh:
 ```jsonc
 // package.json
 "scripts": {
-  "postinstall": "cp -R node_modules/@j_shelfwood/talos-ui/src/{talos.css,tokens.css,fonts} public/vendor/talos-ui/ && cp node_modules/@j_shelfwood/talos-ui/dist/wc/index.js public/vendor/talos-ui/wc.js"
+  "postinstall": "mkdir -p public/vendor/talos-ui && cp -R node_modules/@j_shelfwood/talos-ui/src/{talos.css,tokens.css,fonts} node_modules/@j_shelfwood/talos-ui/dist public/vendor/talos-ui/"
 }
 ```
 
+Copy the whole `dist/` directory: `dist/wc/index.js` imports its components
+from `../chunk-*.js`, so copied on its own it 404s in the browser.
+
 ```blade
 <link rel="stylesheet" href="{{ asset('vendor/talos-ui/talos.css') }}">
-<script type="module" src="{{ asset('vendor/talos-ui/wc.js') }}"></script>
+<script type="module" src="{{ asset('vendor/talos-ui/dist/wc/index.js') }}"></script>
 
 <div class="glass-panel interactive-panel">
   <div class="glass-panel-content talos-pad">…</div>
