@@ -143,21 +143,26 @@ const { title, description, slug } = Astro.props;
         color: var(--talos-text-primary);
       }
 
-      /* Shiki css-variables theme → Talos palette. Restrained monochrome with
-         green accent for strings/values; comments dim; keywords/punctuation in
-         foreground tones. */
+      /* Syntax palette for the talos shiki theme (talos-code-theme.mjs).
+         Hues come from the status tokens so code sits inside the system:
+         green tags, cyan keywords, amber strings, soft red constants. */
       .docs-prose {
-        /* shiki sets the pre's inline background-color from
-           --astro-code-background; that inline style wins over the stylesheet,
-           so it carries the chamfer fill (same value as --_fill below). */
-        --astro-code-background: var(--talos-surface-1);
-        --astro-code-foreground: hsl(var(--talos-foreground-hsl) / 0.9);
-        --astro-code-token-comment: var(--talos-text-tertiary);
-        --astro-code-token-keyword: hsl(var(--talos-foreground-hsl) / 0.6);
-        --astro-code-token-string: var(--talos-accent);
-        --astro-code-token-string-expression: var(--talos-accent);
-        --astro-code-token-constant: hsl(var(--talos-accent-hsl) / 0.85);
-        --astro-code-token-function: var(--talos-text-primary);
+        /* shiki sets the pre's inline background-color from --talos-code-bg;
+           that inline style wins over the stylesheet, so it carries the
+           chamfer fill (same value as --_fill below). */
+        --talos-code-bg: var(--talos-surface-1);
+        --talos-code-fg: hsl(var(--talos-foreground-hsl) / 0.86);
+        --talos-code-comment: hsl(var(--talos-foreground-hsl) / 0.38);
+        --talos-code-punctuation: hsl(var(--talos-foreground-hsl) / 0.45);
+        --talos-code-keyword: hsl(var(--talos-info-hsl) / 0.95);
+        --talos-code-tag: var(--talos-accent);
+        --talos-code-attribute: hsl(var(--talos-accent-hsl) / 0.6);
+        --talos-code-string: hsl(var(--talos-warning-hsl) / 0.9);
+        --talos-code-constant: hsl(var(--talos-danger-hsl) / 0.85);
+        --talos-code-function: var(--talos-text-primary);
+        --talos-code-type: hsl(var(--talos-info-hsl) / 0.75);
+        --talos-code-property: hsl(var(--talos-foreground-hsl) / 0.72);
+        --talos-code-deleted: var(--talos-danger);
       }
 
       /* Prose opt-out boundary. Live demos (<Demo>) render inside .docs-prose
@@ -184,6 +189,8 @@ const { title, description, slug } = Astro.props;
         line-height: 1.6;
         padding: 1.1rem 1.25rem;
         overflow-x: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--talos-edge-default) transparent;
       }
       .docs-prose pre > code {
         position: relative;

@@ -1,6 +1,7 @@
 import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
+import talosCodeTheme from "./talos-code-theme.mjs";
 
 // https://astro.build
 // Docs are hand-built (DocsShell.astro + [...slug].astro) using the Talos
@@ -17,12 +18,12 @@ export default defineConfig({
   },
   integrations: [mdx(), sitemap()],
   markdown: {
-    // css-variables theme: shiki emits var(--astro-code-*) instead of inline
-    // hex colors, so code tokens track the Talos palette (defined in
-    // DocsShell). The transformer puts the chamfer engine classes on every
-    // fenced <pre>, so code blocks draw their cut like any other talos surface.
+    // talos theme: every token colour is a var(--talos-code-*) defined in
+    // DocsShell, so code tracks the Talos palette. The transformer puts the
+    // chamfer engine classes on every fenced <pre>, so code blocks draw their
+    // cut like any other talos surface.
     shikiConfig: {
-      theme: "css-variables",
+      theme: talosCodeTheme,
       transformers: [
         {
           pre(node) {

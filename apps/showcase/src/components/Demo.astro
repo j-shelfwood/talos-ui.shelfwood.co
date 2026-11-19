@@ -20,9 +20,9 @@ const { label = "PREVIEW" } = Astro.props;
 </div>
 
 {/* Register the <talos-*> web-component instruments CLIENT-SIDE. This must be a
-    bundled Astro <script> (browser-only), NOT a frontmatter import: the wc module
+    bundled Astro script tag (browser-only), NOT a frontmatter import: the wc module
     defines classes `extends HTMLElement`, which throws "HTMLElement is not
-    defined" if it runs during SSG. And it must NOT be an inline <script> in MDX
+    defined" if it runs during SSG. And it must NOT be an inline script tag in MDX
     pages: MDX's SmartyPants rewrites the import's quotes to curly “ ” → runtime
     SyntaxError. Centralising it here, once, is the only correct home. Astro
     de-dupes the bundled module across every <Demo> on a page. */}
