@@ -16,7 +16,7 @@ the only thing that distinguishes it from a bare `<pre>`, so the panel reads as
 <Demo>
   <div class="talos-code" style="max-width:420px">
     <div class="talos-code__bar"><span>button.astro</span><button class="talos-code__copy">copy</button></div>
-    <pre class="talos-code__body">&lt;Button variant="ghost"&gt;Engage&lt;/Button&gt;</pre>
+    <pre class="talos-code__body">{'<Button variant="ghost">Engage</Button>'}</pre>
   </div>
 </Demo>
 
@@ -59,7 +59,7 @@ copy button is purely optional. Drop `__copy` for read-only snippets.
 <Demo>
   <div class="talos-code" style="max-width:420px">
     <div class="talos-code__bar"><span>deploy.sh</span><button class="talos-code__copy">copy</button></div>
-    <pre class="talos-code__body">ssh infrastructure.shelfwood.co "docker ps --format '&#123;&#123;.Names&#125;&#125;' | grep g53eqpbkjzqlilcfjx0jkw1z"</pre>
+    <pre class="talos-code__body">{`ssh infrastructure.shelfwood.co "docker ps --format '{{.Names}}' | grep g53eqpbkjzqlilcfjx0jkw1z"`}</pre>
   </div>
 </Demo>
 
