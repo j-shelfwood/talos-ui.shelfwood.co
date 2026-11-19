@@ -13,8 +13,8 @@ not a page. Lives in the opt-in `talos-console.css` module.
 
 ## Default — four zones
 
-<Demo>
-  <div class="talos-console" style="height:280px;width:100%">
+<Demo live>
+  <div class="talos-console" style="height:360px;width:100%">
     <header class="console-rail">
       <span class="console-rail__brand">ATLAS-01</span>
       <span class="console-rail__spacer"></span>
@@ -23,27 +23,21 @@ not a page. Lives in the opt-in `talos-console.css` module.
     <main class="console-scope">
       <div class="console-cell">
         <span class="console-cell__title">CPU</span>
-        <span>30%</span>
-      </div>
-      <div class="console-cell">
-        <span class="console-cell__title">MEM</span>
-        <span>61%</span>
+        <talos-gauge value="30" warn="70" crit="90" unit="%"></talos-gauge>
       </div>
     </main>
     <aside class="console-aside">
       <span class="console-aside__label">// Telemetry</span>
-      <span>Disk 30%</span>
+      <talos-meter value="30" warn="70" crit="90" label="Disk" unit="%"></talos-meter>
     </aside>
     <footer class="console-status">
       <span class="console-status__stat" style="--_status:var(--talos-success-hsl)">NOMINAL</span>
-      <span class="console-status__spacer"></span>
-      <span>uplink stable</span>
     </footer>
   </div>
 </Demo>
 
 ```html
-<div class="talos-console talos-console--viewport">
+<div class="talos-console" style="height:360px;width:100%">
   <header class="console-rail">
     <span class="console-rail__brand">ATLAS-01</span>
     <span class="console-rail__spacer"></span>

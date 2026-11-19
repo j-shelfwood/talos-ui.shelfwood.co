@@ -67,9 +67,15 @@ mark the current user or a focused tile.
 </Demo>
 
 ```html
-<span class="talos-avatar">ON<span class="talos-avatar__status talos-avatar__status--online"></span></span>
-<span class="talos-avatar">WN<span class="talos-avatar__status talos-avatar__status--warning"></span></span>
-<span class="talos-avatar">OF<span class="talos-avatar__status talos-avatar__status--offline"></span></span>
+<span class="talos-avatar">
+  ON<span class="talos-avatar__status talos-avatar__status--online"></span>
+</span>
+<span class="talos-avatar">
+  WN<span class="talos-avatar__status talos-avatar__status--warning"></span>
+</span>
+<span class="talos-avatar">
+  OF<span class="talos-avatar__status talos-avatar__status--offline"></span>
+</span>
 ```
 
 `__status` is a dot tucked into the un-chamfered bottom-right corner. Bare it
@@ -89,7 +95,9 @@ reads `--muted-foreground`; `--online` → `--success`, `--warning` →
 ```html
 <div class="talos-avatar-group">
   <span class="talos-avatar">JS</span>
-  <span class="talos-avatar">KP<span class="talos-avatar__status talos-avatar__status--online"></span></span>
+  <span class="talos-avatar">
+    KP<span class="talos-avatar__status talos-avatar__status--online"></span>
+  </span>
   <span class="talos-avatar talos-avatar--lg">AB</span>
 </div>
 ```

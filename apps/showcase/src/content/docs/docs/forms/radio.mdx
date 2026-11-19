@@ -52,9 +52,15 @@ centre dot (`::after`) in the background colour — a punched hole, not a tick.
 </Demo>
 
 ```html
-<label class="talos-check-row"><input class="talos-radio" type="radio" name="region" checked /> eu-west-3</label>
-<label class="talos-check-row"><input class="talos-radio" type="radio" name="region" /> us-east-1</label>
-<label class="talos-check-row"><input class="talos-radio" type="radio" name="region" /> ap-south-1</label>
+<label class="talos-check-row">
+  <input class="talos-radio" type="radio" name="region" checked /> eu-west-3
+</label>
+<label class="talos-check-row">
+  <input class="talos-radio" type="radio" name="region" /> us-east-1
+</label>
+<label class="talos-check-row">
+  <input class="talos-radio" type="radio" name="region" /> ap-south-1
+</label>
 ```
 
 A shared `name` makes the set mutually exclusive — native behaviour, no
@@ -70,8 +76,12 @@ script. Each row is its own `.talos-check-row` label.
 </Demo>
 
 ```html
-<label class="talos-check-row"><input class="talos-radio" type="radio" name="locked" checked disabled /> Selected (locked)</label>
-<label class="talos-check-row"><input class="talos-radio" type="radio" name="locked" disabled /> Unavailable</label>
+<label class="talos-check-row">
+  <input class="talos-radio" type="radio" name="locked" checked disabled /> Selected (locked)
+</label>
+<label class="talos-check-row">
+  <input class="talos-radio" type="radio" name="locked" disabled /> Unavailable
+</label>
 ```
 
 `:disabled` dims to 0.45 and blocks the pointer. `:hover` brightens the ring to

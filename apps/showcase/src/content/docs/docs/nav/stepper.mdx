@@ -14,7 +14,7 @@ progress.
 ## Default
 
 <Demo>
-  <div class="talos-steps" style="max-width:520px">
+  <div class="talos-steps" style="width:100%;max-width:520px">
     <div class="talos-step"><span class="talos-step__index">1</span><span class="talos-step__label">Plan</span></div>
     <div class="talos-step"><span class="talos-step__index">2</span><span class="talos-step__label">Build</span></div>
     <div class="talos-step"><span class="talos-step__index">3</span><span class="talos-step__label">Verify</span></div>
@@ -24,10 +24,18 @@ progress.
 
 ```html
 <div class="talos-steps">
-  <div class="talos-step"><span class="talos-step__index">1</span><span class="talos-step__label">Plan</span></div>
-  <div class="talos-step"><span class="talos-step__index">2</span><span class="talos-step__label">Build</span></div>
-  <div class="talos-step"><span class="talos-step__index">3</span><span class="talos-step__label">Verify</span></div>
-  <div class="talos-step"><span class="talos-step__index">4</span><span class="talos-step__label">Ship</span></div>
+  <div class="talos-step">
+    <span class="talos-step__index">1</span><span class="talos-step__label">Plan</span>
+  </div>
+  <div class="talos-step">
+    <span class="talos-step__index">2</span><span class="talos-step__label">Build</span>
+  </div>
+  <div class="talos-step">
+    <span class="talos-step__index">3</span><span class="talos-step__label">Verify</span>
+  </div>
+  <div class="talos-step">
+    <span class="talos-step__index">4</span><span class="talos-step__label">Ship</span>
+  </div>
 </div>
 ```
 
@@ -37,7 +45,7 @@ every node but the last draws a subtle connector hairline to its right neighbour
 ## Done
 
 <Demo>
-  <div class="talos-steps" style="max-width:520px">
+  <div class="talos-steps" style="width:100%;max-width:520px">
     <div class="talos-step talos-step--done"><span class="talos-step__index">✓</span><span class="talos-step__label">Plan</span></div>
     <div class="talos-step talos-step--done"><span class="talos-step__index">✓</span><span class="talos-step__label">Build</span></div>
     <div class="talos-step"><span class="talos-step__index">3</span><span class="talos-step__label">Verify</span></div>
@@ -46,7 +54,9 @@ every node but the last draws a subtle connector hairline to its right neighbour
 </Demo>
 
 ```html
-<div class="talos-step talos-step--done"><span class="talos-step__index">✓</span><span class="talos-step__label">Plan</span></div>
+<div class="talos-step talos-step--done">
+  <span class="talos-step__index">✓</span><span class="talos-step__label">Plan</span>
+</div>
 ```
 
 `--done` inverts the chip — foreground fill, background glyph — and brightens its
@@ -56,7 +66,7 @@ complete.
 ## Current
 
 <Demo>
-  <div class="talos-steps" style="max-width:520px">
+  <div class="talos-steps" style="width:100%;max-width:520px">
     <div class="talos-step talos-step--done"><span class="talos-step__index">✓</span><span class="talos-step__label">Plan</span></div>
     <div class="talos-step talos-step--current"><span class="talos-step__index">2</span><span class="talos-step__label">Build</span></div>
     <div class="talos-step"><span class="talos-step__index">3</span><span class="talos-step__label">Verify</span></div>
@@ -65,7 +75,9 @@ complete.
 </Demo>
 
 ```html
-<div class="talos-step talos-step--current"><span class="talos-step__index">2</span><span class="talos-step__label">Build</span></div>
+<div class="talos-step talos-step--current">
+  <span class="talos-step__index">2</span><span class="talos-step__label">Build</span>
+</div>
 ```
 
 `--current` outlines the chip in `--talos-accent` with a 1px accent glow and

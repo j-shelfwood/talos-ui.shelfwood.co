@@ -162,7 +162,9 @@ const currentItem = currentGroup?.items.find((i) => i.slug === slug);
       }
 
       /* --- Markdown prose, Talos-styled ---------------------------------- */
-      .docs-prose { max-width: 70ch; }
+      /* Text keeps a 70ch measure; live demos take the full column so wide
+         components (console, timeline, graph) render at a working width. */
+      .docs-prose > :not(.not-content) { max-width: 70ch; }
       .docs-prose > * + * { margin-top: 1.15rem; }
       .docs-prose p:not(.not-content *),
       .docs-prose li:not(.not-content *) {

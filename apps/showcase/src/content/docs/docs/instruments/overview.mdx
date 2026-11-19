@@ -74,8 +74,20 @@ instrument, honest colour.
 
 ```html
 <!-- low = bad: 18 ≤ crit(20) → critical; 55 > warn(40) → nominal -->
-<talos-meter value="18" warn="40" crit="20" invert unit="fps" label="FRAMERATE"></talos-meter>
-<talos-meter value="55" warn="40" crit="20" invert unit="fps" label="FRAMERATE"></talos-meter>
+<talos-meter
+  value="18"
+  warn="40"
+  crit="20"
+  invert
+  unit="fps"
+  label="FRAMERATE"></talos-meter>
+<talos-meter
+  value="55"
+  warn="40"
+  crit="20"
+  invert
+  unit="fps"
+  label="FRAMERATE"></talos-meter>
 ```
 
 `bandOf()` is shared by gauge, meter, trend, spark, flow, dots, stat, readout and
@@ -117,7 +129,7 @@ These mean the same thing across the banded instruments:
 | `warn` | value at/after which the band is `warning` |
 | `crit` | value at/after which the band is `critical` |
 | `invert` | flip band direction — low = bad |
-| `min` / `max` | domain range for position mapping (default 0 / 100) |
+| `min` / `max` | domain range for position mapping (default 0 / 100; trend auto-fits its buffer when absent) |
 | `label` | uppercase caption / accessible label |
 | `unit` | appended to the readout (e.g. `%`, `fps`) |
 

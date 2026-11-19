@@ -66,11 +66,16 @@ for the chamfer engine and `talos-layout.css` for the pulse of the live mark.
 </Demo>
 
 ```html
-<div class="talos-timeline" style="--talos-timeline-width:760px;--talos-timeline-hour:120px;--talos-timeline-hour0:20px">
+<div
+  class="talos-timeline"
+  style="--talos-timeline-width:760px;--talos-timeline-hour:120px;--talos-timeline-hour0:20px"
+>
   <div class="talos-timeline__heads">
     <div class="talos-timeline__axis-head">Amsterdam</div>
     <div class="talos-timeline__head" style="height:54px">
-      <span class="talos-timeline__title">operator</span><span class="talos-timeline__meta">3 runs</span>
+      <span class="talos-timeline__title">
+        operator</span><span class="talos-timeline__meta">3 runs
+      </span>
     </div>
   </div>
   <div class="talos-timeline__viewport">
@@ -79,7 +84,10 @@ for the chamfer engine and `talos-layout.css` for the pulse of the live mark.
         <span class="talos-timeline__tick" style="--x:20px"><span>09:00</span></span>
       </div>
       <div class="talos-timeline__lane" style="height:54px">
-        <span class="talos-timeline__bar talos-timeline__bar--solid" style="--x:30px;--w:90px;--y:12px">
+        <span
+          class="talos-timeline__bar talos-timeline__bar--solid"
+          style="--x:30px;--w:90px;--y:12px"
+        >
           <i class="talos-timeline__mark talos-timeline__mark--merged"></i>
         </span>
       </div>
@@ -216,7 +224,9 @@ edges brighten.
 
 ```html
 <aside class="talos-drawer is-open">
-  <div class="talos-drawer__head">…<button class="talos-button talos-button--xs">Close</button></div>
+  <div class="talos-drawer__head">
+    …<button class="talos-button talos-button--xs">Close</button>
+  </div>
   <div class="talos-drawer__body">
     <h2 class="talos-drawer__title">Bump talos-ui to 0.12.1</h2>
   </div>
