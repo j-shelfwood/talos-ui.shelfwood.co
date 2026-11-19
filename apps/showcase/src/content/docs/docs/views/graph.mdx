@@ -89,17 +89,18 @@ time scrubber and collapsible side panels. You draw the nodes and edges on a
 <main class="talos-graph" style="height:100vh">
   <canvas class="talos-graph__stage"></canvas>
   <div class="talos-graph__toolbar">
-    <input class="talos-input" type="search">
+    <input class="talos-input" type="search" placeholder="Find a node">
     <button class="talos-flag" aria-pressed="true">operator</button>
   </div>
   <div class="talos-graph__zoom">
-    <button class="talos-button talos-button--xs">+</button>
+    <button class="talos-button talos-button--xs" type="button" aria-label="Zoom in">+</button>
+    <button class="talos-button talos-button--xs" type="button" aria-label="Zoom out">−</button>
     <span class="talos-graph__readout">100%</span>
   </div>
   <div class="talos-graph__minimap"><canvas></canvas></div>
   <div class="talos-graph__scrubber">
     <button class="talos-button talos-button--xs">Play</button>
-    <input class="talos-range" type="range">
+    <input class="talos-range" type="range" aria-label="Time">
     <span class="talos-graph__time">18-11 11:40</span>
   </div>
   <aside class="talos-graph__panel">

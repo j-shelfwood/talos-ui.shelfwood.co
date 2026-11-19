@@ -5,6 +5,13 @@
 // each scene binds to live/real state. Each scene shows a different part of the
 // library doing what it is best at.
 import "@j_shelfwood/talos-ui/all.css";
+import Meta from "../components/Meta.astro";
+import FontPreload from "../components/FontPreload.astro";
+import { talosVersion } from "../talos-version";
+
+const title = "Talos UI — interfaces that visualise a running system";
+const description =
+  "A component system for building functional instruments — gauges, trends, meters, flows — where colour and motion are bound to live domain state. Scroll to fly through it.";
 ---
 
 <!doctype html>
@@ -13,8 +20,10 @@ import "@j_shelfwood/talos-ui/all.css";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script defer src="https://analytics.shelfwood.co/script.js" data-website-id="e3c24b45-4c0e-46f5-8fba-bd6db09fcacd" data-domains="talos-ui.shelfwood.co"></script>
-    <title>Talos UI — interfaces that visualise a running system</title>
-    <meta name="description" content="A component system for building functional instruments — gauges, trends, meters, flows — where colour and motion are bound to live domain state. Scroll to fly through it." />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <Meta title={title} description={description} />
+    <FontPreload />
     <style>
       :root { color-scheme: dark; }
       * { box-sizing: border-box; }
@@ -156,10 +165,10 @@ import "@j_shelfwood/talos-ui/all.css";
         color: var(--talos-foreground); }
       .block-head .bm { font-size:.5rem; letter-spacing:.1em; color: var(--talos-text-tertiary); }
       /* the row primitive: label · value · mini-bar · range */
-      .metric { display:grid; grid-template-columns: 4.2rem 1fr; align-items:center;
+      .metric { display:grid; grid-template-columns: 4.2rem minmax(0, 1fr); align-items:center;
         column-gap:.5rem; padding:.18rem 0; font-size:.6rem; letter-spacing:.04em; }
       .metric .mk { text-transform:uppercase; color: var(--talos-text-tertiary); }
-      .metric .mr { display:flex; align-items:center; gap:.45rem; }
+      .metric .mr { display:flex; align-items:center; gap:.45rem; min-width:0; }
       .metric .mv { min-width:3.1rem; text-align:right; color: var(--talos-foreground);
         font-variant-numeric: tabular-nums; }
       .metric .mv[data-band="warn"] { color: var(--talos-warning); }
@@ -371,6 +380,24 @@ import "@j_shelfwood/talos-ui/all.css";
 
       @media (prefers-reduced-motion: reduce) { .scroll-cue { animation:none; } }
       @media (max-width: 720px) { .mini-console { grid-template-columns: 1fr; } }
+      /* Phones: grid tracks may shrink below their content's min width, flex
+         rows wrap, and the wall drops to one column, so no scene panel is wider
+         than the 92vw scene. */
+      @media (max-width: 820px) {
+        .signal-grid { grid-template-columns: minmax(0, 1fr); }
+        .signal-main, .signal-stats { min-width: 0; }
+        .signal-flows { flex-wrap: wrap; }
+      }
+      @media (max-width: 560px) {
+        .console-wall { grid-template-columns: minmax(0, 1fr); }
+        .wall-block, .wall-block:nth-child(2n), .wall-block:nth-child(4n) { border-right: 0; }
+        .metric .mx { display: none; } /* the range column; the bar still shows the level */
+        .cshell { grid-template-columns: minmax(0, 1fr); }
+        .cshell-scope { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .ccell { min-width: 0; padding-inline: .3rem; }
+        .console-strip { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-columns: auto; }
+        .strip-cell { border-bottom: 1px solid var(--talos-edge-subtle); }
+      }
     </style>
   </head>
   <body>
@@ -383,7 +410,7 @@ import "@j_shelfwood/talos-ui/all.css";
              (load/coolant/flux). The numbers are honest telemetry; the stakes are
              the reactor. The page is the running system it depicts. -->
         <section class="scene" data-scene>
-          <span class="eyebrow">// @j_shelfwood/talos-ui — v0.1.0 · CORE://TALOS-1</span>
+          <span class="eyebrow">// @j_shelfwood/talos-ui — v{talosVersion} · CORE://TALOS-1</span>
           <h1 class="display">Interfaces that<br />visualise a<br />running system</h1>
           <p class="lede">This page is a reactor console — and the reactor is the page itself. Every gauge, trend and meter ahead is bound to a <em>real</em> signal of this tab, read as a core vital. Scroll to run it.</p>
         </section>
@@ -733,8 +760,8 @@ import "@j_shelfwood/talos-ui/all.css";
       <!-- right-edge coords scrubbing with scroll -->
       <div class="coords">
         <span><span class="k">SECT</span> <b id="ro-sect">00:08</b></span>
-        <span><span class="k">LAT</span> <b id="ro-lat">+00.000</b></span>
-        <span><span class="k">LON</span> <b id="ro-lon">+00.000</b></span>
+        <span><span class="k">FPS</span> <b id="ro-fps">00 fps</b></span>
+        <span><span class="k">HEAP</span> <b id="ro-heap">—</b></span>
         <span><span class="k">SIG</span> <b id="ro-sig">NOMINAL</b></span>
       </div>
 
@@ -760,7 +787,7 @@ import "@j_shelfwood/talos-ui/all.css";
       // live HUD readout refs
       const $id = (id: string) => document.getElementById(id)!;
       const roScroll = $id("ro-scroll"), roZ = $id("ro-z"), roVel = $id("ro-vel");
-      const roSect = $id("ro-sect"), roLat = $id("ro-lat"), roLon = $id("ro-lon"), roSig = $id("ro-sig");
+      const roSect = $id("ro-sect"), roSig = $id("ro-sig");
       const rulerMarker = $id("ruler-marker"), rulerPct = $id("ruler-pct");
 
       const GAP = 900; // px of Z between scenes
@@ -831,20 +858,23 @@ import "@j_shelfwood/talos-ui/all.css";
       let target = 0, current = 0;
       let effVel = 0; // smoothed, decoupled velocity that drives the feel effects
 
-      const lenis = new Lenis({ duration: 1.15, smoothWheel: true });
+      // Smooth scrolling is motion the reader did not ask for; under reduced
+      // motion the page scrolls natively and the camera follows it directly.
+      const lenis = reduce ? null : new Lenis({ duration: 1.15, smoothWheel: true });
       // Read progress from the instance in the rAF loop (the scroll-event payload
       // shape varies across Lenis versions; lenis.scroll / lenis.limit are stable).
 
       // click a progress tick to jump
       ticks.forEach((t, i) => t.addEventListener("click", () => {
         const limit = (document.documentElement.scrollHeight - window.innerHeight);
-        lenis.scrollTo((i / (N - 1)) * limit);
+        if (lenis) lenis.scrollTo((i / (N - 1)) * limit);
+        else window.scrollTo({ top: (i / (N - 1)) * limit });
       }));
 
       function frame(time: number) {
-        lenis.raf(time);
-        const limit = (lenis as any).limit || (document.documentElement.scrollHeight - window.innerHeight);
-        const scroll = (lenis as any).scroll ?? window.scrollY;
+        lenis?.raf(time);
+        const limit = (lenis as any)?.limit || (document.documentElement.scrollHeight - window.innerHeight);
+        const scroll = (lenis as any)?.scroll ?? window.scrollY;
         target = limit > 0 ? (scroll / limit) * (N - 1) : 0;
         current = reduce ? target : lerp(current, target, 0.085);
         const camZ = current * GAP; // move camera into the scene stack
@@ -929,10 +959,6 @@ import "@j_shelfwood/talos-ui/all.css";
         roZ.textContent = (camZ >= 0 ? "-" : "+") + String(Math.round(camZ)).padStart(4, "0");
         roVel.textContent = vel.toFixed(2);
         roSect.textContent = `${String(active).padStart(2, "0")}:${String(N).padStart(2, "0")}`;
-        // synthetic but deterministic "coordinates" derived from camera depth —
-        // they scrub continuously with scroll so the frame reads as a live instrument
-        roLat.textContent = (pct * 90 - 45 >= 0 ? "+" : "") + (pct * 90 - 45).toFixed(3);
-        roLon.textContent = (current * 23.7 % 180 - 90 >= 0 ? "+" : "") + (current * 23.7 % 180 - 90).toFixed(3);
         roSig.textContent = vel > 0.25 ? "TRACKING" : "NOMINAL";
         roSig.style.color = vel > 0.25 ? "var(--talos-accent)" : "";
         rulerMarker.style.top = (pct * 100).toFixed(1) + "%";
@@ -1194,7 +1220,7 @@ import "@j_shelfwood/talos-ui/all.css";
         const conn = (navigator as any).connection || {};
         const rtt = conn.rtt ?? 0;
         const camZ = current * GAP;
-        const scrollPx = Math.round((lenis as any).scroll ?? window.scrollY);
+        const scrollPx = Math.round((lenis as any)?.scroll ?? window.scrollY);
         const progPct = r2((scrollPx / Math.max(1, document.documentElement.scrollHeight - innerHeight)) * 100);
 
         // ---- Scene 01: CORE CONSOLE — one zoned reactor panel, all real tab
@@ -1438,12 +1464,8 @@ import "@j_shelfwood/talos-ui/all.css";
         }
       }, 280);
 
-      // ---- HUD: replace the synthetic lat/lon with REAL vitals, labelled true ----
-      const hudFps = $("ro-lat"), hudHeap = $("ro-lon"), hudSig = $("ro-sig");
-      // relabel the coord cluster keys to their real meaning
-      const coordKeys = document.querySelectorAll(".coords .k");
-      if (coordKeys[1]) coordKeys[1].textContent = "FPS";
-      if (coordKeys[2]) coordKeys[2].textContent = "HEAP";
+      // ---- HUD: real vitals (frame rate, JS heap) ----
+      const hudFps = $("ro-fps"), hudHeap = $("ro-heap"), hudSig = $("ro-sig");
       setInterval(() => {
         if (hudFps) hudFps.textContent = String(Math.round(fps)).padStart(2, "0") + " fps";
         if (hudHeap) hudHeap.textContent = memSupported ? heapMB().toFixed(1) + " MB" : "N/A";

@@ -14,7 +14,7 @@ readout at once. Every attribute is reactive; re-setting `value` re-renders.
 
 ## Default
 
-<Demo>
+<Demo live>
   <talos-gauge value="62" label="cpu" unit="%"></talos-gauge>
 </Demo>
 
@@ -29,13 +29,13 @@ caption under the dial; `unit` is appended to the readout.
 ## Bands — warning & critical
 
 <Demo>
-  <talos-gauge value="62" warn="60" crit="85" label="nominal" unit="%"></talos-gauge>
+  <talos-gauge value="42" warn="60" crit="85" label="nominal" unit="%"></talos-gauge>
   <talos-gauge value="74" warn="60" crit="85" label="warning" unit="%"></talos-gauge>
   <talos-gauge value="92" warn="60" crit="85" label="critical" unit="%"></talos-gauge>
 </Demo>
 
 ```html
-<talos-gauge value="62" warn="60" crit="85" unit="%"></talos-gauge>
+<talos-gauge value="42" warn="60" crit="85" unit="%"></talos-gauge>
 <talos-gauge value="74" warn="60" crit="85" unit="%"></talos-gauge>
 <talos-gauge value="92" warn="60" crit="85" unit="%"></talos-gauge>
 ```
@@ -68,7 +68,13 @@ signal strength — a dangerously low reading reads red, no separate instrument.
 </Demo>
 
 ```html
-<talos-gauge value="3200" min="800" max="6000" warn="4500" crit="5400" label="rpm"></talos-gauge>
+<talos-gauge
+  value="3200"
+  min="800"
+  max="6000"
+  warn="4500"
+  crit="5400"
+  label="rpm"></talos-gauge>
 ```
 
 `min`/`max` set the domain the needle maps across (default `0–100`). The needle

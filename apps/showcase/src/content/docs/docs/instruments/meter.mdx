@@ -14,7 +14,7 @@ to the true band the instant the value crosses; only the length tweens.
 
 ## Default
 
-<Demo>
+<Demo live>
   <talos-meter value="30" warn="70" crit="90" label="Disk" unit="%" width="300"></talos-meter>
 </Demo>
 
@@ -38,9 +38,27 @@ the two ticks mark `warn` and `crit` on the scale.
 </Demo>
 
 ```html
-<talos-meter value="34" warn="70" crit="90" label="Nominal" unit="%" width="300"></talos-meter>
-<talos-meter value="78" warn="70" crit="90" label="Warning" unit="%" width="300"></talos-meter>
-<talos-meter value="96" warn="70" crit="90" label="Critical" unit="%" width="300"></talos-meter>
+<talos-meter
+  value="34"
+  warn="70"
+  crit="90"
+  label="Nominal"
+  unit="%"
+  width="300"></talos-meter>
+<talos-meter
+  value="78"
+  warn="70"
+  crit="90"
+  label="Warning"
+  unit="%"
+  width="300"></talos-meter>
+<talos-meter
+  value="96"
+  warn="70"
+  crit="90"
+  label="Critical"
+  unit="%"
+  width="300"></talos-meter>
 ```
 
 A value at or past `warn` paints the fill (and the readout) `--talos-warning`;
@@ -109,6 +127,7 @@ that stretches to its container — the honest replacement for a hand-rolled min
 | `ticks` | `"off"` suppresses the warn/crit tick marks (on by default) |
 | `compact` | bare 3px micro-bar, no caption/readout; width from `--talos-meter-w` |
 
-`setAttribute("value", v)` re-renders live; the fill eases (`easeOutCubic`) or
+`setAttribute("value", v)` re-renders live; the fill eases toward the new value
+(each frame closes 18% of the remaining gap, an exponential approach) or
 snaps under `prefers-reduced-motion`. Exposes `role="meter"` with
 `aria-valuenow/min/max`. For the radial form see [`<talos-gauge>`](/docs/instruments/gauge/).

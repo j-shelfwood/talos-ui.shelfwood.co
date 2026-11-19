@@ -1,0 +1,51 @@
+---
+title: Spacecraft
+description: "One satellite drawn as its anatomy, where each part is an instrument: bus, payload, solar wings, radiators, antenna, each coloured by its health band."
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`<talos-spacecraft>` is the deepest magnification of the drill-down: one
+satellite drawn as its physical parts. The central bus, the GPU payload, two
+solar wings, two radiator panels and the downlink antenna are each a selectable
+hotspot whose **colour is that subsystem's band**. The form of the object is the
+readout.
+
+## Default — `.parts`
+
+<Demo live>
+  <talos-spacecraft label="sat P03-S11" style="width:100%;max-width:420px"></talos-spacecraft>
+</Demo>
+
+```html
+<talos-spacecraft label="sat P03-S11"></talos-spacecraft>
+<script type="module">
+  const el = document.querySelector("talos-spacecraft");
+  el.parts = {
+    bus: { band: 0 }, gpu: { value: 91, band: 2 },
+    solarL: { band: 0 }, solarR: { band: 1 },
+    radL: { band: 0 }, radR: { band: 0 }, antenna: { band: 0 },
+  };
+  el.addEventListener("talos:part", (e) => el.setAttribute("selected", e.detail.part));
+</script>
+```
+
+The demo re-assigns `.parts` every second and toggles `eclipse` every few
+seconds. In eclipse the solar wings dim: they make no power in shadow, which is
+a state, not a style.
+
+## Data
+
+| Property | Shape | Effect |
+| --- | --- | --- |
+| `parts` | `{ [id]: { value?, band } }` | ids `bus`, `gpu`, `solarL`, `solarR`, `radL`, `radR`, `antenna`; unset parts read nominal |
+
+A click on a part emits `talos:part` with `{ part }`.
+
+## Attributes
+
+| Attribute | Default | Effect |
+| --- | --- | --- |
+| `selected` | — | id of the outlined part |
+| `eclipse` | — | flag: solar wings dark (no sun) |
+| `label` | — | accessible label |

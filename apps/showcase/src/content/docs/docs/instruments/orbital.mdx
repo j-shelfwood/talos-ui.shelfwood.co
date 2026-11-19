@@ -14,12 +14,14 @@ encodes function, so the picture reads even frozen: under
 whole state, the orbit is only the enhancement.
 
 Nodes are pushed as a **property** (`el.nodes = [...]`), not an attribute — it's a
-live instrument, so the demos below render the static frame (rings, axes, core)
-and the code blocks show the node set that drives the system.
+live instrument. The demos below are driven by a script on this page that
+re-assigns a changing node set every second: readings cross the `warn`/`crit`
+bands, rates and loads drift, and nodes join and leave. The code blocks show the
+shape of the node set that drives the system.
 
 ## Default
 
-<Demo>
+<Demo live>
   <talos-orbital rings="3" warn="70" crit="90" size="260" core-label="CORE"></talos-orbital>
 </Demo>
 
@@ -41,7 +43,7 @@ node sits on the ring named by `ring` (1 = innermost / most critical), sized by
 
 ## Rings — subsystem count
 
-<Demo>
+<Demo live>
   <talos-orbital rings="5" warn="70" crit="90" size="260" core-label="MESH"></talos-orbital>
 </Demo>
 
@@ -54,7 +56,7 @@ node sits on the ring named by `ring` (1 = innermost / most critical), sized by
 
 ## Core label & sub
 
-<Demo>
+<Demo live>
   <talos-orbital rings="3" size="260" core-label="ATLAS" core-sub="SYS://PRIMARY"></talos-orbital>
 </Demo>
 
@@ -67,7 +69,7 @@ beneath it. Both default to `CORE` / `SYS://ATLAS` when omitted.
 
 ## Band thresholds
 
-<Demo>
+<Demo live>
   <talos-orbital rings="3" warn="50" crit="80" size="260" core-label="CORE"></talos-orbital>
 </Demo>
 

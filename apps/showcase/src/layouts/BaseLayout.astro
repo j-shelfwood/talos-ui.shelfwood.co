@@ -16,6 +16,7 @@
 import "@j_shelfwood/talos-ui/all.css";
 import "@j_shelfwood/talos-ui/talos-marketing.css";
 import Meta from "../components/Meta.astro";
+import FontPreload from "../components/FontPreload.astro";
 import Navbar from "@j_shelfwood/talos-ui/astro/Navbar.astro";
 
 // Dogfood: the package Navbar (modeled on this app's former SiteNav) now owns
@@ -52,6 +53,7 @@ const pageTitle = title === "Talos UI" ? title : `${title} — Talos UI`;
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <Meta title={pageTitle} description={description} />
+    <FontPreload />
     <script defer src="https://analytics.shelfwood.co/script.js" data-website-id="e3c24b45-4c0e-46f5-8fba-bd6db09fcacd" data-domains="talos-ui.shelfwood.co"></script>
   </head>
   <body>

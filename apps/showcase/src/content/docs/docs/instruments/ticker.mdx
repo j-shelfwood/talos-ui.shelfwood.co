@@ -1,0 +1,60 @@
+---
+title: Ticker
+description: "A live event stream: newest on top, severity as colour, arrival as motion, announced to screen readers as it lands."
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`<talos-ticker>` is the discrete sibling of [`<talos-trend>`](/docs/instruments/trend/):
+a scrolling log of timestamped events where **severity is the colour** and
+**arrival is the motion**. A row sliding in is an event happening. The newest
+arrives at the top and the oldest falls off a fixed window. It is the live
+instrument for the static [`.talos-log`](/docs/data/log/) markup.
+
+## Default — `push()`
+
+<Demo live>
+  <talos-ticker cap="6" label="events" style="width:100%;max-width:420px"></talos-ticker>
+</Demo>
+
+```html
+<talos-ticker cap="6" label="events"></talos-ticker>
+<script type="module">
+  const el = document.querySelector("talos-ticker");
+  el.push({ msg: "deploy 4f2c1 rolled out", level: "nominal" });
+  el.push({ msg: "queue depth above 800", level: "warning" });
+  el.push({ msg: "db replica lag 9 s", level: "critical" });
+</script>
+```
+
+The demo pushes one event per second. An event without `time` is stamped
+`HH:MM:SS` on arrival. The entrance is a one-shot slide that is dropped under
+`prefers-reduced-motion`; the row is fully present either way.
+
+## Seeding the window
+
+```js
+el.events = [
+  { msg: "gateway gw-07 reconnected", level: "ok", time: "14:02:11" },
+  { msg: "cert renewal in 6 days", level: "warn", time: "14:02:40" },
+];
+```
+
+`el.events = [...]` replaces the whole window at once.
+
+## Attributes and API
+
+| Attribute | Default | Effect |
+| --- | --- | --- |
+| `cap` | `8` | max rows retained and shown |
+| `label` | — | caption |
+
+| Member | Effect |
+| --- | --- |
+| `push({ msg, level?, time? })` | append one event at the top and scroll the window |
+| `events` | get or replace the whole window |
+
+`level` is per event: `nominal` / `warning` / `critical`, with the aliases `ok` /
+`warn` / `crit`. The host is `role="log"` with `aria-live="polite"`: the one
+instrument where a live region is correct, because each announcement is an
+event.

@@ -21,7 +21,9 @@ draws a rotated open-corner tick. Mechanical, not a rounded toggle.
 
 ```html
 <label class="talos-check-row"><input class="talos-checkbox" type="checkbox" /> Send alerts</label>
-<label class="talos-check-row"><input class="talos-checkbox" type="checkbox" checked /> Enable auto-scaling</label>
+<label class="talos-check-row">
+  <input class="talos-checkbox" type="checkbox" checked /> Enable auto-scaling
+</label>
 ```
 
 Unchecked is a `--talos-surface-1` box with an `--talos-edge-strong` hairline.
@@ -54,8 +56,12 @@ label makes the whole row clickable.
 </Demo>
 
 ```html
-<label class="talos-check-row"><input class="talos-checkbox" type="checkbox" disabled /> Locked off</label>
-<label class="talos-check-row"><input class="talos-checkbox" type="checkbox" checked disabled /> Locked on</label>
+<label class="talos-check-row">
+  <input class="talos-checkbox" type="checkbox" disabled /> Locked off
+</label>
+<label class="talos-check-row">
+  <input class="talos-checkbox" type="checkbox" checked disabled /> Locked on
+</label>
 ```
 
 `:disabled` dims to 0.45 opacity and blocks the cursor. The checked tick still

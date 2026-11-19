@@ -16,7 +16,7 @@ the number. Δ is computed against the last reading, so a fresh element with one
 
 ## Default — first reading
 
-<Demo>
+<Demo live>
   <talos-delta value="42"></talos-delta>
 </Demo>
 
@@ -97,7 +97,7 @@ flickering direction on noise (default `0` — every non-zero step shows).
 | `value` | current reading; Δ is `value − previous`, recomputed each set (required) |
 | `good` | which direction is healthy: `up` (default) or `down` — flips the good/bad colour |
 | `precision` | decimal places for the magnitude figure (default `0`, min `0`) |
-| `eps` | dead-zone; `|Δ| ≤ eps` reads flat instead of up/down (default `0`) |
+| `eps` | dead-zone; `\|Δ\| ≤ eps` reads flat instead of up/down (default `0`) |
 
 `value` is reactive — re-set it (or call `el.update(value)`) and the delta
 recomputes against the prior reading. Exposes `::part(arrow)` and `::part(mag)`

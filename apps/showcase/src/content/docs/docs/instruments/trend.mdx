@@ -15,7 +15,7 @@ as gauge and meter: colour is the state. Push a sample with `el.push(v)` or set
 
 ## Default
 
-<Demo>
+<Demo live>
   <talos-trend data="30 34 28 40 38 46 42 50 44 52" width="220" height="60"></talos-trend>
 </Demo>
 
@@ -106,6 +106,7 @@ entrance animation; the line simply reflects the buffer.
 
 | Attribute | Effect |
 | --- | --- |
+| `data` | initial series, comma/space separated; seeds the window |
 | `value` | newest sample; appended to the window when it changes |
 | `points` | max samples kept in the window (default 48, min 2) |
 | `min` / `max` | vertical domain; absent = auto-fit the buffer |

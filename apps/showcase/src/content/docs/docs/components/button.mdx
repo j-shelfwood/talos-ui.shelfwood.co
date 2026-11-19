@@ -25,6 +25,9 @@ button reads its weight from contrast, not colour. Render `<a>` when it links,
   <button class="talos-button talos-button--ghost">
     <span class="talos-button__label">Ghost</span>
   </button>
+  <button class="talos-button talos-button--solid">
+    <span class="talos-button__label">Solid</span>
+  </button>
 </Demo>
 
 ```html
@@ -38,12 +41,6 @@ button reads its weight from contrast, not colour. Render `<a>` when it links,
 dims the edge for an alternative action; `--ghost` drops the fill to transparent
 for a tertiary, text-weight control that fills only on hover. `--solid` is the
 loud call to action: light fill, dark label.
-
-<Demo>
-  <button class="talos-button talos-button--solid">
-    <span class="talos-button__label">Solid</span>
-  </button>
-</Demo>
 
 ## Sizes
 
@@ -119,14 +116,20 @@ The Astro `<Button>` renders the same markup:
 
 ```astro
 ---
-import { Button } from "@j_shelfwood/talos-ui/astro";
+import Button from "@j_shelfwood/talos-ui/astro/Button.astro";
 ---
 <Button variant="ghost" size="sm" href="/launch">Launch</Button>
 ```
 
 ```html
-<a class="talos-button" href="/launch">Launch</a>
+<a class="talos-button talos-button--ghost talos-button--sm" href="/launch">
+  <span class="talos-button__label">Launch</span>
+</a>
 ```
+
+`variant` (default `primary`) and `size` (default `md`) add their modifier class
+only when they differ from the default; the slot always lands in
+`.talos-button__label`. Without `href` it renders a `<button>`.
 
 ## Classes
 

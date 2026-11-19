@@ -8,7 +8,8 @@ import Demo from "../../../../components/Demo.astro";
 `.talos-switch` is a native checkbox styled with `appearance: none` into a HUD
 toggle: a SQUARE thumb sliding inside a SQUARE track — mechanical, no iOS
 rounding. The one Talos idea: checked is not a colour tint on a pill, it's the
-track filling with `--talos-accent` while the thumb hard-translates to the right.
+track filling with `--talos-accent` while the thumb slides to the right (a `--talos-dur-fast`, 180ms transform
+transition; instant under `prefers-reduced-motion`).
 
 ## Default
 
@@ -17,7 +18,9 @@ track filling with `--talos-accent` while the thumb hard-translates to the right
 </Demo>
 
 ```html
-<label class="talos-check-row"><input class="talos-switch" type="checkbox" /> Live telemetry</label>
+<label class="talos-check-row">
+  <input class="talos-switch" type="checkbox" /> Live telemetry
+</label>
 ```
 
 Unchecked: muted `--talos-edge-strong` track and thumb, parked left. Pair it
@@ -30,7 +33,9 @@ with a [`.talos-check-row`](/docs/forms/checkbox/) label so the text sits inline
 </Demo>
 
 ```html
-<label class="talos-check-row"><input class="talos-switch" type="checkbox" checked /> Live telemetry</label>
+<label class="talos-check-row">
+  <input class="talos-switch" type="checkbox" checked /> Live telemetry
+</label>
 ```
 
 `:checked` fills the track with `--talos-accent` at 0.2 alpha, recolours the
@@ -45,8 +50,12 @@ is the on-state — it reads as energised, not just shifted.
 </Demo>
 
 ```html
-<label class="talos-check-row"><input class="talos-switch" type="checkbox" disabled /> Telemetry off</label>
-<label class="talos-check-row"><input class="talos-switch" type="checkbox" checked disabled /> Telemetry locked</label>
+<label class="talos-check-row">
+  <input class="talos-switch" type="checkbox" disabled /> Telemetry off
+</label>
+<label class="talos-check-row">
+  <input class="talos-switch" type="checkbox" checked disabled /> Telemetry locked
+</label>
 ```
 
 `:disabled` dims to 0.45 and blocks the pointer; the checked/unchecked geometry

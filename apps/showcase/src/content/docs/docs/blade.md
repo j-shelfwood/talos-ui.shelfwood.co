@@ -16,17 +16,30 @@ public/vendor/talos-ui/
   tokens.css
   fonts/oxanium-latin.woff2
   fonts/oxanium-latin-ext.woff2
-  wc.js          (from dist/wc/index.js)
+  dist/              (the whole dist directory)
+    wc/index.js
+    chunk-*.js
 ```
 
-A Bun/npm postinstall or a small copy script keeps them in sync.
+Copy `dist/` as a directory, not `dist/wc/index.js` on its own: `index.js`
+imports its components from `../chunk-*.js` (32 shared chunks in 0.12.1), so
+a lone copy fails in the browser with 404s on every chunk.
+
+A Bun/npm postinstall keeps the copy in sync:
+
+```jsonc
+// package.json
+"scripts": {
+  "postinstall": "mkdir -p public/vendor/talos-ui && cp -R node_modules/@j_shelfwood/talos-ui/src/{talos.css,tokens.css,fonts} node_modules/@j_shelfwood/talos-ui/dist public/vendor/talos-ui/"
+}
+```
 
 ## Layout
 
 ```blade
 {{-- resources/views/layouts/app.blade.php --}}
 <link rel="stylesheet" href="{{ asset('vendor/talos-ui/talos.css') }}">
-<script type="module" src="{{ asset('vendor/talos-ui/wc.js') }}"></script>
+<script type="module" src="{{ asset('vendor/talos-ui/dist/wc/index.js') }}"></script>
 ```
 
 ## Markup

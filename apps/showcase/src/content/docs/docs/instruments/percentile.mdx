@@ -1,0 +1,64 @@
+---
+title: Percentile
+description: "The five-number summary of a value's spread on one rail: the p25–p75 box, whiskers, and p50/p90/p99 markers, with p99 banded."
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`<talos-percentile>` draws what latency dashboards live on: p50 / p90 / p99
+(and optionally p25 / p75 / p05) of a metric as markers on a horizontal scale. It
+is a box plot in HUD clothing. The **p99 marker is coloured by band** against
+`warn` / `crit`, because the tail is what pages you: "p99 latency is critical"
+reads red before you read the number.
+
+## Default — streaming via `.stats`
+
+<Demo live>
+  <talos-percentile warn="400" crit="700" label="latency" unit="ms" width="460"></talos-percentile>
+</Demo>
+
+```html
+<talos-percentile warn="400" crit="700" label="latency" unit="ms" width="460"></talos-percentile>
+<script type="module">
+  const el = document.querySelector("talos-percentile");
+  el.stats = { p05: 24, p25: 45, p50: 60, p75: 78, p90: 130, p99: 410 };
+</script>
+```
+
+The demo re-assigns `.stats` every second. Markers slide to their new positions
+(suppressed under `prefers-reduced-motion`); with no `min` / `max` the scale
+auto-fits the supplied percentiles with a little headroom, so p99 is never pinned
+to the right edge.
+
+## Declarative
+
+<Demo>
+  <talos-percentile p25="38" p50="52" p75="70" p90="118" p99="260" warn="400" crit="700" unit="ms" width="460"></talos-percentile>
+  <talos-percentile p25="40" p50="61" p75="88" p90="240" p99="820" warn="400" crit="700" unit="ms" width="460"></talos-percentile>
+</Demo>
+
+```html
+<talos-percentile
+  p25="40" p50="61" p75="88" p90="240" p99="820"
+  warn="400" crit="700" unit="ms"
+></talos-percentile>
+```
+
+Attributes render whichever percentiles are present. The box needs both `p25`
+and `p75`.
+
+## Attributes
+
+| Attribute | Default | Effect |
+| --- | --- | --- |
+| `p50` / `p90` / `p99` | — | the canonical percentiles |
+| `p25` / `p75` | — | interquartile box bounds |
+| `p05` | — | low whisker end |
+| `min` / `max` | auto-fit | scale domain |
+| `warn` / `crit` | — | band thresholds, applied to p99 |
+| `invert` | — | flag: low = bad |
+| `label` | — | caption above the rail |
+| `unit` | — | appended to the percentile labels |
+| `width` | `240` | px |
+
+`el.stats = { p50, p90, p99, p25?, p75?, p05? }` replaces the set and re-renders.

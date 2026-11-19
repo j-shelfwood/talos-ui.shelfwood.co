@@ -1,6 +1,6 @@
 ---
 /**
- * Primitive gallery — exercises every Phase-1 CSS primitive (feedback, data,
+ * Primitive gallery — exercises every CSS primitive (feedback, data,
  * nav, forms) so the look can be reviewed at a glance and regressions show up.
  * Pure class-based markup; no JS wiring beyond what Landing already provides.
  */
@@ -11,6 +11,7 @@ import GlassPanel from "@j_shelfwood/talos-ui/astro/GlassPanel.astro";
 import BentoGrid from "@j_shelfwood/talos-ui/astro/BentoGrid.astro";
 import LinkCard from "@j_shelfwood/talos-ui/astro/LinkCard.astro";
 import Tag from "@j_shelfwood/talos-ui/astro/Tag.astro";
+import { talosVersion } from "../talos-version";
 import BackButton from "@j_shelfwood/talos-ui/astro/BackButton.astro";
 
 const rows = [
@@ -24,7 +25,7 @@ const rows = [
   <span class="talos-eyebrow">// Primitive gallery</span>
   <h1 style="font-size:2rem;margin:0.5rem 0 0">Component primitives</h1>
   <p class="talos-muted" style="max-width:60ch;margin-top:0.5rem">
-    Every Phase-1 primitive in one place — feedback, data display, navigation,
+    Every primitive in one place — feedback, data display, navigation,
     and the full form control set. Monochrome HUD; status colour is the only
     chroma.
   </p>
@@ -42,7 +43,7 @@ const rows = [
         <span class="talos-badge talos-badge--info">Info</span>
         <span class="talos-badge">Neutral</span>
         <span class="talos-badge talos-badge--solid talos-badge--success">Solid</span>
-        <span class="talos-badge talos-badge--sm">v0.1.0</span>
+        <span class="talos-badge talos-badge--sm">v{talosVersion}</span>
       </div>
 
       <div class="talos-grid-auto">
@@ -89,7 +90,7 @@ const rows = [
 
       <div class="talos-stack" style="min-width:300px;max-width:340px">
         <span class="talos-eyebrow">Toasts</span>
-        <div class="talos-toast-region" style="position:static;inset:auto">
+        <div class="talos-toast-region" style="position:static;inset:auto;max-width:100%;overflow-x:clip">
           <div class="talos-toast talos-toast--success">
             <span class="talos-toast__icon">✓</span>
             <div class="talos-toast__title">Deploy complete</div>
@@ -350,7 +351,7 @@ const rows = [
 
     <div class="talos-row" style="gap:1rem;flex-wrap:wrap;margin-bottom:2rem">
       <Tag><span slot="icon">◆</span>Design system</Tag>
-      <Tag size="sm">v0.4.0</Tag>
+      <Tag size="sm">v{talosVersion}</Tag>
       <BackButton variant="ghost" href="/showcase/" text="Back to showcase" />
     </div>
 

@@ -1,0 +1,48 @@
+---
+title: Ground track
+description: "An equirectangular world strip: sub-satellite points, the sinusoidal tracks an inclined orbit traces, and gateways that light when a satellite is overhead."
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`<talos-groundtrack>` shows where a constellation **is**: the point beneath each
+satellite, the ground tracks an inclined orbit traces, and ground-station
+gateways that brighten while a satellite is in view. Position is bound to each
+satellite's state, so the dots march west to east and the gateways light as the
+fleet passes over. On an equirectangular map an orbit of inclination *i* traces
+`lat = i · sin(phase)`, so the reference tracks are the real shape.
+
+## Default — `.sats` and `.gateways`
+
+<Demo live>
+  <talos-groundtrack inclination="53" tracks="6" label="constellation" style="width:100%"></talos-groundtrack>
+</Demo>
+
+```html
+<talos-groundtrack inclination="53" tracks="6"></talos-groundtrack>
+<script type="module">
+  const el = document.querySelector("talos-groundtrack");
+  el.sats = [{ lon: -40, lat: 22, band: 0 }, { lon: 95, lat: -48, band: 2 }];
+  el.gateways = [{ lon: -3, lat: 51, active: true }, { lon: 139, lat: 35, active: false }];
+</script>
+```
+
+The demo advances twelve satellites each second and marks a gateway `active`
+while a satellite is within range of it.
+
+## Data
+
+| Property | Shape | Effect |
+| --- | --- | --- |
+| `sats` | `[{ lon, lat, band }]` | sub-satellite points; `band` `0` / `1` / `2` = nominal / warning / critical |
+| `gateways` | `[{ lon, lat, active }]` | fixed ground stations; `active` brightens one |
+
+Coordinates are degrees: `lon` in `-180..180`, `lat` in `-90..90`.
+
+## Attributes
+
+| Attribute | Default | Effect |
+| --- | --- | --- |
+| `inclination` | `53` | orbit inclination in degrees for the reference tracks |
+| `tracks` | `6` | number of reference track sinusoids |
+| `label` | — | accessible label |

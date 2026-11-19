@@ -1,0 +1,51 @@
+---
+title: Plane
+description: "One orbital plane as the train it is: its satellites spaced along the track, in-plane and cross-plane links, and the eclipse span."
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`<talos-plane>` is one orbital **plane** drawn as a train: the satellites of a
+single plane spaced along their shared track, each following the one ahead. It
+is the middle magnification between the whole-shell
+[matrix](/docs/instruments/matrix/) and a single
+[spacecraft](/docs/instruments/spacecraft/). Each satellite links to its fore and
+aft neighbours along the track and to two cross-plane neighbours (the stubs above
+and below). The shaded span is the eclipse the train is flying through.
+
+## Default — `.sats` and the eclipse span
+
+<Demo live>
+  <talos-plane slots="22" plane-label="P00" style="width:100%"></talos-plane>
+</Demo>
+
+```html
+<talos-plane slots="22" plane-label="P00" eclipse-from="0.3" eclipse-to="0.6"></talos-plane>
+<script type="module">
+  const el = document.querySelector("talos-plane");
+  el.sats = Array.from({ length: 22 }, (_, i) => ({ band: 0, eclipse: i > 6 && i < 13 }));
+  el.addEventListener("talos:sat", (e) => console.log("slot", e.detail.slot));
+</script>
+```
+
+The demo moves the eclipse span along the track each second and re-sets
+`.sats`: satellites inside the shadow read warning, a few random ones go
+critical. Motion lives in the data you push; re-set `.sats` and the train
+advances.
+
+## Data
+
+| Property | Shape | Effect |
+| --- | --- | --- |
+| `sats` | `[{ band, eclipse?, selected? }]` | in slot (flight) order; `band` `0` / `1` / `2`; `selected` rings a satellite |
+
+A click on a satellite emits `talos:sat` with `{ slot }`.
+
+## Attributes
+
+| Attribute | Default | Effect |
+| --- | --- | --- |
+| `slots` | `22` | satellites in the plane |
+| `eclipse-from` | — | shadow span start, `0..1` along the track |
+| `eclipse-to` | — | shadow span end, `0..1` |
+| `plane-label` | — | short text label |

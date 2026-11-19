@@ -1,0 +1,8 @@
+---
+// Preload the latin Oxanium face the whole site renders in. The ?url import
+// resolves to the same hashed asset Vite emits for the @font-face in
+// tokens.css, so the preload and the stylesheet request one file.
+import oxaniumLatin from "@j_shelfwood/talos-ui/fonts/oxanium-latin.woff2?url";
+---
+
+<link rel="preload" href={oxaniumLatin} as="font" type="font/woff2" crossorigin />
