@@ -101,27 +101,27 @@ const { title, description, slug } = Astro.props;
       /* --- Markdown prose, Talos-styled ---------------------------------- */
       .docs-prose { max-width: 70ch; }
       .docs-prose > * + * { margin-top: 1.15rem; }
-      .docs-prose p,
-      .docs-prose li {
+      .docs-prose p:not(.not-content *),
+      .docs-prose li:not(.not-content *) {
         font-family: var(--talos-font-body, var(--talos-font-display));
         font-size: 0.98rem;
         line-height: 1.7;
         color: hsl(var(--talos-foreground-hsl) / 0.86);
       }
-      .docs-prose h2,
-      .docs-prose h3 {
+      .docs-prose h2:not(.not-content *),
+      .docs-prose h3:not(.not-content *) {
         font-weight: 300;
         text-transform: uppercase;
         letter-spacing: var(--talos-tracking-hud-tight);
         color: var(--talos-text-primary);
         margin-top: 2.75rem;
       }
-      .docs-prose h2 {
+      .docs-prose h2:not(.not-content *) {
         font-size: 1.15rem;
         padding-bottom: 0.5rem;
         border-bottom: 1px solid var(--talos-edge-subtle);
       }
-      .docs-prose h3 { font-size: 1rem; }
+      .docs-prose h3:not(.not-content *) { font-size: 1rem; }
       /* Prose links only — links inside live demos (.not-content) keep their own
          component styling, e.g. a .talos-button keeps its border and colour. */
       .docs-prose a:not(.not-content *) {
@@ -130,10 +130,10 @@ const { title, description, slug } = Astro.props;
         border-bottom: 1px solid hsl(var(--talos-accent-hsl) / 0.35);
       }
       .docs-prose a:not(.not-content *):hover { border-bottom-color: var(--talos-accent); }
-      .docs-prose strong { color: var(--talos-text-primary); font-weight: 400; }
+      .docs-prose strong:not(.not-content *) { color: var(--talos-text-primary); font-weight: 400; }
 
       /* Inline code */
-      .docs-prose :not(pre) > code {
+      .docs-prose :not(pre) > code:not(.not-content *) {
         font-family: var(--talos-font-mono, ui-monospace, monospace);
         font-size: 0.85em;
         padding: 0.12em 0.4em;
@@ -166,23 +166,17 @@ const { title, description, slug } = Astro.props;
       }
 
       /* Prose opt-out boundary. Live demos (<Demo>) render inside .docs-prose
-         and carry .not-content; without this the prose rules above (stray
-         top-margin on the first child, link underlines, body font on slotted
-         <p>/<a>) leak into demo content. This replaces the dead Starlight
-         class that used to supply the opt-out before the Starlight removal. */
+         and carry .not-content. Every element rule in this block is scoped with
+         :not(.not-content *), so headings, tables, pre/code, lists and links
+         inside a demo render exactly as the package ships them; only the
+         flow spacing below needs an explicit reset. */
       .docs-prose .not-content { margin-top: 0; }
-      .docs-prose .not-content :where(p, li) {
-        font-family: var(--talos-font-display);
-        font-size: inherit;
-        line-height: inherit;
-        color: inherit;
-      }
       .docs-prose .not-content > * + * { margin-top: 0; }
 
       /* Fenced code blocks — chamfered HUD frame on the talos chamfer engine.
          astro.config.mjs adds `talos-chamfer talos-chamfer--btn` (bottom-right
          cut) to every <pre>; only the fill and box metrics are set here. */
-      .docs-prose pre {
+      .docs-prose pre:not(.not-content *) {
         --_fill: var(--talos-surface-1);
         font-family: var(--talos-font-mono, ui-monospace, monospace);
         font-size: 0.85rem;
@@ -192,7 +186,7 @@ const { title, description, slug } = Astro.props;
         scrollbar-width: thin;
         scrollbar-color: var(--talos-edge-default) transparent;
       }
-      .docs-prose pre > code {
+      .docs-prose pre:not(.not-content *) > code {
         position: relative;
         z-index: 0;
         background: none;
@@ -203,12 +197,12 @@ const { title, description, slug } = Astro.props;
       }
 
       /* Tables — zebra hairline, HUD header */
-      .docs-prose table {
+      .docs-prose table:not(.not-content *) {
         width: 100%;
         border-collapse: collapse;
         font-size: 0.9rem;
       }
-      .docs-prose th {
+      .docs-prose th:not(.not-content *) {
         text-align: left;
         font-family: var(--talos-font-display);
         font-weight: 400;
@@ -219,16 +213,16 @@ const { title, description, slug } = Astro.props;
         padding: 0.6rem 0.9rem;
         border-bottom: 1px solid var(--talos-edge-strong);
       }
-      .docs-prose td {
+      .docs-prose td:not(.not-content *) {
         padding: 0.6rem 0.9rem;
         border-bottom: 1px solid var(--talos-edge-subtle);
         color: hsl(var(--talos-foreground-hsl) / 0.86);
       }
-      .docs-prose tbody tr:nth-child(even) { background: hsl(var(--talos-foreground-hsl) / 0.02); }
-      .docs-prose td code { white-space: nowrap; }
+      .docs-prose tbody:not(.not-content *) tr:nth-child(even) { background: hsl(var(--talos-foreground-hsl) / 0.02); }
+      .docs-prose td:not(.not-content *) code { white-space: nowrap; }
 
-      .docs-prose ul { padding-left: 1.25rem; }
-      .docs-prose li { margin-top: 0.35rem; }
-      .docs-prose li::marker { color: var(--talos-accent); }
+      .docs-prose ul:not(.not-content *) { padding-left: 1.25rem; }
+      .docs-prose li:not(.not-content *) { margin-top: 0.35rem; }
+      .docs-prose li:not(.not-content *)::marker { color: var(--talos-accent); }
     </style>
 </BaseLayout>
