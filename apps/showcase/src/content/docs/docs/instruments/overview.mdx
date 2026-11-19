@@ -112,12 +112,21 @@ had to be watched to be understood would be decoration wearing a function's coat
 | [`<talos-trend>`](/docs/instruments/trend/) | pushed `value` | live trend line; slope = rate |
 | [`<talos-spark>`](/docs/instruments/spark/) | series / pushed | compact inline sparkline |
 | [`<talos-flow>`](/docs/instruments/flow/) | `rate` | a connection whose dash speed = throughput |
-| [`<talos-orbital>`](/docs/instruments/orbital/) | child nodes | radial system map |
+| [`<talos-orbital>`](/docs/instruments/orbital/) | `.nodes` | radial system map |
 | [`<talos-readout>`](/docs/instruments/readout/) | `value` | text that scrambles on change |
 | [`<talos-dots>`](/docs/instruments/dots/) | `value` of `total` | dot-matrix count |
 | [`<talos-delta>`](/docs/instruments/delta/) | `value` vs last | ▲▼ change + magnitude |
 | [`<talos-stat>`](/docs/instruments/stat/) | `value` | labelled statistic cell, counts up |
 | [`<talos-toggle>`](/docs/instruments/toggle/) | `value` | segmented control; selection is state |
+| [`<talos-compass>`](/docs/instruments/compass/) | `heading` | 360° bearing; wraps, eases the short way |
+| [`<talos-odometer>`](/docs/instruments/odometer/) | `value` | running total; changed digits roll |
+| [`<talos-percentile>`](/docs/instruments/percentile/) | `.stats` / `p50`…`p99` | box plot on a rail; p99 banded |
+| [`<talos-ticker>`](/docs/instruments/ticker/) | `push(event)` | live event log; severity is colour |
+| [`<talos-histogram>`](/docs/instruments/histogram/) | `.values` | distribution; bars banded by bucket |
+| [`<talos-matrix>`](/docs/instruments/matrix/) | `.cells` | banded cell grid with a terminator band |
+| [`<talos-groundtrack>`](/docs/instruments/groundtrack/) | `.sats` / `.gateways` | world strip with ground tracks |
+| [`<talos-plane>`](/docs/instruments/plane/) | `.sats` | one orbital plane as a linked train |
+| [`<talos-spacecraft>`](/docs/instruments/spacecraft/) | `.parts` | one satellite, each part banded |
 
 ## Shared attributes
 

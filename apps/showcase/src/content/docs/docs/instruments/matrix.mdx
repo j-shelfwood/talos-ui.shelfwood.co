@@ -1,0 +1,58 @@
+---
+title: Matrix
+description: "A dense cell grid where each cell's colour is a banded value: the health of many homogeneous units at a glance."
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`<talos-matrix>` is the honest form for "the health of many identical units": a
+satellite shell (planes × slots), a disk array, a rack, a sensor wall. Each cell
+is one unit and its colour is that unit's band, so the whole field reads as one
+picture of where the trouble is and how much of it there is. It renders to one
+`<canvas>`, so 72 × 22 = 1,584 cells repaint live without a DOM node each.
+
+## Default — `.cells` with a terminator
+
+<Demo live>
+  <talos-matrix cols="48" rows="12" warn="70" crit="90" terminator="0.2" label="fleet health" style="width:100%"></talos-matrix>
+</Demo>
+
+```html
+<talos-matrix cols="48" rows="12" warn="70" crit="90" terminator="0.2"></talos-matrix>
+<script type="module">
+  const el = document.querySelector("talos-matrix");
+  el.cells = new Float32Array(48 * 12).map(() => Math.random() * 100); // row-major
+</script>
+```
+
+The demo walks every cell each second and advances `terminator`. The terminator
+is a shadow band (for example the day/night line crossing an orbital shell):
+cells inside it are dimmed, still their colour, because they are in eclipse,
+not unknown. Under reduced motion the consumer stops advancing `terminator` and
+the band holds, which is still a valid reading.
+
+## Clicking a cell
+
+```js
+el.addEventListener("talos:cell", (e) => {
+  const { col, row, index } = e.detail;
+  el.highlight = { index };
+});
+```
+
+A click emits `talos:cell` with the cell's `col`, `row` and `index`. The
+`highlight` property (`{ col }` or `{ index }`) outlines a column or one cell.
+
+## Attributes
+
+| Attribute | Default | Effect |
+| --- | --- | --- |
+| `cols` / `rows` | `72` / `22` | grid dimensions |
+| `warn` / `crit` | `70` / `90` | band thresholds on each cell value |
+| `invert` | — | flag: low = bad |
+| `terminator` | — | shadow-band centre, `0..1`; absent = no shadow |
+| `terminator-width` | `0.35` | shadow-band width as a fraction of the grid |
+| `gap` | `1` | px between cells |
+| `label` | — | accessible label; `aria-label` summarises the band counts |
+
+`el.cells` takes an array or TypedArray of `cols × rows` values, row-major.

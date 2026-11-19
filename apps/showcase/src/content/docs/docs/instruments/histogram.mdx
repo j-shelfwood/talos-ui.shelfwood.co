@@ -1,0 +1,58 @@
+---
+title: Histogram
+description: "The distribution of one value across many units: bar height is the count per bucket, bar colour is that bucket's band."
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`<talos-histogram>` shows the **shape of a population**: how battery charge is
+spread across a fleet, how latency is distributed across gateways, where the mass
+sits and where the tail is. Bar height is how many units fall in a bucket; bar
+colour is the band of that bucket's centre. A cohort sliding toward trouble reads
+as a bump migrating toward the red end.
+
+## Default — `.values`
+
+<Demo live>
+  <talos-histogram bins="24" min="0" max="100" warn="70" crit="88" label="cpu across nodes" style="width:100%;height:150px"></talos-histogram>
+</Demo>
+
+```html
+<talos-histogram
+  bins="24" min="0" max="100" warn="70" crit="88"
+  label="cpu across nodes" style="height:150px"
+></talos-histogram>
+<script type="module">
+  const el = document.querySelector("talos-histogram");
+  el.values = nodes.map((n) => n.cpu); // the raw population
+</script>
+```
+
+The demo feeds 400 samples whose centre drifts each second. The element buckets
+the raw population itself; give the host a height.
+
+## Inverted — low is bad
+
+<Demo live>
+  <talos-histogram bins="20" min="0" max="100" warn="45" crit="25" invert label="battery" style="width:100%;height:120px"></talos-histogram>
+</Demo>
+
+```html
+<talos-histogram bins="20" warn="45" crit="25" invert label="battery"></talos-histogram>
+```
+
+`invert` flips the bands: the low buckets are the red ones.
+
+## Attributes
+
+| Attribute | Default | Effect |
+| --- | --- | --- |
+| `bins` | `24` | number of buckets |
+| `min` / `max` | `0` / `100` | value range to bucket across |
+| `warn` / `crit` | — | band thresholds for bar colour |
+| `invert` | — | flag: low = bad |
+| `label` | — | accessible label |
+
+`el.values = ArrayLike<number>` sets the population and re-renders. Colour and
+bar position carry the meaning in a static frame; there is no motion-only
+information.

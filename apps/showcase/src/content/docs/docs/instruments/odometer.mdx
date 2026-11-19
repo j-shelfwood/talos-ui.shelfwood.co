@@ -1,0 +1,59 @@
+---
+title: Odometer
+description: "A rolling running total where the digit motion is the throughput: the ones place blurs, the high digits sit still."
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`<talos-odometer>` is a big running counter (requests served, bytes moved,
+events processed) where every digit that changes **rolls** from its old glyph to
+the new one. A fast counter therefore looks fast: its low-order digits roll
+continuously while the high-order digits sit still, and a stalled counter is
+visibly still. Only changed digits roll.
+
+## Default
+
+<Demo live>
+  <talos-odometer value="1284903" group label="requests" unit="req"></talos-odometer>
+</Demo>
+
+```html
+<talos-odometer value="1284903" group label="requests" unit="req"></talos-odometer>
+```
+
+The demo adds a few dozen to `value` every second. `group` inserts thousands
+separators; they are presentation only, so the digits read true in any frame.
+
+## Zero-padded digits
+
+<Demo>
+  <talos-odometer value="4821" digits="8" label="uptime s"></talos-odometer>
+</Demo>
+
+```html
+<talos-odometer value="4821" digits="8" label="uptime s"></talos-odometer>
+```
+
+`digits` is a minimum digit count; shorter numbers are zero-padded so the
+columns do not shift as the total grows.
+
+## Distinct from its siblings
+
+- [`<talos-stat>`](/docs/instruments/stat/) counts **once** to a target: a magnitude transition.
+- [`<talos-readout>`](/docs/instruments/readout/) scrambles to mark the arrival of new telemetry.
+- `<talos-odometer>` rolls **per digit, on every change**: the cadence of the roll is the cadence of the data.
+
+## Attributes
+
+| Attribute | Default | Effect |
+| --- | --- | --- |
+| `value` | `0` | current total |
+| `digits` | — | minimum digit count, zero-padded |
+| `group` | — | flag: insert thousands separators |
+| `label` | — | caption above the counter |
+| `unit` | — | suffix after the number |
+| `duration` | `400` | roll duration in ms |
+
+A running total has no health band, so there is no `warn` / `crit`. Under
+`prefers-reduced-motion` digits snap to the new value with no roll. The roll is a
+CSS transform transition per changed digit; there is no rAF loop.

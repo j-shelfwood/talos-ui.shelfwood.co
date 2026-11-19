@@ -172,8 +172,9 @@ const drivers: Record<string, Driver> = {
     const base = state.get(el) ?? 60;
     const p50 = walk(base, 30, 110, 0.1);
     state.set(el, p50);
-    const p90 = p50 * (1.6 + Math.random() * 0.6);
-    const p99 = p90 * (1.3 + Math.random() * 0.9);
+    // Spread the tail well apart so the marker labels stay legible.
+    const p90 = p50 * (2.4 + Math.random() * 0.8);
+    const p99 = p90 * (2 + Math.random() * 1.2);
     (el as HTMLElement & { stats: unknown }).stats = {
       p05: Math.round(p50 * 0.4),
       p25: Math.round(p50 * 0.75),

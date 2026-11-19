@@ -1,0 +1,57 @@
+---
+title: Compass
+description: "A 360°-wrapping bearing indicator: the needle points where the thing points, and 359° sits next to 1°."
+---
+
+import Demo from "../../../../components/Demo.astro";
+
+`<talos-compass>` renders a **direction**, not a number that happens to be an
+angle. On a bar or a sweep gauge, 359° and 1° sit at opposite ends of the track;
+on the compass they are neighbours, as they are in the world. The dial is fixed
+(N up) and the needle rotates, so the cardinal labels stay upright at every
+heading.
+
+## Default
+
+<Demo live>
+  <talos-compass heading="72" label="heading"></talos-compass>
+</Demo>
+
+```html
+<talos-compass heading="72" label="heading"></talos-compass>
+```
+
+The demo walks `heading` every second. The needle eases to each new bearing the
+**short way round** (350° to 10° turns +20°, never −340°); the readout and colour
+are exact at once. Under `prefers-reduced-motion` the tween is skipped, not the
+meaning.
+
+## Target and tolerance bands
+
+<Demo>
+  <talos-compass heading="88" target="90" warn="10" crit="25" label="on target"></talos-compass>
+  <talos-compass heading="105" target="90" warn="10" crit="25" label="drifting"></talos-compass>
+  <talos-compass heading="140" target="90" warn="10" crit="25" label="off target"></talos-compass>
+</Demo>
+
+```html
+<talos-compass heading="105" target="90" warn="10" crit="25" label="drifting"></talos-compass>
+```
+
+With `target` set, `warn` / `crit` are **off-target tolerances** in degrees of
+shortest-angle error: the needle turns amber, then red, as the heading drifts
+off the target bearing. Without a target the needle is always nominal; a bearing
+alone has no wrong value.
+
+## Attributes
+
+| Attribute | Default | Effect |
+| --- | --- | --- |
+| `heading` | `0` | current bearing in degrees; wraps at 360 |
+| `target` | — | desired bearing, drawn as a marker |
+| `warn` | — | off-target error (degrees) at which the band is warning |
+| `crit` | — | off-target error (degrees) at which the band is critical |
+| `label` | — | caption under the readout |
+| `size` | `160` | px square |
+
+All attributes are reactive.
